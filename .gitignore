@@ -1,5 +1,8 @@
 web/node_modules
 web/build
+web/package-lock.json
+web/yarn.lock
+web/package.json
 **/.idea
 **/.settings
 **/.classpath
