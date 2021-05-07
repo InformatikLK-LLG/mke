@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MkeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MkeApplication.class, "--server.port=4001");
+		SpringApplication.run(MkeApplication.class, args);
 	}
 
 }
