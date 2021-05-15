@@ -10,6 +10,7 @@ web/package.json
 *.swp
 *.~ava
 *.iml
+**/application.properties
 
 HELP.md
 target/
