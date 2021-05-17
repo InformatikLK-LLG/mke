@@ -11,6 +11,7 @@ web/package.json
 *.~ava
 *.iml
 **/application.properties
+.env
 
 HELP.md
 target/
