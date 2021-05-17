@@ -5,21 +5,26 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 16
-      uses: actions/setup-java@v2
-      with:
-        java-version: '16'
-        distribution: 'adopt'
-    - name: Build with Maven
-      run: mvn -B package --file server/pom.xml
+      - uses: actions/checkout@v2
+      - name: Set up JDK 16
+        uses: actions/setup-java@v2
+        with:
+          java-version: "16"
+          distribution: "adopt"
+      - name: Build with Maven
+        run: mvn -B package --file server/pom.xml
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_HOSTNAME: ${{ secrets.DB_HOSTNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_NAME }}
