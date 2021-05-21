@@ -4,19 +4,21 @@ type SideBoxProps = {
   headline: string;
   subtitle: string[];
   Button: JSX.Element;
+  color?: "blue" | "";
+  size?: "normal" | "smol" | "big";
 };
 
-export function SideBox({ headline, subtitle, Button }: SideBoxProps) {
+export function SideBox({ headline, subtitle, Button, color = "", size = "normal" }: SideBoxProps) {
   const navigate = useNavigate();
 
   return (
-    <div>
+    <div className={`sideBox ${color} ${size}`}>
       <h2>{headline}</h2>
-      <div>
+      <span>
         {subtitle.map((line, index) => {
           return <p key={index}>{line}</p>;
         })}
-      </div>
+      </span>
       <div>{Button}</div>
     </div>
   );
