@@ -12,7 +12,7 @@ export function Button({
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }): Button {
   return (
-    <button type={type} className={"button" + className} onClick={onClick}>
+    <button type={type} className={"button " + className} onClick={onClick}>
       {label}
     </button>
   );

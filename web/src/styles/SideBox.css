@@ -1,0 +1,32 @@
+.sideBox {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.sideBox > h2 {
+  font-size: 2em;
+}
+
+.sideBox.blue > span,
+.sideBox.blue > h2 {
+  color: white;
+}
+
+.sideBox.blue {
+  background-color: var(--highlighting);
+}
+
+.sideBox.smol {
+  width: 35%;
+}
+
+.sideBox.big {
+  width: 65%;
+}
+
+.sideBox.normal {
+  width: 50%;
+}

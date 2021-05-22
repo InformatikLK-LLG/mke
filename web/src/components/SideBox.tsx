@@ -1,3 +1,4 @@
+import "../styles/SideBox.css";
 import { useNavigate } from "react-router-dom";
 
 type SideBoxProps = {

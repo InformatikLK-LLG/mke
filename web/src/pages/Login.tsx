@@ -30,6 +30,7 @@ export default function Login() {
         <div className="" />
       )}
       <div className="container">
+        <h1>Login</h1>
         <LoginForm />
       </div>
     </div>
