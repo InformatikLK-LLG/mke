@@ -12,9 +12,9 @@ form > label > input {
   width: 30vw;
   min-width: 200px;
   max-width: 350px;
-  padding-left: 3em;
+  padding-left: 2em;
   margin-left: 0;
-
+  font-size: 1em;
 }
 
 form > label {
@@ -25,7 +25,9 @@ form > label {
   color: var(--border);
   font-size: 1em;
   position: absolute;
-  padding: 10px 0.55em;
+  padding: 1em 0.55em;
+  top: 0;
+  bottom: 0;
 }
 
 .formButton {

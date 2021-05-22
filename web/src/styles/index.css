@@ -1,9 +1,13 @@
+:root {
+  font-size: 20px;
+}
+
 body {
   box-sizing: border;
   margin: 0;
   padding: 0;
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-  font-size: 20px;
+  /* font-size: 20px; */
 }
 
 *:focus {
