@@ -1,5 +1,5 @@
 import "../styles/index.css";
-import "../styles/BookingCalendar.scss";
+import "../styles/BookingCalendar.css";
 
 import Calendar, { CalendarTileProperties } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
