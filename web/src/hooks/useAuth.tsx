@@ -16,6 +16,7 @@ const defaultAuth: auth = {
     return;
   },
 };
+
 const authContext = createContext<auth>(defaultAuth);
 
 export default function ProvideAuth({ children }: { children: JSX.Element }) {
