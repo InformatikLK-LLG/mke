@@ -1,0 +1,66 @@
+form {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+form > label > input {
+  margin: 0.5em;
+  padding: 0.5em 1.5em;
+  background-color: var(--input);
+  border: none;
+  width: 30vw;
+  min-width: 200px;
+  max-width: 350px;
+  padding-left: 3em;
+  margin-left: 0;
+
+}
+
+form > label {
+  position: relative;
+}
+
+.inputIcon {
+  color: var(--border);
+  font-size: 1em;
+  position: absolute;
+  padding: 10px 0.55em;
+}
+
+.formButton {
+  display: flex;
+  justify-content: center;
+  margin-top: 2em;
+  padding: 0.4em 3.5em;
+  width: 30%;
+}
+
+form > a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1em;
+  text-decoration: none;
+  color: var(--border);
+}
+
+@media (min-width: 520px) {
+  form > a::after {
+    content: "";
+    width: 120%;
+    height: 0.1em;
+    margin-top: 0.5em;
+    background-color: var(--border);
+  }
+}
+
+@media (max-width: 520px) {
+  form > a::before {
+    content: "";
+    width: 120%;
+    height: 0.1em;
+    margin-bottom: 0.5em;
+    background-color: var(--border);
+  }
+}
