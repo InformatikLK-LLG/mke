@@ -15,6 +15,7 @@ h2,
 h3 {
   font-weight: normal;
 }
+
 h1 {
   font-size: 2.5em;
 }
@@ -67,11 +68,11 @@ input:focus {
 }
 
 .container {
-  flex-grow: 1;
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
+  flex-grow: 1;
 }
 
 .container > h1 {

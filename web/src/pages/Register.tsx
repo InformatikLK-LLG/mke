@@ -19,7 +19,7 @@ export function Register1() {
   return (
     <div className="flexrow">
       <div className="container">
-        <h1>Login</h1>
+        <h1>Registrieren</h1>
         <RegisterForm1 />
       </div>
       {width > 520 ? (
@@ -51,7 +51,8 @@ export function Register1() {
 
 export function Register2() {
   return (
-    <div>
+    <div className="container">
+      <h1>Registrieren</h1>
       <RegisterForm2 />
     </div>
   );
@@ -59,7 +60,8 @@ export function Register2() {
 
 export function Register3() {
   return (
-    <div>
+    <div className="container">
+      <h1>Registrieren</h1>
       <RegisterForm3 />
     </div>
   );

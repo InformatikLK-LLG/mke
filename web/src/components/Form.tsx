@@ -1,8 +1,9 @@
 import "../styles/Form.css";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { FieldError, useForm, UseFormRegister } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Button from "./Button";
+import FormErrorMessage from "./FormErrorMessage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -17,7 +18,11 @@ type LoginFormInputs = {
 };
 
 export function LoginForm() {
-  const { register, handleSubmit } = useForm<LoginFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
   const auth = useAuth();
 
@@ -28,10 +33,7 @@ export function LoginForm() {
         navigate("/");
       })}
     >
-      <label id="email">
-        <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
-        <input placeholder="Email" {...register("email")} type="email" />
-      </label>
+      <EmailInputField register={register} emailErrors={errors.email} />
       <label id="password">
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
         <input
@@ -51,20 +53,17 @@ type ForgotPasswordFormInputs = {
 };
 
 export function ForgotPasswordForm() {
-  const { register, handleSubmit } = useForm<ForgotPasswordFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormInputs>();
   const navigate = useNavigate();
 
   return (
     <form onSubmit={handleSubmit(({ email }) => navigate("/login"))}>
-      <label>
-        <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
-        <input
-          placeholder="Email"
-          {...register("email", { required: true })}
-          type="email"
-        />
-      </label>
-      <Button type="submit" label="Submit!" />
+      <EmailInputField register={register} emailErrors={errors.email} />
+      <Button className="formButton" type="submit" label="Weiter" />
     </form>
   );
 }
@@ -79,21 +78,23 @@ export function RegisterForm1() {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<RegisterForm1Inputs>({ mode: "onBlur" });
+  } = useForm<RegisterForm1Inputs>();
   const navigate = useNavigate();
 
   return (
     <form onSubmit={handleSubmit(({ code }) => navigate("./1"))}>
       <label>
+        {errors.code && <FormErrorMessage message={errors.code.message} />}
         <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
         <input
           placeholder="Code"
           {...register("code", {
             required: "Einladungscode ist notwendig.",
-            maxLength: { value: 6, message: "too many characters and stuff" },
-            pattern: /^-?[0-9]d*.?d*$/i,
+            pattern: {
+              value: /^[0-9]{6}$/,
+              message: "0-6 chars bla dass wir sehen dass was da ist.",
+            },
           })}
-          type="text"
           onChange={(event) => {
             if (isNaN(Number(event.target.value)))
               setValue(
@@ -104,7 +105,6 @@ export function RegisterForm1() {
         />
       </label>
       <Button className="formButton" type="submit" label="Registrieren" />
-      {errors.code && <span>{errors.code.message}</span>}
     </form>
   );
 }
@@ -116,7 +116,11 @@ type RegisterForm2Inputs = {
 };
 
 export function RegisterForm2() {
-  const { register, handleSubmit } = useForm<RegisterForm2Inputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterForm2Inputs>();
   const navigate = useNavigate();
 
   return (
@@ -126,28 +130,31 @@ export function RegisterForm2() {
       )}
     >
       <label>
+        {errors.firstName && (
+          <FormErrorMessage message={errors.firstName.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faEdit} />
         <input
           placeholder="Vorname"
-          {...register("firstName", { required: true })}
+          {...register("firstName", {
+            required: "Vorname muss angegeben werden",
+          })}
         />
       </label>
       <label>
+        {errors.lastName && (
+          <FormErrorMessage message={errors.lastName.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faEdit} />
         <input
           placeholder="Nachname"
-          {...(register("lastName"), { required: true })}
+          {...register("lastName", {
+            required: "Nachname muss angegeben werden",
+          })}
         />
       </label>
-      <label>
-        <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
-        <input
-          placeholder="Email"
-          {...(register("email"), { required: true })}
-          type="email"
-        />
-      </label>
-      <Button type="submit" label="Submit!" />
+      <EmailInputField register={register} emailErrors={errors.email} />
+      <Button className="formButton" type="submit" label="Weiter" />
     </form>
   );
 }
@@ -158,7 +165,11 @@ type RegisterForm3Inputs = {
 };
 
 export function RegisterForm3() {
-  const { register, handleSubmit } = useForm<RegisterForm3Inputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterForm3Inputs>();
   const navigate = useNavigate();
 
   return (
@@ -166,22 +177,57 @@ export function RegisterForm3() {
       onSubmit={handleSubmit(({ password, passwordRepeated }) => navigate("/"))}
     >
       <label>
+        {errors.password && (
+          <FormErrorMessage message={errors.password.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
         <input
           placeholder="Passwort"
-          {...register("password", { required: true })}
+          {...register("password", {
+            required: "Passwort muss angegeben werden ",
+          })}
           type="password"
         />
       </label>
       <label>
+        {errors.passwordRepeated && (
+          <FormErrorMessage message={errors.passwordRepeated.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
         <input
           placeholder="Passwort bestätigen"
-          {...register("passwordRepeated", { required: true })}
+          {...register("passwordRepeated", {
+            required: "Passwort muss angegeben werden",
+          })}
           type="password"
         />
       </label>
-      <Button type="submit" label="Submit!" />
+      <Button className="formButton" type="submit" label="Weiter" />
     </form>
+  );
+}
+
+function EmailInputField({
+  register,
+  emailErrors,
+}: {
+  register: UseFormRegister<any>;
+  emailErrors: FieldError | undefined;
+}) {
+  return (
+    <label>
+      {emailErrors && <FormErrorMessage message={emailErrors.message} />}
+      <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
+      <input
+        placeholder="Email"
+        {...register("email", {
+          required: "Email muss angegeben werden",
+          pattern: {
+            value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+            message: "gültige Email mit @ und so.",
+          },
+        })}
+      />
+    </label>
   );
 }

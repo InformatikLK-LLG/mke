@@ -2,6 +2,7 @@ form {
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
+  margin-top: 1em;
 }
 
 form > label > input {
@@ -20,6 +21,8 @@ form > label > input {
 
 form > label {
   position: relative;
+  /* margin: 5em 0 1em 0; */
+  /* margin-top: 0.75em; */
 }
 
 .inputIcon {
@@ -78,4 +81,44 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.validationMessage {
+  position: absolute;
+  bottom: 100%;
+  left: 0.75em;
+  max-width: 30em;
+
+  color: white;
+  background-color: var(--border);
+
+  padding: 0.5em 1.5em;
+  font-size: 0.75em;
+  border-radius: 10px;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3),
+    0 0.0625rem 0.125rem rgba(0, 0, 0, 0.2);
+}
+
+.validationMessage::before,
+.validationMessage::after {
+  content: "";
+  position: absolute;
+  left: 1.5em;
+}
+
+.validationMessage::before {
+  width: 0;
+  height: 0;
+  top: 100%;
+  border: 0.75rem solid transparent;
+  border-bottom: none;
+  border-top-color: var(--border);
+  filter: drop-shadow(0 0.0625rem 0.0625rem rgba(0, 0, 0, 0.1));
+}
+
+.validationMessage::after {
+  width: 1.3rem;
+  padding: 0.1em;
+  top: 90%;
+  background-color: var(--border);
 }
