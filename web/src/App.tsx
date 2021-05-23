@@ -3,8 +3,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Wrapper from "./Wrapper";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { Register1, Register2, Register3 } from "./pages/Register";
+import Register, { Register1, Register2, Register3 } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 

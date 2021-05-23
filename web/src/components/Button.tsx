@@ -1,6 +1,6 @@
 export type Button = JSX.Element;
 
-export function Button({
+export default function Button({
   type,
   className = "",
   label,

@@ -1,6 +1,5 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
-import { useLocation } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import type { NavBar as NavBarType } from "./components/NavBar";
 

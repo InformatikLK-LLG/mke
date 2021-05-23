@@ -15,6 +15,7 @@ form > label > input {
   padding-left: 2em;
   margin-left: 0;
   font-size: 1em;
+  font-family: inherit;
 }
 
 form > label {
@@ -34,8 +35,7 @@ form > label {
   display: flex;
   justify-content: center;
   margin-top: 2em;
-  padding: 0.4em 3.5em;
-  width: 30%;
+  padding: 0.5em 10%;
 }
 
 form > a {
@@ -66,4 +66,16 @@ form > a {
     margin-bottom: 0.5em;
     background-color: var(--border);
   }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

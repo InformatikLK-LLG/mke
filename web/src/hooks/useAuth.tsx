@@ -44,7 +44,7 @@ function useProvideAuth(): auth {
   // TODO maybe implement more methods for reset password, register, ...
 
   useEffect(() => {
-    // tODo logic to fetch user on mount
+    // TODO logic to fetch user on mount
   });
 
   return { user, signin, signout };
