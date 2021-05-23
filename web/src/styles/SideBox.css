@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  min-width: 320px;
 }
 
 .sideBox > h2 {

@@ -49,6 +49,7 @@ form > a {
 
 @media (min-width: 520px) {
   form > a::after {
+    outline: none;
     content: "";
     width: 120%;
     height: 0.1em;

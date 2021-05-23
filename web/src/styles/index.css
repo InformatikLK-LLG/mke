@@ -1,16 +1,38 @@
 :root {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
   /* font-size: 20px; */
 }
 
+h1,
+h2,
+h3 {
+  font-weight: normal;
+}
+h1 {
+  font-size: 2.5em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
 *:focus {
-  outline-color: var(--border);
+  /* outline-color: var(--border); */
+  outline: none;
+  box-shadow: 0 0 5px var(--border);
+}
+
+.button:focus,
+.button:hover {
+  box-shadow: 0 0 5px #444444;
+  filter: brightness(1.05);
 }
 
 input:focus {
@@ -60,7 +82,7 @@ input:focus {
   background-color: var(--highlighting);
   border: 1px solid white;
   color: white;
-  font-size: 30px;
+  font-size: 1em;
   padding: 10px 45px;
   border-radius: 100px;
 }
