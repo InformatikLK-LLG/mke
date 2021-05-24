@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 import NavBar from "./components/NavBar";
-import type { NavBar as NavBarType } from "./components/NavBar";
+import type { NavBarType } from "./components/NavBar";
 
 export default function Wrapper() {
   const auth = useAuth();

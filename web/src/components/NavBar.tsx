@@ -1,8 +1,8 @@
 import "../styles/NavBar.css";
 import { NavLink } from "react-router-dom";
 
-export type NavBar = { path: string; name: string }[];
-type NavBarProps = { routes: NavBar };
+export type NavBarType = { path: string; name: string }[];
+type NavBarProps = { routes: NavBarType };
 
 export default function NavBar({ routes }: NavBarProps) {
   return (

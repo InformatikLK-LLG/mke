@@ -76,9 +76,8 @@ export function RegisterForm1() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
-  } = useForm<RegisterForm1Inputs>();
+  } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
 
   return (
@@ -95,13 +94,6 @@ export function RegisterForm1() {
               message: "0-6 chars bla dass wir sehen dass was da ist.",
             },
           })}
-          onChange={(event) => {
-            if (isNaN(Number(event.target.value)))
-              setValue(
-                "code",
-                event.target.value.slice(0, event.target.value.length - 1)
-              );
-          }}
         />
       </label>
       <Button className="formButton" type="submit" label="Registrieren" />

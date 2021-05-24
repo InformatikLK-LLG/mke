@@ -1,4 +1,4 @@
-export type Button = JSX.Element;
+export type ButtonProps = JSX.Element;
 
 export default function Button({
   type,
@@ -10,7 +10,7 @@ export default function Button({
   className?: string;
   label: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}): Button {
+}): ButtonProps {
   return (
     <button type={type} className={"button " + className} onClick={onClick}>
       {label}
