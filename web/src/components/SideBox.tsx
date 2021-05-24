@@ -1,5 +1,4 @@
 import "../styles/SideBox.css";
-import { useNavigate } from "react-router-dom";
 
 type SideBoxProps = {
   headline: string;
@@ -9,9 +8,13 @@ type SideBoxProps = {
   size?: "normal" | "smol" | "big";
 };
 
-export function SideBox({ headline, subtitle, Button, color = "", size = "normal" }: SideBoxProps) {
-  const navigate = useNavigate();
-
+export function SideBox({
+  headline,
+  subtitle,
+  Button,
+  color = "",
+  size = "normal",
+}: SideBoxProps) {
   return (
     <div className={`sideBox ${color} ${size}`}>
       <h2>{headline}</h2>

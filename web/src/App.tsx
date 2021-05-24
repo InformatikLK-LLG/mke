@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import NoTrespassing from "./components/NoTrespassing";
 
 function App() {
   return (
@@ -19,8 +20,8 @@ function App() {
               <Route path="/forgotpassword" element={<ForgotPassword />} />
               <Route path="/register" element={<Register />}>
                 <Route path="/" element={<Register1 />} />
-                <Route path="1" element={<Register2 />} />
-                <Route path="2" element={<Register3 />} />
+                <NoTrespassing path="1" element={<Register2 />} />
+                <NoTrespassing path="2" element={<Register3 />} />
               </Route>
             </Route>
           </Routes>

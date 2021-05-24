@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type user = { email: String; password: String } | undefined;
+type user = { email: string; password: string } | undefined;
 type auth = {
   user: user;
   signin: (email: string, password: string) => void;
@@ -31,7 +31,7 @@ export const useAuth = () => {
 function useProvideAuth(): auth {
   const [user, setUser] = useState<user>();
 
-  const signin = (email: String, password: String) => {
+  const signin = (email: string, password: string) => {
     // TODO implement logic for signin
     setUser({ email, password });
   };

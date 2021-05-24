@@ -1,6 +1,6 @@
 import "../styles/Form.css";
 import { FieldError, useForm, UseFormRegister } from "react-hook-form";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Prompt } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Button from "./Button";
 import FormErrorMessage from "./FormErrorMessage";
@@ -81,7 +81,11 @@ export function RegisterForm1() {
   const navigate = useNavigate();
 
   return (
-    <form onSubmit={handleSubmit(({ code }) => navigate("./1"))}>
+    <form
+      onSubmit={handleSubmit(({ code }) =>
+        navigate("./1", { state: { _register_1: true } })
+      )}
+    >
       <label>
         {errors.code && <FormErrorMessage message={errors.code.message} />}
         <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
@@ -111,14 +115,15 @@ export function RegisterForm2() {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
-  } = useForm<RegisterForm2Inputs>();
+  } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
 
   return (
     <form
       onSubmit={handleSubmit(({ firstName, lastName, email }) =>
-        navigate("../2")
+        navigate("../2", { state: { _register_2: true } })
       )}
     >
       <label>
@@ -131,6 +136,7 @@ export function RegisterForm2() {
           {...register("firstName", {
             required: "Vorname muss angegeben werden",
           })}
+          autoFocus
         />
       </label>
       <label>
@@ -147,6 +153,12 @@ export function RegisterForm2() {
       </label>
       <EmailInputField register={register} emailErrors={errors.email} />
       <Button className="formButton" type="submit" label="Weiter" />
+      <Prompt
+        when={Boolean(
+          getValues().firstName || getValues().lastName || getValues().email
+        )}
+        message="Sicher, dass du die Seite verlassen möchtest?"
+      />
     </form>
   );
 }
@@ -160,13 +172,21 @@ export function RegisterForm3() {
   const {
     register,
     handleSubmit,
+    setError,
+    getValues,
     formState: { errors },
-  } = useForm<RegisterForm3Inputs>();
+  } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
 
   return (
     <form
-      onSubmit={handleSubmit(({ password, passwordRepeated }) => navigate("/"))}
+      onSubmit={handleSubmit(({ password, passwordRepeated }) =>
+        password === passwordRepeated
+          ? navigate("/")
+          : setError("password", {
+              message: "Passwörter stimmen nicht überein",
+            })
+      )}
     >
       <label>
         {errors.password && (
@@ -177,8 +197,14 @@ export function RegisterForm3() {
           placeholder="Passwort"
           {...register("password", {
             required: "Passwort muss angegeben werden ",
+            pattern: {
+              value: /\w{8}/,
+              message:
+                "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
+            },
           })}
           type="password"
+          autoFocus
         />
       </label>
       <label>
@@ -195,6 +221,10 @@ export function RegisterForm3() {
         />
       </label>
       <Button className="formButton" type="submit" label="Weiter" />
+      <Prompt
+        when={Boolean(getValues().password || getValues().passwordRepeated)}
+        message="Sicher, dass du die Seite verlassen möchtest?"
+      />
     </form>
   );
 }

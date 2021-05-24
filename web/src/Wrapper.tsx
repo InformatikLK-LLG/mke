@@ -1,10 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
 import NavBar from "./components/NavBar";
 import type { NavBarType } from "./components/NavBar";
 
 export default function Wrapper() {
-  const auth = useAuth();
   const location = useLocation();
 
   const routesWithNavBar = ["/"];
@@ -16,8 +14,6 @@ export default function Wrapper() {
   ];
 
   const hasNavBar = routesWithNavBar.includes(location.pathname);
-
-  // useEffect(() => {}, []);
 
   return (
     <div className={`wrapper ${hasNavBar ? "hasNavBar" : ""}`}>
