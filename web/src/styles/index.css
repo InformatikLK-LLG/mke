@@ -65,6 +65,7 @@ input:focus {
   align-items: center;
   justify-content: space-evenly;
   height: 100%;
+  max-width: 100%;
 }
 
 .container {
@@ -116,4 +117,35 @@ input:focus {
   /* padding: 3rem; */
   align-content: flex-start;
   justify-content: flex-end;
+}
+
+.flexcolumn {
+  display: flex;
+  height: 100%;
+  flex-flow: column-reverse nowrap;
+  align-items: center;
+  max-width: 100%;
+  justify-content: space-between;
+}
+
+.lower {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-self: flex-end;
+  flex-grow: 0.2;
+}
+
+.lower > p {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  color: var(--border);
+}
+
+.lower > p::before {
+  content: "";
+  width: 80%;
+  height: 0.1em;
+  background-color: var(--border);
+  margin-bottom: 0.5em;
 }

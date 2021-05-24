@@ -22,7 +22,7 @@ export function Register1() {
         <h1>Registrieren</h1>
         <RegisterForm1 />
       </div>
-      {width > 520 ? (
+      {width > 730 ? (
         <SideBox
           headline="Hallo!"
           subtitle={[

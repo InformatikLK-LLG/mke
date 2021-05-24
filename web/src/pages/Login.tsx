@@ -7,10 +7,11 @@ import { LoginForm } from "../components/Form";
 export default function Login() {
   const width = useViewport();
   const navigate = useNavigate();
+  const isDesktop = width > 730;
 
   return (
-    <div className="flexrow">
-      {width > 520 ? (
+    <div className={isDesktop ? "flexrow" : "flexcolumn"}>
+      {isDesktop ? (
         <SideBox
           headline="Willkommen zurück"
           subtitle={[
@@ -31,7 +32,14 @@ export default function Login() {
           size="smol"
         />
       ) : (
-        <div className="" />
+        <div className="mobile lower">
+          <p>Neu? Stattdessen registrieren?</p>
+          <Button
+            label="REGISTRIEREN"
+            type="button"
+            onClick={() => navigate("/register")}
+          />
+        </div>
       )}
       <div className="container">
         <h1>Login</h1>
