@@ -1,0 +1,22 @@
+.navBar {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.navLink {
+  padding: 10px;
+  text-decoration: none;
+  color: var(--border);
+  border-style: solid none solid solid;
+  border-width: 1px;
+  border-color: var(--border);
+}
+
+.navLink:last-of-type {
+  border-right: 1px solid var(--border);
+}
+
+.navLink.active {
+  background-color: var(--highlighting);
+}
