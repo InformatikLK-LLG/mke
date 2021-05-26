@@ -28,7 +28,7 @@ form > label > input {
   font-size: 1em;
   position: absolute;
   padding: 1em 0.55em;
-  top: 0;
+  top: 0.09em;
   bottom: 0;
 }
 
@@ -93,8 +93,7 @@ input[type="number"] {
   padding: 0.5em 1.5em;
   font-size: 0.75em;
   border-radius: 10px;
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3),
-    0 0.0625rem 0.125rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.2);
 }
 
 .validationMessage::before,

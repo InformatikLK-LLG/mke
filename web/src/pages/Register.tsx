@@ -1,8 +1,4 @@
-import {
-  RegisterForm1,
-  RegisterForm2,
-  RegisterForm3,
-} from "../components/Form";
+import { RegisterForm1, RegisterForm2, RegisterForm3 } from "../components/Form";
 import { Outlet, useNavigate } from "react-router-dom";
 import { SideBox } from "../components/SideBox";
 import useViewport from "../hooks/useViewport";
@@ -15,21 +11,19 @@ export default function Register() {
 export function Register1() {
   const width = useViewport();
   const navigate = useNavigate();
+  const isDesktop = width > 730;
 
   return (
-    <div className="flexrow">
-      <div className="container">
-        <h1>Registrieren</h1>
-        <RegisterForm1 />
-      </div>
-      {width > 730 ? (
+    // <div className={isDesktop ? "flexrow" : "flexcolumn"}>
+    isDesktop ? (
+      <div className="flexrow">
+        <div className="container">
+          <h1>Registrieren</h1>
+          <RegisterForm1 />
+        </div>
         <SideBox
           headline="Hallo!"
-          subtitle={[
-            "hier ganz viel Begrüßungstext",
-            "mehrere Zeilen",
-            "sogar",
-          ]}
+          subtitle={["hier ganz viel Begrüßungstext", "mehrere Zeilen", "sogar"]}
           Button={
             <Button
               type={"button"}
@@ -42,10 +36,21 @@ export function Register1() {
           color="blue"
           size="smol"
         />
-      ) : (
-        <div className="" />
-      )}
-    </div>
+      </div>
+    ) : (
+      <>
+        <div className="flexcolumn">
+          <div className="container">
+            <h1>Registrieren</h1>
+            <RegisterForm1 />
+          </div>
+        </div>
+        <div className="lower">
+          <p>Neu? Stattdessen einloggen?</p>
+          <Button label="LOGIN" type="button" onClick={() => navigate("/login")} />
+        </div>
+      </>
+    )
   );
 }
 

@@ -10,15 +10,11 @@ export default function Login() {
   const isDesktop = width > 730;
 
   return (
-    <div className={isDesktop ? "flexrow" : "flexcolumn"}>
+    <div className={isDesktop ? "flexrow" : "flexcolumn reverse"}>
       {isDesktop ? (
         <SideBox
           headline="Willkommen zurück"
-          subtitle={[
-            "hier ganz viel Begrüßungstext",
-            "mehrere Zeilen",
-            "sogar",
-          ]}
+          subtitle={["hier ganz viel Begrüßungstext", "mehrere Zeilen", "sogar"]}
           Button={
             <Button
               type={"button"}
@@ -34,11 +30,7 @@ export default function Login() {
       ) : (
         <div className="mobile lower">
           <p>Neu? Stattdessen registrieren?</p>
-          <Button
-            label="REGISTRIEREN"
-            type="button"
-            onClick={() => navigate("/register")}
-          />
+          <Button label="REGISTRIEREN" type="button" onClick={() => navigate("/register")} />
         </div>
       )}
       <div className="container">
