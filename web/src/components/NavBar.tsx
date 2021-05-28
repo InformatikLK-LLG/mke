@@ -4,7 +4,7 @@ import Dropdown from "./Dropdown";
 
 export interface NavBarItem {
   path: string;
-  name: string | JSX.Element;
+  name: string;
   subroutes?: NavBarType;
 }
 
@@ -17,12 +17,7 @@ export default function NavBar({ routes }: NavBarProps) {
     <nav className="navBar">
       {routes.map((route, index) => {
         return (
-          <Dropdown
-            key={index}
-            route={route}
-            index={index}
-            subroutes={route.subroutes}
-          />
+          <Dropdown route={route} index={index} subroutes={route.subroutes} />
         );
       })}
     </nav>
