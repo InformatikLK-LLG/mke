@@ -7,7 +7,7 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import { Link, Prompt, useNavigate } from "react-router-dom";
+import { Link, Prompt, useLocation, useNavigate } from "react-router-dom";
 import {
   faEdit,
   faEnvelope,
@@ -127,8 +127,8 @@ export function ForgotPasswordForm() {
   );
 }
 
-type RegisterForm1Inputs = {
-  code: string;
+export type RegisterForm1Inputs = {
+  code: number;
 };
 
 export function RegisterForm1() {
@@ -137,16 +137,20 @@ export function RegisterForm1() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const theme = useTheme();
+  const { validateInviteCode } = useAuth();
 
   return (
     <form
-      onSubmit={handleSubmit(({ code }) =>
-        navigate("./1", { state: { _register_1: true } })
-      )}
+      onSubmit={handleSubmit(({ code }) => {
+        if (validateInviteCode(code))
+          navigate("./1", { state: { registerState: { code } } });
+        setError("code", { message: "Code falsch" });
+      })}
     >
       <label>
         {errors.code && <FormErrorMessage message={errors.code.message} />}
@@ -180,7 +184,7 @@ export function RegisterForm1() {
   );
 }
 
-type RegisterForm2Inputs = {
+export type RegisterForm2Inputs = {
   firstName: string;
   lastName: string;
   email: string;
@@ -197,11 +201,19 @@ export function RegisterForm2() {
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const theme = useTheme();
+  const location = useLocation();
+  const {
+    registerState: { code },
+  } = location.state as { registerState: { code: number } };
 
   return (
     <form
       onSubmit={handleSubmit(({ firstName, lastName, email }) =>
-        navigate("../2", { state: { _register_2: true } })
+        navigate("../2", {
+          state: {
+            registerState: { code, firstName, lastName, email },
+          },
+        })
       )}
     >
       <label>
@@ -278,16 +290,35 @@ export function RegisterForm3() {
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const theme = useTheme();
+  const auth = useAuth();
+  const location = useLocation();
+  const { registerState } = location.state as {
+    registerState: {
+      code: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  };
 
   return (
     <form
-      onSubmit={handleSubmit(({ password, passwordRepeated }) =>
-        password === passwordRepeated
-          ? navigate("/")
-          : setError("password", {
-              message: "Passwörter stimmen nicht überein",
-            })
-      )}
+      onSubmit={handleSubmit(({ password, passwordRepeated }) => {
+        if (password === passwordRepeated) {
+          auth.register(
+            registerState.code,
+            registerState.firstName,
+            registerState.lastName,
+            registerState.email,
+            password,
+            passwordRepeated
+          );
+          navigate("/");
+        } else
+          setError("password", {
+            message: "Passwörter stimmen nicht überein",
+          });
+      })}
     >
       <label>
         {errors.password && (
