@@ -12,7 +12,7 @@ type HeaderType = {
 };
 
 interface RouteItem extends NavBarItem {
-  heading?: string;
+  heading: string;
   subroutes?: RouteType;
 }
 
@@ -47,6 +47,18 @@ export default function Wrapper() {
       path: "/",
       name: "Homie",
       heading: "Home",
+      subroutes: [
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+      ],
     },
     {
       path: "/institutions",
@@ -63,12 +75,6 @@ export default function Wrapper() {
           heading: "",
         },
       ],
-    },
-    {
-      path: "/profile",
-      name: <FontAwesomeIcon icon={faUser} />,
-      heading: `Hallo ${auth.user?.email}`,
-      subroutes: [{ name: "Logout", path: "/logout" }],
     },
   ];
 

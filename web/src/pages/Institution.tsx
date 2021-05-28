@@ -50,6 +50,7 @@ import Button from "../components/Button";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
+import { InstitutionOverlay } from "../components/InstitutionOverlay";
 import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
@@ -692,11 +693,10 @@ export function Institutions() {
 }
 
 export function ViewDetails() {
-  // let { instCode } = useParams();
-  // GET and stuff
+  let { instCode } = useParams();
   return (
     <div>
-      <InstitutionOverlay />
+      <InstitutionOverlay instCode={instCode} />
     </div>
   );
 }
