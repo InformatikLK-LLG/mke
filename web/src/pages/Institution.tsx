@@ -6,11 +6,12 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { faEdit, faKeyboard } from "@fortawesome/free-regular-svg-icons";
 
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { useForm } from "react-hook-form";
 
 type Address = {
@@ -21,8 +22,8 @@ type Address = {
 };
 
 type InstitutionType = {
-  firstName: string;
-  lastName: string;
+  instCode: string;
+  name: string;
   address: Address;
   phoneNumber: number;
   schoolAdministrativeDistrict: boolean;
@@ -55,7 +56,11 @@ const useInputStyles = makeStyles({
   },
 });
 
-export default function CreateInstitution() {
+export default function Institution() {
+  return <Outlet />;
+}
+
+export function CreateInstitution() {
   const {
     register,
     handleSubmit,
@@ -73,44 +78,41 @@ export default function CreateInstitution() {
         })}
       >
         <label>
-          {errors.firstName && (
-            <FormErrorMessage message={errors.firstName.message} />
+          {errors.instCode && (
+            <FormErrorMessage message={errors.instCode.message} />
           )}
           <TextField
-            placeholder="Vorname"
+            placeholder="INST-Code"
             type="text"
             className={formInput.input}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <FontAwesomeIcon className="inputIcon" icon={faEdit} />
+                  <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
                 </InputAdornment>
               ),
-              ...register("firstName", {
-                required: "Vorname muss angegeben werden",
+              ...register("instCode", {
+                required: "INST-Code muss angegeben werden",
               }),
             }}
             autoFocus
           />
         </label>
         <label>
-          {errors.lastName && (
-            <FormErrorMessage message={errors.lastName.message} />
-          )}
+          {errors.name && <FormErrorMessage message={errors.name.message} />}
           <TextField
-            placeholder="Nachname"
-            type="text"
-            className={formInput.input}
+            placeholder="Name"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <FontAwesomeIcon className="inputIcon" icon={faEdit} />
                 </InputAdornment>
               ),
-              ...register("lastName", {
-                required: "Nachname muss angegeben werden",
+              ...register("name", {
+                required: "Name der Institution muss angegeben werden",
               }),
             }}
+            type="text"
           />
         </label>
         <label>
@@ -216,48 +218,72 @@ export default function CreateInstitution() {
 
 const institutions: Array<InstitutionType> = [
   {
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    firstName: "name",
-    lastName: "last name",
+    address: {
+      street: "blub",
+      streetNumber: 42,
+      town: "bla",
+      zipCode: 31415,
+    },
+    instCode: "GI1234blub",
+    name: "name",
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    firstName: "name",
-    lastName: "last name",
+    address: {
+      street: "blub",
+      streetNumber: 42,
+      town: "bla",
+      zipCode: 31415,
+    },
+    instCode: "GI56789blubjfg",
+    name: "name",
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
 ];
 
 export function Institutions() {
+  const navigate = useNavigate();
+  const tableHeaders = [
+    "INST-Code",
+    "Name",
+    "Straße",
+    "Hausnummer",
+    "Stadt",
+    "PLZ",
+    "Telefonnummer",
+    "Schulverwaltungsbezirk",
+  ];
+
   return (
     <>
       <div className="container">
         <table>
           <thead>
             <tr>
-              <th>Straße</th>
-              <th>Hausnummer</th>
-              <th>Stadt</th>
-              <th>PLZ</th>
-              <th>Vorname</th>
-              <th>Nachname</th>
-              <th>Telefonnummer</th>
-              <th>Schulverwaltungsbezirk</th>
+              {tableHeaders.map((header) => (
+                <th>{header}</th>
+              ))}
             </tr>
           </thead>
-          {institutions.map((institution, index) => {
+          {institutions.map((institution) => {
             return (
               <tbody>
-                <tr key={index}>
+                <tr
+                  className="link"
+                  key={institution.instCode}
+                  onClick={() => {
+                    console.log("click", institution.instCode);
+                    navigate("./".concat(institution.instCode));
+                  }}
+                >
+                  <td>{institution.instCode}</td>
+                  <td>{institution.name}</td>
                   <td>{institution.address.street}</td>
                   <td>{institution.address.streetNumber}</td>
                   <td>{institution.address.town}</td>
                   <td>{institution.address.zipCode}</td>
-                  <td>{institution.firstName}</td>
-                  <td>{institution.lastName}</td>
                   <td>{institution.phoneNumber}</td>
                   <td>
                     {institution.schoolAdministrativeDistrict ? "Ja" : "Nein"}
@@ -270,4 +296,18 @@ export function Institutions() {
       </div>
     </>
   );
+}
+
+export function ViewDetails() {
+  let { instCode } = useParams();
+  // GET and stuff
+  return (
+    <div>
+      <InstitutionOverlay />
+    </div>
+  );
+}
+
+export function InstitutionOverlay() {
+  return <div>asdf</div>;
 }

@@ -56,8 +56,13 @@ export default function Wrapper() {
   let currentRoute = routes.find((obj) => obj.path === location.pathname);
 
   if (!currentRoute) {
-    currentRoute = routes.find((obj) =>
-      obj.subroutes?.find((o) => o.path === location.pathname)
+    routes.forEach(
+      (route) =>
+        (currentRoute = !currentRoute
+          ? route.subroutes?.find(
+              (subroute) => subroute.path === location.pathname
+            )
+          : currentRoute)
     );
   }
 

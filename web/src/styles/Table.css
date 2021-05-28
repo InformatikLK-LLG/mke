@@ -13,3 +13,8 @@ td {
   padding: 0.5em;
   text-align: left;
 }
+
+tr.link:hover {
+  color: var(--border);
+  cursor: pointer;
+}
