@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Institution, {
   CreateInstitution,
   Institutions,
+  ViewDetails,
 } from "./pages/Institution";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
 
@@ -47,6 +48,7 @@ function App() {
                     path="/create"
                     element={<CreateInstitution />}
                   />
+                  <PrivateRoute path="/:instCode" element={<ViewDetails />} />
                 </PrivateRoute>
               </Route>
               <Route path="/*" element={<PageNotFound />} />
