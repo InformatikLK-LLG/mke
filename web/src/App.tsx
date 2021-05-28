@@ -59,9 +59,17 @@ function App() {
                   element={<CreateInstitution />}
                 />
                 <PrivateRoute path="/institutions" element={<Institutions />} />
+                <PrivateRoute path="/institutions" element={<Institution />}>
+                  <PrivateRoute path="/" element={<Institutions />} />
+                  <PrivateRoute
+                    path="/create"
+                    element={<CreateInstitution />}
+                  />
+                  <PrivateRoute path="/:instCode" element={<ViewDetails />} />
+                </PrivateRoute>
                 <Route path="/*" element={<PageNotFound />} />
               </Routes>
-            </BrowserRouter>
+            </BrowserRouter>{" "}
           </div>
         </QueryClientProvider>
       </ThemeProvider>
