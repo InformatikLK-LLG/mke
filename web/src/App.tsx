@@ -69,7 +69,7 @@ function App() {
                 </PrivateRoute>
                 <Route path="/*" element={<PageNotFound />} />
               </Routes>
-            </BrowserRouter>{" "}
+            </BrowserRouter>
           </div>
         </QueryClientProvider>
       </ThemeProvider>
