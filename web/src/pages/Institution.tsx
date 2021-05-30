@@ -236,56 +236,8 @@ export function Institutions() {
   return (
     <>
       <div className="container">
-        <Table
-          tableHeaders={{
-            id: "ID",
-            name: {
-              vorname: { erstername: "Numero 1", zweitername: "Numero 2" },
-              nachname: "Nachname",
-            },
-          }}
-          rows={[
-            {
-              id: 1,
-              name: {
-                vorname: { erstername: "first1", zweitername: "second1" },
-                nachname: "nachname1",
-              },
-            },
-            {
-              id: 2,
-              name: {
-                vorname: { erstername: "first2", zweitername: "second2" },
-                nachname: "nachname2",
-              },
-            },
-          ]}
-        />
-        <Table
-          tableHeaders={{
-            id: "ID",
-            name: {
-              vorname: { first: "Vorname 1", second: "Vorname 2" },
-              nachname: "Nachname",
-            },
-          }}
-          rows={[
-            {
-              id: "id1",
-              name: {
-                vorname: { first: "vorname1", second: "vorname2" },
-                nachname: "lastname1",
-              },
-            },
-            {
-              id: "id2",
-              name: {
-                vorname: { first: "vorname1", second: "vorname2" },
-                nachname: "lastname2",
-              },
-            },
-          ]}
-        />
+        {/* <Table tableHeaders={{ id: "ID", name: { vorname: { erstername: "Numero 1", zweitername: "Numero 2" }, nachname: "Nachname", }, }} rows={[ { id: 1, name: { vorname: { erstername: "first1", zweitername: "second1" }, nachname: "nachname1", }, }, { id: 2, name: { vorname: { erstername: "first2", zweitername: "second2" }, nachname: "nachname2", }, }, ]} /> */}
+        {/* <Table tableHeaders={{ id: "ID", name: { vorname: { first: "Vorname 1", second: "Vorname 2" }, nachname: "Nachname", }, }} rows={[ { id: "id1", name: { vorname: { first: "vorname1", second: "vorname2" }, nachname: "lastname1", }, }, { id: "id2", name: { vorname: { first: "vorname1", second: "vorname2" }, nachname: "lastname2", }, }, ]} /> */}
         <Table
           tableHeaders={{
             id: "INST-Code",
@@ -300,18 +252,23 @@ export function Institutions() {
             schoolAdministrativeDistrict: "Schulverwaltungsbezirk?",
           }}
           rows={institutions}
+          sort={[
+            "Name",
+            "INST-Code",
+            "Straße",
+            "Ort",
+            "PLZ",
+            "Telefonnummer",
+            "Schulverwaltungsbezirk?",
+          ]}
         />
       </div>
-      {/* onClick={() => {
-                    console.log("click", institution.instCode);
-                    navigate("./".concat(nstitution.instCode));
-                  }} */}
     </>
   );
 }
 
 export function ViewDetails() {
-  let { instCode } = useParams();
+  // let { instCode } = useParams();
   // GET and stuff
   return (
     <div>

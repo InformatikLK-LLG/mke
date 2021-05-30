@@ -17,7 +17,12 @@ export default function NavBar({ routes }: NavBarProps) {
     <nav className="navBar">
       {routes.map((route, index) => {
         return (
-          <Dropdown route={route} index={index} subroutes={route.subroutes} />
+          <Dropdown
+            key={index}
+            route={route}
+            index={index}
+            subroutes={route.subroutes}
+          />
         );
       })}
     </nav>
