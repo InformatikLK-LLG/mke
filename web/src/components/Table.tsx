@@ -1,3 +1,10 @@
+import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
+import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 // returns array containing object values with correct type inferred
 function objectValues<T extends {}>(obj: T) {
   return Object.keys(obj).map((key) => obj[key as keyof T]);
@@ -27,82 +34,152 @@ type TableHeaders<T extends SimplestItem> = Record<keyof T, string | {}>;
 interface TableProps<T extends SimplestItem> {
   tableHeaders: TableHeaders<T>;
   rows: Array<T>;
+  sort?: Array<string>;
 }
 
 /* TODO add possibility for custom rendering for advanced types (like objects and stuff) */
 export default function Table<T extends SimplestItem>({
   tableHeaders,
   rows,
+  sort,
 }: TableProps<T>) {
-  function renderNestedValue(
+  const navigate = useNavigate();
+  const [sortBy, setSortBy] = useState("id");
+  const [direction, setDirection] = useState("asc");
+
+  function RenderNestedValue(
     row: T,
     value: T[keyof T][keyof T[keyof T]]
   ): JSX.Element {
+    const isCheckedIcon =
+      typeof value === "boolean" && value ? faCheckSquare : faSquare;
+
     return (
       <>
         {objectValues(value).map((nestedValue) => {
-          if (isPrimitive(nestedValue))
-            return <td key={`${row.id}.${nestedValue}`}>{nestedValue}</td>;
-          else return renderNestedValue(row, nestedValue);
+          if (isPrimitive(nestedValue)) {
+            return (
+              <td key={`${row.id}.${nestedValue}`}>
+                {typeof nestedValue !== "boolean" ? (
+                  nestedValue
+                ) : (
+                  <FontAwesomeIcon className="checkbox" icon={isCheckedIcon} />
+                )}
+              </td>
+            );
+          } else return RenderNestedValue(row, nestedValue);
         })}
       </>
     );
   }
 
-  function renderValue(row: T, value: T[keyof T]) {
+  function RenderValue(row: T, value: T[keyof T]) {
+    const isCheckedIcon =
+      typeof value === "boolean" && value ? faCheckSquare : faSquare;
+
     if (isPrimitive(value))
       return (
         <td key={`${row.id}.${value}`}>
           {typeof value !== "boolean" ? (
             value
           ) : (
-            <input type="checkbox" checked={value} />
+            <FontAwesomeIcon className="checkbox" icon={isCheckedIcon} />
           )}
         </td>
       );
-    else return renderNestedValue(row, value);
+    else return RenderNestedValue(row, value);
   }
 
-  function renderRow(row: T) {
+  function RenderRow(row: T) {
     return (
-      <tr key={`row${row.id}`}>
+      <tr
+        key={`row${row.id}`}
+        onClick={() => {
+          console.log("click", row.id);
+          navigate("./".concat(`${row.id}`));
+        }}
+        className="link"
+      >
         {objectValues(row).map((value) => {
-          return renderValue(row, value);
+          return RenderValue(row, value);
         })}
       </tr>
     );
   }
 
-  function renderNestedHeader(header: {}): any {
-    return objectValues(header).map((nestedHeader) => {
-      return typeof nestedHeader === "string" ? (
-        <th key={`${nestedHeader}`}>{nestedHeader}</th>
-      ) : (
-        renderNestedHeader(nestedHeader)
-      );
-    });
+  function RenderHeader(header: string) {
+    const isAscending = direction === "asc";
+    const isDescending = direction === "desc";
+    const isCurrentlySortedBy = sortBy === header;
+
+    const isAscendingAndActive =
+      isAscending && isCurrentlySortedBy ? " active" : "";
+    const isDescendingAndActive =
+      isDescending && isCurrentlySortedBy ? " active" : "";
+
+    const toggleDirection = () => {
+      setDirection(direction === "asc" ? "desc" : "asc");
+    };
+
+    function doTheThing() {
+      if (sortBy === header) {
+        toggleDirection();
+      } else {
+        setSortBy(header);
+        setDirection("asc");
+      }
+      console.log(sortBy, direction);
+    }
+
+    return (
+      <th key={header}>
+        {sort?.includes(header) ? (
+          <label
+            onClick={() => {
+              doTheThing();
+            }}
+            key={`${header}.label`}
+          >
+            <span key={`${header}.span`}>{header}</span>
+            <FontAwesomeIcon
+              className={`sortIcon${isAscendingAndActive}`}
+              icon={faSortUp}
+              key={`${header}.up`}
+            />
+            <FontAwesomeIcon
+              className={`sortIcon${isDescendingAndActive}`}
+              icon={faSortDown}
+              key={`${header}.down`}
+            />
+          </label>
+        ) : (
+          header
+        )}
+      </th>
+    );
   }
 
-  function renderHeader(headers: TableHeaders<T>) {
+  function RenderHeaders(headers: TableHeaders<T>): JSX.Element {
     return (
-      <tr>
+      <>
         {objectValues(headers).map((header) => {
-          return typeof header === "string" ? (
-            <th key={header}>{header}</th>
-          ) : (
-            renderNestedHeader(header)
-          );
+          if (typeof header === "string") {
+            return RenderHeader(header);
+          }
+          return RenderHeaders(header as TableHeaders<T>);
         })}
-      </tr>
+      </>
     );
   }
 
   return (
     <table>
-      <thead>{renderHeader(tableHeaders)}</thead>
+      <thead>
+        <tr>{RenderHeaders(tableHeaders)}</tr>
+      </thead>
       <tbody>
         {rows.map((row) => {
-          return renderRow(row);
+          return RenderRow(row);
         })}
       </tbody>
     </table>
