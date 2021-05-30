@@ -234,82 +234,79 @@ const institutions: Array<InstitutionType> = [
 ];
 
 export function Institutions() {
-  const navigate = useNavigate();
-  const tableHeaders = [
-    {
-      identifier: "instCode",
-      label: "INST-Code",
-    },
-    {
-      identifier: "name",
-      label: "Name",
-    },
-    {
-      identifier: "street",
-      label: "Straße",
-    },
-    {
-      identifier: "streetnumber",
-      label: "Hausnummer",
-    },
-    {
-      identifier: "town",
-      label: "Ort",
-    },
-    {
-      identifier: "zipCode",
-      label: "PLZ",
-    },
-    {
-      identifier: "phoneNumber",
-      label: "Telefonnummer",
-    },
-    {
-      identifier: "schoolAdministrativeDistrict",
-      label: "Schulverwaltungsbezirk",
-    },
-  ];
-
   return (
     <>
       <div className="container">
-        {/* <Table tableHeaders={{ id: "ID", name: { vorname: { erstername: "Numero 1", zweitername: "Numero 2" }, nachname: "Nachname" }, }} rows={[ { id: 1, name: { vorname: { erstername: "first1", zweitername: "second1" }, nachname: "nachname1", }, }, { id: 2, name: { vorname: { erstername: "first2", zweitername: "second2" }, nachname: "nachname2", }, }, ]} /> */}
+        <Table
+          tableHeaders={{
+            id: "ID",
+            name: {
+              vorname: { erstername: "Numero 1", zweitername: "Numero 2" },
+              nachname: "Nachname",
+            },
+          }}
+          rows={[
+            {
+              id: 1,
+              name: {
+                vorname: { erstername: "first1", zweitername: "second1" },
+                nachname: "nachname1",
+              },
+            },
+            {
+              id: 2,
+              name: {
+                vorname: { erstername: "first2", zweitername: "second2" },
+                nachname: "nachname2",
+              },
+            },
+          ]}
+        />
+        <Table
+          tableHeaders={{
+            id: "ID",
+            name: {
+              vorname: { first: "Vorname 1", second: "Vorname 2" },
+              nachname: "Nachname",
+            },
+          }}
+          rows={[
+            {
+              id: "id1",
+              name: {
+                vorname: { first: "vorname1", second: "vorname2" },
+                nachname: "lastname1",
+              },
+            },
+            {
+              id: "id2",
+              name: {
+                vorname: { first: "vorname1", second: "vorname2" },
+                nachname: "lastname2",
+              },
+            },
+          ]}
+        />
         <Table
           tableHeaders={{
             id: "INST-Code",
             name: "Name",
-            address: { street: "Straße", streetNumber: "Hausnummer", town: "Ort", zipCode: "PLZ" },
+            address: {
+              street: "Straße",
+              streetNumber: "Hausnummer",
+              town: "Ort",
+              zipCode: "PLZ",
+            },
             phoneNumber: "Telefonnummer",
             schoolAdministrativeDistrict: "Schulverwaltungsbezirk?",
           }}
           rows={institutions}
         />
-        {/* <table>
-          {institutions.map((institution) => {
-            return (
-              <tbody>
-                <tr
-                  className="link"
-                  key={institution.instCode}
-                  onClick={() => {
+      </div>
+      {/* onClick={() => {
                     console.log("click", institution.instCode);
                     navigate("./".concat(institution.instCode));
-                  }}
-                >
-                  <td>{institution.instCode}</td>
-                  <td>{institution.name}</td>
-                  <td>{institution.address.street}</td>
-                  <td>{institution.address.streetNumber}</td>
-                  <td>{institution.address.town}</td>
-                  <td>{institution.address.zipCode}</td>
-                  <td>{institution.phoneNumber}</td>
-                  <td>{institution.schoolAdministrativeDistrict ? "Ja" : "Nein"}</td>
-                </tr>
-              </tbody>
-            );
-          })}
-        </table> */}
-      </div>
+                  }} */}
     </>
   );
 }

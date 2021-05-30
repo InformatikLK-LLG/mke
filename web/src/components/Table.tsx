@@ -1,10 +1,3 @@
-import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
-import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-
 // returns array containing object values with correct type inferred
 function objectValues<T extends {}>(obj: T) {
   return Object.keys(obj).map((key) => obj[key as keyof T]);
@@ -36,62 +29,34 @@ interface TableProps<T extends SimplestItem> {
   rows: Array<T>;
 }
 
-/* TODO improve nested headers and rows stuff*/
-/* TODO fix keys */
 /* TODO add possibility for custom rendering for advanced types (like objects and stuff) */
 export default function Table<T extends SimplestItem>({
   tableHeaders,
   rows,
 }: TableProps<T>) {
-  function renderNestedValue(row: T, value: T[keyof T] | any): any {
-    return objectValues(value).map((nestedValue) => {
-      return isPrimitive(nestedValue) ? (
-        <td key={`${row.id}.${nestedValue}`}>
-          {nestedValue}
-          {console.log(
-            `nested value of ${row.id}: ${nestedValue} with key ${row.id}.${nestedValue}`
-          )}
-        </td>
-      ) : typeof nestedValue === "object" ? (
-        (console.log("Double Nested!!!"), renderNestedValue(row, nestedValue))
-      ) : (
-        console.log("was denn hier los")
-      );
-    });
+  function renderNestedValue(
+    row: T,
+    value: T[keyof T][keyof T[keyof T]]
+  ): JSX.Element {
+    return (
+      <>
+        {objectValues(value).map((nestedValue) => {
+          if (isPrimitive(nestedValue))
+            return <td key={`${row.id}.${nestedValue}`}>{nestedValue}</td>;
+          else return renderNestedValue(row, nestedValue);
+        })}
+      </>
+    );
   }
-  // if (typeof nestedValue === "object") {
-  //   console.log("DOUBLE NESTED");
-  //   renderNestedValue(row, nestedValue);
-  // }
-
-  // <td key={`${row.id}.${nestedValue}`}>
-  //   {nestedValue}
-  //   {console.log(`nestedValue of ${row.id}: ${nestedValue} with key ${row.id}.${nestedValue}`)}
-  // </td>
-  // );
 
   function renderValue(row: T, value: T[keyof T]) {
-    return isPrimitive(value) ? (
-      <td key={`${row.id}.${value}`}>
-        {value}
-        {console.log(
-          `primitive value of ${row.id}: ${value} with key ${row.id}.${value}`
-        )}
-      </td>
-    ) : typeof value === "object" ? (
-      (console.log("nested!!!"), renderNestedValue(row, value))
-    ) : (
-      console.log("was denn hier los")
-    );
-    // (
-    //       renderNestedValue(row, value)
-    //     );
+    if (isPrimitive(value)) return <td key={`${row.id}.${value}`}>{value}</td>;
+    else return renderNestedValue(row, value);
   }
 
   function renderRow(row: T) {
     return (
       <tr key={`row${row.id}`}>
-        {console.log(`Row with key row${row.id}`)}
         {objectValues(row).map((value) => {
           return renderValue(row, value);
         })}
@@ -99,55 +64,29 @@ export default function Table<T extends SimplestItem>({
     );
   }
 
-  function renderNestedHeader(header: object): any {
-    return objectValues(header).map((thing) => {
-      return typeof thing === "string" ? (
-        <th key={`${thing}`}>
-          {thing}
-          {/* potentially not unique if there are other nested headers with same attr */}
-          {console.log(`header ${thing} with key ${thing}`)}
-        </th>
+  function renderNestedHeader(header: {}): any {
+    return objectValues(header).map((nestedHeader) => {
+      return typeof nestedHeader === "string" ? (
+        <th key={`${nestedHeader}`}>{nestedHeader}</th>
       ) : (
-        renderNestedHeader(thing)
+        renderNestedHeader(nestedHeader)
       );
     });
   }
 
-  function renderHeader(tableHeaders: TableHeaders<T>) {
+  function renderHeader(headers: TableHeaders<T>) {
     return (
       <tr>
-        {objectValues(tableHeaders).map((header) => {
+        {objectValues(headers).map((header) => {
           return typeof header === "string" ? (
-            <th key={`${header}`}>
-              {header}
-              {console.log(`header ${header} with key ${header}`)}
-            </th>
+            <th key={header}>{header}</th>
           ) : (
-            objectValues(header).map((nestedHeader) => {
-              return typeof nestedHeader === "string" ? (
-                <th key={`${nestedHeader}`}>
-                  {nestedHeader}
-                  {/* potentially not unique key if there are other nested headers with same attr */}
-                  {console.log(
-                    `nestedHeader ${nestedHeader} with key ${nestedHeader}`
-                  )}
-                </th>
-              ) : (
-                <th>empty</th>
-              );
-            })
+            renderNestedHeader(header)
           );
         })}
       </tr>
     );
   }
-  // renderNestedHeader(nestedHeader)
-  // ) : typeof header !== "string" ? (
-  //   ""
-  // ) : (
-  //   renderNestedHeader(header)
-  // );
-  // )
 
   return (
     <table>
@@ -156,16 +95,6 @@ export default function Table<T extends SimplestItem>({
         {rows.map((row) => {
           return renderRow(row);
         })}
-
-        {/*rows.map((row) => {
-          console.log(row);
-          tableHeaders.map((tableHeader) => {
-            //   console.log(row.[tableHeader.identifier]);
-            console.log(tableHeader.identifier);
-            console.log(row[tableHeader.identifier]);
-          });
-        })}
-      */}
       </tbody>
     </table>
   );

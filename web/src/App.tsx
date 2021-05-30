@@ -41,17 +41,8 @@ function App() {
                   <NoTrespassing path="1" element={<Register2 />} />
                   <NoTrespassing path="2" element={<Register3 />} />
                 </Route>
-                <PrivateRoute path="/logout" element={<Logout />} />
-                <PrivateRoute path="/institutions" element={<Institution />}>
-                  <PrivateRoute path="/" element={<Institutions />} />
-                  <PrivateRoute
-                    path="/create"
-                    element={<CreateInstitution />}
-                  />
-                  <PrivateRoute path="/:instCode" element={<ViewDetails />} />
-                </PrivateRoute>
+                <Route path="/*" element={<PageNotFound />} />
               </Route>
-              <Route path="/*" element={<PageNotFound />} />
             </Routes>
           </BrowserRouter>
         </div>
