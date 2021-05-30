@@ -9,6 +9,7 @@ import Register, { Register1, Register2, Register3 } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Logout from "./pages/Logout";
 import NoTrespassing from "./components/NoTrespassing";
 import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./components/PrivateRoute";
@@ -40,6 +41,7 @@ function App() {
                   <NoTrespassing path="1" element={<Register2 />} />
                   <NoTrespassing path="2" element={<Register3 />} />
                 </Route>
+                <PrivateRoute path="/logout" element={<Logout />} />
                 <PrivateRoute path="/institutions" element={<Institution />}>
                   <PrivateRoute path="/" element={<Institutions />} />
                   <PrivateRoute
@@ -48,8 +50,8 @@ function App() {
                   />
                   <PrivateRoute path="/:instCode" element={<ViewDetails />} />
                 </PrivateRoute>
-                <Route path="/*" element={<PageNotFound />} />
               </Route>
+              <Route path="/*" element={<PageNotFound />} />
             </Routes>
           </BrowserRouter>
         </div>
