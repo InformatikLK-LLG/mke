@@ -12,6 +12,7 @@ import { faEdit, faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
+import Table from "../components/Table";
 import { useForm } from "react-hook-form";
 
 type Address = {
@@ -22,7 +23,7 @@ type Address = {
 };
 
 type InstitutionType = {
-  instCode: string;
+  id: string;
   name: string;
   address: Address;
   phoneNumber: number;
@@ -78,9 +79,7 @@ export function CreateInstitution() {
         })}
       >
         <label>
-          {errors.instCode && (
-            <FormErrorMessage message={errors.instCode.message} />
-          )}
+          {errors.id && <FormErrorMessage message={errors.id.message} />}
           <TextField
             placeholder="INST-Code"
             type="text"
@@ -91,7 +90,7 @@ export function CreateInstitution() {
                   <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
                 </InputAdornment>
               ),
-              ...register("instCode", {
+              ...register("id", {
                 required: "INST-Code muss angegeben werden",
               }),
             }}
@@ -218,26 +217,16 @@ export function CreateInstitution() {
 
 const institutions: Array<InstitutionType> = [
   {
-    address: {
-      street: "blub",
-      streetNumber: 42,
-      town: "bla",
-      zipCode: 31415,
-    },
-    instCode: "GI1234blub",
+    id: "GI1234blub",
     name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    address: {
-      street: "blub",
-      streetNumber: 42,
-      town: "bla",
-      zipCode: 31415,
-    },
-    instCode: "GI56789blubjfg",
+    id: "GI56789blubjfg",
     name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
@@ -246,27 +235,60 @@ const institutions: Array<InstitutionType> = [
 export function Institutions() {
   const navigate = useNavigate();
   const tableHeaders = [
-    "INST-Code",
-    "Name",
-    "Straße",
-    "Hausnummer",
-    "Stadt",
-    "PLZ",
-    "Telefonnummer",
-    "Schulverwaltungsbezirk",
+    {
+      identifier: "instCode",
+      label: "INST-Code",
+    },
+    {
+      identifier: "name",
+      label: "Name",
+    },
+    {
+      identifier: "street",
+      label: "Straße",
+    },
+    {
+      identifier: "streetnumber",
+      label: "Hausnummer",
+    },
+    {
+      identifier: "town",
+      label: "Ort",
+    },
+    {
+      identifier: "zipCode",
+      label: "PLZ",
+    },
+    {
+      identifier: "phoneNumber",
+      label: "Telefonnummer",
+    },
+    {
+      identifier: "schoolAdministrativeDistrict",
+      label: "Schulverwaltungsbezirk",
+    },
   ];
 
   return (
     <>
       <div className="container">
-        <table>
-          <thead>
-            <tr>
-              {tableHeaders.map((header) => (
-                <th>{header}</th>
-              ))}
-            </tr>
-          </thead>
+        {/* <Table tableHeaders={{ id: "ID", name: "Name" }} rows={[ { id: 1, name: "name1" }, { id: 2, name: "name2" }, ]} /> */}
+        <Table
+          tableHeaders={{
+            id: "INST-Code",
+            name: "Name",
+            address: {
+              street: "Straße",
+              streetNumber: "Hausnummer",
+              town: "Ort",
+              zipCode: "PLZ",
+            },
+            phoneNumber: "Telefonnummer",
+            schoolAdministrativeDistrict: "Schulverwaltungsbezirk?",
+          }}
+          rows={institutions}
+        />
+        {/* <table>
           {institutions.map((institution) => {
             return (
               <tbody>
@@ -285,14 +307,12 @@ export function Institutions() {
                   <td>{institution.address.town}</td>
                   <td>{institution.address.zipCode}</td>
                   <td>{institution.phoneNumber}</td>
-                  <td>
-                    {institution.schoolAdministrativeDistrict ? "Ja" : "Nein"}
-                  </td>
+                  <td>{institution.schoolAdministrativeDistrict ? "Ja" : "Nein"}</td>
                 </tr>
               </tbody>
             );
           })}
-        </table>
+        </table> */}
       </div>
     </>
   );
