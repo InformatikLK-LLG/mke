@@ -31,7 +31,7 @@ function App() {
         <div className="App">
           <BrowserRouter>
             <Routes>
-              <Route path="" element={<Wrapper />}>
+              <Route element={<Wrapper />}>
                 <PrivateRoute path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgotpassword" element={<ForgotPassword />} />
@@ -40,18 +40,16 @@ function App() {
                   <NoTrespassing path="1" element={<Register2 />} />
                   <NoTrespassing path="2" element={<Register3 />} />
                 </Route>
-                <PrivateRoute
-                  path="/institutions/create"
-                  element={<CreateInstitution />}
-                />
-                <PrivateRoute path="/institutions" element={<Institutions />} />
+                <PrivateRoute path="/institutions" element={<Institution />}>
+                  <PrivateRoute path="/" element={<Institutions />} />
+                  <PrivateRoute
+                    path="/create"
+                    element={<CreateInstitution />}
+                  />
+                  <PrivateRoute path="/:instCode" element={<ViewDetails />} />
+                </PrivateRoute>
+                <Route path="/*" element={<PageNotFound />} />
               </Route>
-              <PrivateRoute path="/institutions" element={<Institution />}>
-                <PrivateRoute path="/" element={<Institutions />} />
-                <PrivateRoute path="/create" element={<CreateInstitution />} />
-                <PrivateRoute path="/:instCode" element={<ViewDetails />} />
-              </PrivateRoute>
-              <Route path="/*" element={<PageNotFound />} />
             </Routes>
           </BrowserRouter>
         </div>
