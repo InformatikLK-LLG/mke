@@ -4,7 +4,7 @@ import Dropdown from "./Dropdown";
 
 export interface NavBarItem {
   path: string;
-  name: string;
+  name: string | JSX.Element;
   subroutes?: NavBarType;
 }
 

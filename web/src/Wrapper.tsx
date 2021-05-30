@@ -1,8 +1,12 @@
 import NavBar, { NavBarItem } from "./components/NavBar";
 import { Outlet, useLocation } from "react-router-dom";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { useAuth } from "./hooks/useAuth";
+
 interface RouteItem extends NavBarItem {
-  heading: string;
+  heading?: string;
   subroutes?: RouteType;
 }
 
@@ -10,6 +14,7 @@ interface RouteType extends Array<RouteItem> {}
 
 export default function Wrapper() {
   const location = useLocation();
+  const auth = useAuth();
 
   const routes: RouteType = [
     {
@@ -50,6 +55,12 @@ export default function Wrapper() {
           heading: "Institution erstellen",
         },
       ],
+    },
+    {
+      path: "/profile",
+      name: <FontAwesomeIcon icon={faUser} />,
+      heading: `Hallo ${auth.user?.email}`,
+      subroutes: [{ name: "Logout", path: "/logout" }],
     },
   ];
 
