@@ -228,7 +228,7 @@ const institutions: Array<InstitutionType> = [
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
+    schoolAdministrativeDistrict: false,
   },
 ];
 
