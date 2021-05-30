@@ -273,17 +273,12 @@ export function Institutions() {
   return (
     <>
       <div className="container">
-        {/* <Table tableHeaders={{ id: "ID", name: "Name" }} rows={[ { id: 1, name: "name1" }, { id: 2, name: "name2" }, ]} /> */}
+        {/* <Table tableHeaders={{ id: "ID", name: { vorname: { erstername: "Numero 1", zweitername: "Numero 2" }, nachname: "Nachname" }, }} rows={[ { id: 1, name: { vorname: { erstername: "first1", zweitername: "second1" }, nachname: "nachname1", }, }, { id: 2, name: { vorname: { erstername: "first2", zweitername: "second2" }, nachname: "nachname2", }, }, ]} /> */}
         <Table
           tableHeaders={{
             id: "INST-Code",
             name: "Name",
-            address: {
-              street: "Straße",
-              streetNumber: "Hausnummer",
-              town: "Ort",
-              zipCode: "PLZ",
-            },
+            address: { street: "Straße", streetNumber: "Hausnummer", town: "Ort", zipCode: "PLZ" },
             phoneNumber: "Telefonnummer",
             schoolAdministrativeDistrict: "Schulverwaltungsbezirk?",
           }}
