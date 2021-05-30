@@ -692,7 +692,7 @@ export function Institutions() {
 }
 
 export function ViewDetails() {
-  let { instCode } = useParams();
+  // let { instCode } = useParams();
   // GET and stuff
   return (
     <div>
