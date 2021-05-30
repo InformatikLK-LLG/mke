@@ -6,7 +6,7 @@ import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
 
 interface RouteItem extends NavBarItem {
-  heading: string;
+  heading?: string;
   subroutes?: RouteType;
 }
 
@@ -55,6 +55,12 @@ export default function Wrapper() {
           heading: "Institution erstellen",
         },
       ],
+    },
+    {
+      path: "/profile",
+      name: <FontAwesomeIcon icon={faUser} />,
+      heading: `Hallo ${auth.user?.email}`,
+      subroutes: [{ name: "Logout", path: "/logout" }],
     },
   ];
 
