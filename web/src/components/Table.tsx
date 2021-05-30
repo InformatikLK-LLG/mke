@@ -50,7 +50,16 @@ export default function Table<T extends SimplestItem>({
   }
 
   function renderValue(row: T, value: T[keyof T]) {
-    if (isPrimitive(value)) return <td key={`${row.id}.${value}`}>{value}</td>;
+    if (isPrimitive(value))
+      return (
+        <td key={`${row.id}.${value}`}>
+          {typeof value !== "boolean" ? (
+            value
+          ) : (
+            <input type="checkbox" checked={value} />
+          )}
+        </td>
+      );
     else return renderNestedValue(row, value);
   }
 
