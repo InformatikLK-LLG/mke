@@ -34,156 +34,80 @@ type TableHeaders<T extends SimplestItem> = Record<keyof T, string | {}>;
 interface TableProps<T extends SimplestItem> {
   tableHeaders: TableHeaders<T>;
   rows: Array<T>;
-  sort?: Array<string>;
 }
 
+/* TODO improve nested headers and rows stuff*/
+/* TODO fix keys */
 /* TODO add possibility for custom rendering for advanced types (like objects and stuff) */
 export default function Table<T extends SimplestItem>({
   tableHeaders,
   rows,
-  sort,
 }: TableProps<T>) {
-  const navigate = useNavigate();
-  const [sortBy, setSortBy] = useState("id");
-  const [direction, setDirection] = useState("asc");
-
-  function RenderNestedValue(
-    row: T,
-    value: T[keyof T][keyof T[keyof T]]
-  ): JSX.Element {
-    const isCheckedIcon =
-      typeof value === "boolean" && value ? faCheckSquare : faSquare;
-
-    return (
-      <>
-        {objectValues(value).map((nestedValue) => {
-          if (isPrimitive(nestedValue)) {
-            return (
-              <td key={`${row.id}.${nestedValue}`}>
-                {typeof nestedValue !== "boolean" ? (
-                  nestedValue
-                ) : (
-                  <FontAwesomeIcon className="checkbox" icon={isCheckedIcon} />
-                )}
-              </td>
-            );
-          } else return RenderNestedValue(row, nestedValue);
-        })}
-      </>
-    );
-  }
-
-  function RenderValue(row: T, value: T[keyof T]) {
-    const isCheckedIcon =
-      typeof value === "boolean" && value ? faCheckSquare : faSquare;
-
-    if (isPrimitive(value))
-      return (
-        <td key={`${row.id}.${value}`}>
-          {typeof value !== "boolean" ? (
-            value
-          ) : (
-            <FontAwesomeIcon className="checkbox" icon={isCheckedIcon} />
-          )}
-        </td>
-      );
-    else return RenderNestedValue(row, value);
-  }
-
-  function RenderRow(row: T) {
-    return (
-      <tr
-        key={`row${row.id}`}
-        onClick={() => {
-          console.log("click", row.id);
-          navigate("./".concat(`${row.id}`));
-        }}
-        className="link"
-      >
-        {objectValues(row).map((value) => {
-          return RenderValue(row, value);
-        })}
-      </tr>
-    );
-  }
-
-  function RenderHeader(header: string) {
-    const isAscending = direction === "asc";
-    const isDescending = direction === "desc";
-    const isCurrentlySortedBy = sortBy === header;
-
-    const isAscendingAndActive =
-      isAscending && isCurrentlySortedBy ? " active" : "";
-    const isDescendingAndActive =
-      isDescending && isCurrentlySortedBy ? " active" : "";
-
-    const toggleDirection = () => {
-      setDirection(direction === "asc" ? "desc" : "asc");
-    };
-
-    function doTheThing() {
-      if (sortBy === header) {
-        toggleDirection();
-      } else {
-        setSortBy(header);
-        setDirection("asc");
-      }
-      console.log(sortBy, direction);
-    }
-
-    return (
-      <th key={header}>
-        {sort?.includes(header) ? (
-          <label
-            onClick={() => {
-              doTheThing();
-            }}
-            key={`${header}.label`}
-          >
-            <span key={`${header}.span`}>{header}</span>
-            <FontAwesomeIcon
-              className={`sortIcon${isAscendingAndActive}`}
-              icon={faSortUp}
-              key={`${header}.up`}
-            />
-            <FontAwesomeIcon
-              className={`sortIcon${isDescendingAndActive}`}
-              icon={faSortDown}
-              key={`${header}.down`}
-            />
-          </label>
-        ) : (
-          header
-        )}
-      </th>
-    );
-  }
-
-  function RenderHeaders(headers: TableHeaders<T>): JSX.Element {
-    return (
-      <>
-        {objectValues(headers).map((header) => {
-          if (typeof header === "string") {
-            return RenderHeader(header);
-          }
-          return RenderHeaders(header as TableHeaders<T>);
-        })}
-      </>
-    );
-  }
-
   return (
-    <div className="table">
-      <table cellSpacing={0}>
-        <thead>
-          <tr>{RenderHeaders(tableHeaders)}</tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            return RenderRow(row);
+    <table>
+      <thead>
+        <tr>
+          {objectValues(tableHeaders).map((header) => {
+            return typeof header === "string" ? (
+              <th key={header}>
+                {header}
+                {console.log(`header ${header} with key ${header}`)}
+              </th>
+            ) : (
+              objectValues(header).map((nestedHeader) => {
+                return (
+                  <th key={`${nestedHeader}`}>
+                    {nestedHeader}
+                    {/* potentially not unique if there are other nested headers with same attr */}
+                    {console.log(
+                      `nestedHeader ${nestedHeader} without a key. Do I need one? idk`
+                    )}
+                  </th>
+                );
+              })
+            );
           })}
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => {
+          return (
+            <tr key={`row${row.id}`}>
+              {console.log(`Row with key row${row.id}`)}
+              {objectValues(row).map((value) => {
+                return isPrimitive(value) ? (
+                  <td key={`${row.id}.${value}`}>
+                    {value}
+                    {console.log(
+                      `primitive value of ${row.id}: ${value} with key ${row.id}.${value}`
+                    )}
+                  </td>
+                ) : (
+                  objectValues(value).map((nestedValue) => {
+                    return (
+                      <td key={`${row.id}.${nestedValue}`}>
+                        {nestedValue}
+                        {console.log(
+                          `nestedValue of ${row.id}: ${nestedValue} with key ${row.id}.${nestedValue}`
+                        )}
+                      </td>
+                    );
+                  })
+                );
+              })}
+            </tr>
+          );
+        })}
+        {/*rows.map((row) => {
+          console.log(row);
+          tableHeaders.map((tableHeader) => {
+            //   console.log(row.[tableHeader.identifier]);
+            console.log(tableHeader.identifier);
+            console.log(row[tableHeader.identifier]);
+          });
+        })}
+      */}
+      </tbody>
+    </table>
   );
 }
