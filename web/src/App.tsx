@@ -53,21 +53,8 @@ function App() {
                     />
                     <PrivateRoute path="/:instCode" element={<ViewDetails />} />
                   </PrivateRoute>
+                  <Route path="/*" element={<PageNotFound />} />
                 </Route>
-                <PrivateRoute
-                  path="/institutions/create"
-                  element={<CreateInstitution />}
-                />
-                <PrivateRoute path="/institutions" element={<Institutions />} />
-                <PrivateRoute path="/institutions" element={<Institution />}>
-                  <PrivateRoute path="/" element={<Institutions />} />
-                  <PrivateRoute
-                    path="/create"
-                    element={<CreateInstitution />}
-                  />
-                  <PrivateRoute path="/:instCode" element={<ViewDetails />} />
-                </PrivateRoute>
-                <Route path="/*" element={<PageNotFound />} />
               </Routes>
             </BrowserRouter>
           </div>
