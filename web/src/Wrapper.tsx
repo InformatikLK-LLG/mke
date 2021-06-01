@@ -47,18 +47,6 @@ export default function Wrapper() {
       path: "/",
       name: "Homie",
       heading: "Home",
-      subroutes: [
-        {
-          path: "/institutions/create",
-          name: "Erstellen",
-          heading: "Institution erstellen",
-        },
-        {
-          path: "/institutions/create",
-          name: "Erstellen",
-          heading: "Institution erstellen",
-        },
-      ],
     },
     {
       path: "/institutions",
