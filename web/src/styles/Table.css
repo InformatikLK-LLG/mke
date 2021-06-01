@@ -1,14 +1,21 @@
-table {
+/* table {
   border-collapse: collapse;
-  /* border: 1px solid black; */
+  border: 1px solid black;
   border: none;
+}
+
+.table {
+  max-height: 50%;
+  overflow-y: scroll;
 }
 
 th {
   background: var(--input);
   border: none;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  /* border-bottom: 1px solid black; */
+  border-bottom: 1px solid black;
+  position: sticky;
+  top: 0;
 }
 
 th,
@@ -30,18 +37,49 @@ th > label {
   display: block;
   cursor: pointer;
 }
+ */
+.table {
+  height: 50%;
+  font-size: 1rem;
+  text-align: left;
+  border: none;
+  overflow-y: scroll;
+  box-sizing: border-box;
+  border-collapse: separate;
+  border-spacing: 0;
+}
 
-th > label > span::selection {
-  background: none;
+th,
+td {
+  padding: 0.5em;
+}
+
+table thead th {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: white;
+  top: 0;
+  padding-right: 2em;
+  position: sticky;
+  border: none;
+  border-bottom: 1px solid black;
+  background: var(--input);
+}
+
+.table > label {
+  cursor: pointer;
 }
 
 .sortIcon {
   position: absolute;
-  margin-left: 0.1em;
   margin-top: 0.25em;
+  margin-left: 0.1em;
   color: var(--border);
 }
 
 .sortIcon.active {
   color: black;
+}
+
+th > label > span::selection {
+  background: none;
 }
