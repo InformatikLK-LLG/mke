@@ -173,15 +173,17 @@ export default function Table<T extends SimplestItem>({
   }
 
   return (
-    <table>
-      <thead>
-        <tr>{RenderHeaders(tableHeaders)}</tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => {
-          return RenderRow(row);
-        })}
-      </tbody>
-    </table>
+    <div className="table">
+      <table cellSpacing={0}>
+        <thead>
+          <tr>{RenderHeaders(tableHeaders)}</tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            return RenderRow(row);
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
