@@ -1,19 +1,27 @@
-export type ButtonProps = JSX.Element;
+import BetterButton from "@material-ui/core/Button";
 
 export default function Button({
   type,
   className = "",
+  color,
   label,
   onClick,
 }: {
   type: "button" | "submit" | "reset" | undefined;
   className?: string;
+  color: "primary" | "secondary" | any;
   label: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}): ButtonProps {
+}): JSX.Element {
   return (
-    <button type={type} className={"button " + className} onClick={onClick}>
+    <BetterButton
+      type={type}
+      className={"button " + className}
+      onClick={onClick}
+      variant="contained"
+      color={color}
+    >
       {label}
-    </button>
+    </BetterButton>
   );
 }

@@ -1,8 +1,8 @@
-import { SideBox } from "../components/SideBox";
-import useViewport from "../hooks/useViewport";
 import Button from "../components/Button";
-import { useNavigate } from "react-router-dom";
 import { LoginForm } from "../components/Form";
+import { SideBox } from "../components/SideBox";
+import { useNavigate } from "react-router-dom";
+import useViewport from "../hooks/useViewport";
 
 export default function Login() {
   const width = useViewport();
@@ -14,9 +14,14 @@ export default function Login() {
       {isDesktop ? (
         <SideBox
           headline="Willkommen zurück"
-          subtitle={["hier ganz viel Begrüßungstext", "mehrere Zeilen", "sogar"]}
+          subtitle={[
+            "hier ganz viel Begrüßungstext",
+            "mehrere Zeilen",
+            "sogar",
+          ]}
           Button={
             <Button
+              color="primary"
               type={"button"}
               label={"REGISTRIEREN"}
               onClick={() => {
@@ -30,7 +35,12 @@ export default function Login() {
       ) : (
         <div className="mobile lower">
           <p>Neu? Stattdessen registrieren?</p>
-          <Button label="REGISTRIEREN" type="button" onClick={() => navigate("/register")} />
+          <Button
+            label="REGISTRIEREN"
+            type="button"
+            onClick={() => navigate("/register")}
+            color="primary"
+          />
         </div>
       )}
       <div className="container">

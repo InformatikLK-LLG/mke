@@ -1,8 +1,13 @@
-import { RegisterForm1, RegisterForm2, RegisterForm3 } from "../components/Form";
 import { Outlet, useNavigate } from "react-router-dom";
+import {
+  RegisterForm1,
+  RegisterForm2,
+  RegisterForm3,
+} from "../components/Form";
+
+import Button from "../components/Button";
 import { SideBox } from "../components/SideBox";
 import useViewport from "../hooks/useViewport";
-import Button from "../components/Button";
 
 export default function Register() {
   return <Outlet />;
@@ -23,7 +28,11 @@ export function Register1() {
         </div>
         <SideBox
           headline="Hallo!"
-          subtitle={["hier ganz viel Begrüßungstext", "mehrere Zeilen", "sogar"]}
+          subtitle={[
+            "hier ganz viel Begrüßungstext",
+            "mehrere Zeilen",
+            "sogar",
+          ]}
           Button={
             <Button
               type={"button"}
@@ -31,6 +40,7 @@ export function Register1() {
               onClick={() => {
                 navigate("/login");
               }}
+              color="primary"
             />
           }
           color="blue"
@@ -47,7 +57,12 @@ export function Register1() {
         </div>
         <div className="lower">
           <p>Neu? Stattdessen einloggen?</p>
-          <Button label="LOGIN" type="button" onClick={() => navigate("/login")} />
+          <Button
+            color="primary"
+            label="LOGIN"
+            type="button"
+            onClick={() => navigate("/login")}
+          />
         </div>
       </>
     )
