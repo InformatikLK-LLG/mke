@@ -1,4 +1,4 @@
-package de.llggiessen.mke;
+package de.llggiessen.mke.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import de.llggiessen.mke.repository.UserRepository;
+import de.llggiessen.mke.schema.User;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController

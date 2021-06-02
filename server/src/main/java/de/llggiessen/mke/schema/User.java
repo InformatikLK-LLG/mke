@@ -1,4 +1,4 @@
-package de.llggiessen.mke;
+package de.llggiessen.mke.schema;
 
 import java.util.Objects;
 
