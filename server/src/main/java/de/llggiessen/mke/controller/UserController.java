@@ -1,7 +1,10 @@
 package de.llggiessen.mke.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +24,19 @@ public class UserController {
 
     @Autowired
     UserRepository repository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private static Logger log = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("")
     public Iterable<User> getUsers(@RequestParam(value = "email", required = false, defaultValue = "") String email,
             @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
             @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName) {
 
-        return repository.findAllByAttributes(email, firstName, lastName);
+        Iterable<User> foo = repository.findAllByAttributes(email, firstName, lastName);
+        log.warn(foo.toString());
+        return foo;
     }
 
     @DeleteMapping("")
@@ -37,7 +46,12 @@ public class UserController {
 
     @PostMapping("")
     public User createUser(@RequestBody User user) {
+        if (user.getEmail() == null || user.getFirstName() == null || user.getLastName() == null
+                || user.getPassword() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
         try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             return repository.save(user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
