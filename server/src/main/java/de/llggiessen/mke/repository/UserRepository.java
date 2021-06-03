@@ -20,6 +20,9 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Query(value = "SELECT * FROM user WHERE user.email LIKE %:email%", nativeQuery = true)
     Iterable<User> findAllByEmail(@Param("email") String email);
 
+    @Query(value = "SELECT * FROM user WHERE user.email = :email", nativeQuery = true)
+    User findExactByEmail(@Param("email") String email);
+
     @Query(value = "SELECT * FROM user WHERE user.first_name LIKE %:firstName%", nativeQuery = true)
     Iterable<User> findAllByFirstName(@Param("firstName") String firstName);
 
