@@ -35,9 +35,14 @@ function useProvideAuth(): auth {
 
   const signin = async (email: string, password: string) => {
     // TODO implement logic for signin
-    const { data } = await axios.post("http://localhost:8080/login", { email, password });
-    console.log(data);
-    setUser(data as user);
+    const response = await axios.post("http://localhost:8080/login", { email, password });
+    if (response.status !== 200) {
+      setUser(undefined);
+      return;
+    }
+    const user = response.data as user;
+    console.log(user);
+    setUser(user);
   };
 
   const signout = () => {

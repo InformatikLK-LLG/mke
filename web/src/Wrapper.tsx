@@ -22,7 +22,7 @@ export default function Wrapper() {
     <div className={`wrapper ${hasNavBar ? "hasNavBar" : ""}`}>
       {hasNavBar && (
         <div className="header">
-          <h1>Hallo, {auth.user?.firstName}</h1>
+          <h1>{`Hallo, ${auth.user?.firstName} ${auth.user?.lastName}`}</h1>
           <NavBar routes={routes} />
         </div>
       )}
