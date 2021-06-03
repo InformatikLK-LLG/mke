@@ -24,19 +24,16 @@ public class UserController {
 
     @Autowired
     UserRepository repository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    private static Logger log = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("")
     public Iterable<User> getUsers(@RequestParam(value = "email", required = false, defaultValue = "") String email,
             @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
             @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName) {
 
-        Iterable<User> foo = repository.findAllByAttributes(email, firstName, lastName);
-        log.warn(foo.toString());
-        return foo;
+        return repository.findAllByAttributes(email, firstName, lastName);
     }
 
     @DeleteMapping("")

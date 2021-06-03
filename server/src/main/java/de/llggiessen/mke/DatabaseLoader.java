@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import de.llggiessen.mke.repository.UserRepository;
-import de.llggiessen.mke.schema.Role;
 import de.llggiessen.mke.schema.User;
 
 @Component
