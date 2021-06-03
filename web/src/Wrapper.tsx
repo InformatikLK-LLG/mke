@@ -1,6 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
+
 import NavBar from "./components/NavBar";
 import type { NavBarType } from "./components/NavBar";
+import { useAuth } from "./hooks/useAuth";
 
 export default function Wrapper() {
   const location = useLocation();
@@ -12,6 +14,7 @@ export default function Wrapper() {
     { path: "/", name: "something" },
     { path: "/", name: "else" },
   ];
+  const auth = useAuth();
 
   const hasNavBar = routesWithNavBar.includes(location.pathname);
 
@@ -19,7 +22,7 @@ export default function Wrapper() {
     <div className={`wrapper ${hasNavBar ? "hasNavBar" : ""}`}>
       {hasNavBar && (
         <div className="header">
-          <h1>Heading</h1>
+          <h1>Hallo, {auth.user?.firstName}</h1>
           <NavBar routes={routes} />
         </div>
       )}

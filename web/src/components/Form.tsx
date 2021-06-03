@@ -1,12 +1,14 @@
 import "../styles/Form.css";
-import { FieldError, useForm, UseFormRegister } from "react-hook-form";
-import { useNavigate, Link, Prompt } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import Button from "./Button";
-import FormErrorMessage from "./FormErrorMessage";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { FieldError, UseFormRegister, useForm } from "react-hook-form";
+import { Link, Prompt, useNavigate } from "react-router-dom";
 import { faEdit, faEnvelope, faKeyboard } from "@fortawesome/free-regular-svg-icons";
+
+import Button from "./Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import FormErrorMessage from "./FormErrorMessage";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../hooks/useAuth";
 
 type LoginFormInputs = {
   email: string;
@@ -24,8 +26,8 @@ export function LoginForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(({ email, password }) => {
-        auth.signin(email, password);
+      onSubmit={handleSubmit( async ({ email, password }) => {
+        await auth.signin(email, password);
         navigate("/");
       })}
     >

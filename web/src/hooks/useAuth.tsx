@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type user = { email: string; password: string } | undefined;
+import axios from "axios";
+
+type user = { firstName: string; lastName: string; email: string; username: string; password: string } | undefined;
 type auth = {
   user: user;
   signin: (email: string, password: string) => void;
@@ -31,9 +33,11 @@ export const useAuth = () => {
 function useProvideAuth(): auth {
   const [user, setUser] = useState<user>();
 
-  const signin = (email: string, password: string) => {
+  const signin = async (email: string, password: string) => {
     // TODO implement logic for signin
-    setUser({ email, password });
+    const { data } = await axios.post("http://localhost:8080/login", { email, password });
+    console.log(data);
+    setUser(data as user);
   };
 
   const signout = () => {
