@@ -1,5 +1,7 @@
 package de.llggiessen.mke;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import de.llggiessen.mke.repository.UserRepository;
+import de.llggiessen.mke.schema.Role;
 import de.llggiessen.mke.schema.User;
 
 @Component
