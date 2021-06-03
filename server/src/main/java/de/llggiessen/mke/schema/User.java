@@ -26,9 +26,6 @@ public class User {
     private String email;
     private String password;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
     public User() {
     }
 
@@ -36,7 +33,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = passwordEncoder.encode(password);
+        this.password = password;
     }
 
     public String getUsername() {
