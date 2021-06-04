@@ -65,6 +65,7 @@ export function LoginForm() {
     control,
     getValues,
     setValue,
+    setError,
     formState: { errors },
   } = useForm<LoginFormInputs>({ mode: "onChange" });
   const navigate = useNavigate();
@@ -107,9 +108,10 @@ export function LoginForm() {
         />
       }
       inputs={inputs}
-      onSubmit={handleSubmit(({ email, password }) => {
-        auth.signin(email, password);
-        navigate("/");
+      onSubmit={handleSubmit(async ({ email, password }) => {
+        if (await auth.signin(email, password)) navigate("/");
+        else
+          setError("password", { message: "Email oder Passwort ist falsch" });
       })}
       width="40%"
       otherElements={{

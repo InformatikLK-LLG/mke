@@ -23,7 +23,7 @@ type user =
 
 type auth = {
   user: user;
-  signin: (email: string, password: string) => void;
+  signin: (email: string, password: string) => Promise<user>;
   signout: () => void;
   register: register;
   validateInviteCode: (code: number) => boolean;
@@ -31,8 +31,8 @@ type auth = {
 
 const defaultAuth: auth = {
   user: undefined,
-  signin: () => {
-    return;
+  signin: (email, password) => {
+    return new Promise(() => undefined);
   },
   signout: () => {
     return;
@@ -60,18 +60,17 @@ function useProvideAuth(): auth {
   const [user, setUser] = useState<user>();
 
   const signin = async (email: string, password: string) => {
-    // TODO implement logic for signin
-    const response = await axios.post("http://localhost:8080/login", {
-      email,
-      password,
-    });
-    if (response.status !== 200) {
+    try {
+      const response = await axios.post<user>("http://localhost:8080/login", {
+        email,
+        password,
+      });
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
       setUser(undefined);
-      return;
+      return undefined;
     }
-    const user = response.data as user;
-    console.log(user);
-    setUser(user);
   };
 
   const signout = () => {
