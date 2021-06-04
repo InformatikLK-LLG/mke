@@ -2,7 +2,11 @@ import "../styles/Form.css";
 
 import { FieldError, UseFormRegister, useForm } from "react-hook-form";
 import { Link, Prompt, useNavigate } from "react-router-dom";
-import { faEdit, faEnvelope, faKeyboard } from "@fortawesome/free-regular-svg-icons";
+import {
+  faEdit,
+  faEnvelope,
+  faKeyboard,
+} from "@fortawesome/free-regular-svg-icons";
 
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +23,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
@@ -26,15 +31,23 @@ export function LoginForm() {
 
   return (
     <form
-      onSubmit={handleSubmit( async ({ email, password }) => {
-        await auth.signin(email, password);
-        navigate("/");
+      onSubmit={handleSubmit(async ({ email, password }) => {
+        if (await auth.signin(email, password)) navigate("/");
+        else
+          setError("password", { message: "Email oder Passwort ist falsch" });
       })}
     >
       <EmailInputField register={register} emailErrors={errors.email} />
       <label id="password">
+        {errors.password && (
+          <FormErrorMessage message={errors.password.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
-        <input placeholder="Password" {...register("password")} type="password" />
+        <input
+          placeholder="Password"
+          {...register("password")}
+          type="password"
+        />
       </label>
       <Link to="/forgotpassword">Passwort vergessen?</Link>
       <Button className="formButton" type="submit" label="Login" />
@@ -75,7 +88,11 @@ export function RegisterForm1() {
   const navigate = useNavigate();
 
   return (
-    <form onSubmit={handleSubmit(({ code }) => navigate("./1", { state: { _register_1: true } }))}>
+    <form
+      onSubmit={handleSubmit(({ code }) =>
+        navigate("./1", { state: { _register_1: true } })
+      )}
+    >
       <label>
         {errors.code && <FormErrorMessage message={errors.code.message} />}
         <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
@@ -112,10 +129,14 @@ export function RegisterForm2() {
 
   return (
     <form
-      onSubmit={handleSubmit(({ firstName, lastName, email }) => navigate("../2", { state: { _register_2: true } }))}
+      onSubmit={handleSubmit(({ firstName, lastName, email }) =>
+        navigate("../2", { state: { _register_2: true } })
+      )}
     >
       <label>
-        {errors.firstName && <FormErrorMessage message={errors.firstName.message} />}
+        {errors.firstName && (
+          <FormErrorMessage message={errors.firstName.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faEdit} />
         <input
           placeholder="Vorname"
@@ -126,7 +147,9 @@ export function RegisterForm2() {
         />
       </label>
       <label>
-        {errors.lastName && <FormErrorMessage message={errors.lastName.message} />}
+        {errors.lastName && (
+          <FormErrorMessage message={errors.lastName.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faEdit} />
         <input
           placeholder="Nachname"
@@ -138,7 +161,9 @@ export function RegisterForm2() {
       <EmailInputField register={register} emailErrors={errors.email} />
       <Button className="formButton" type="submit" label="Weiter" />
       <Prompt
-        when={Boolean(getValues().firstName || getValues().lastName || getValues().email)}
+        when={Boolean(
+          getValues().firstName || getValues().lastName || getValues().email
+        )}
         message="Sicher, dass du die Seite verlassen möchtest?"
       />
     </form>
@@ -171,7 +196,9 @@ export function RegisterForm3() {
       )}
     >
       <label>
-        {errors.password && <FormErrorMessage message={errors.password.message} />}
+        {errors.password && (
+          <FormErrorMessage message={errors.password.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
         <input
           placeholder="Passwort"
@@ -179,7 +206,8 @@ export function RegisterForm3() {
             required: "Passwort muss angegeben werden ",
             pattern: {
               value: /\w{8}/,
-              message: "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
+              message:
+                "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
             },
           })}
           type="password"
@@ -187,7 +215,9 @@ export function RegisterForm3() {
         />
       </label>
       <label>
-        {errors.passwordRepeated && <FormErrorMessage message={errors.passwordRepeated.message} />}
+        {errors.passwordRepeated && (
+          <FormErrorMessage message={errors.passwordRepeated.message} />
+        )}
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
         <input
           placeholder="Passwort bestätigen"

@@ -2,17 +2,25 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 
-type user = { firstName: string; lastName: string; email: string; username: string; password: string } | undefined;
+type user =
+  | {
+      firstName: string;
+      lastName: string;
+      email: string;
+      username: string;
+      password: string;
+    }
+  | undefined;
 type auth = {
   user: user;
-  signin: (email: string, password: string) => void;
+  signin: (email: string, password: string) => Promise<user>;
   signout: () => void;
 };
 
 const defaultAuth: auth = {
   user: undefined,
   signin: (email, password) => {
-    return;
+    return new Promise(() => undefined);
   },
   signout: () => {
     return;
@@ -34,15 +42,17 @@ function useProvideAuth(): auth {
   const [user, setUser] = useState<user>();
 
   const signin = async (email: string, password: string) => {
-    // TODO implement logic for signin
-    const response = await axios.post("http://localhost:8080/login", { email, password });
-    if (response.status !== 200) {
+    try {
+      const response = await axios.post<user>("http://localhost:8080/login", {
+        email,
+        password,
+      });
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
       setUser(undefined);
-      return;
+      return undefined;
     }
-    const user = response.data as user;
-    console.log(user);
-    setUser(user);
   };
 
   const signout = () => {
