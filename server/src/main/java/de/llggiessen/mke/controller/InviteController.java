@@ -35,9 +35,8 @@ public class InviteController {
     }
 
     @GetMapping(value = "", params = { "code", "email" })
-    public Invite getInvite(@RequestParam int code, @RequestParam String email) {
-        return repository.findByAttributes(code, email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    public boolean isInvite(@RequestParam int code, @RequestParam String email) {
+        return repository.findByAttributes(code, email).isPresent();
     }
 
     @PostMapping("")
