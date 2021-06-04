@@ -33,15 +33,11 @@ export function LoginForm() {
     <form
       onSubmit={handleSubmit(async ({ email, password }) => {
         if (await auth.signin(email, password)) navigate("/");
-        else
-          setError("password", { message: "Email oder Passwort ist falsch" });
+        else setError("email", { message: "Email oder Passwort ist falsch" });
       })}
     >
       <EmailInputField register={register} emailErrors={errors.email} />
       <label id="password">
-        {errors.password && (
-          <FormErrorMessage message={errors.password.message} />
-        )}
         <FontAwesomeIcon className="inputIcon" icon={faKey} />
         <input
           placeholder="Password"
