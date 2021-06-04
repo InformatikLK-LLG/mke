@@ -1,9 +1,9 @@
-import { Route, useLocation } from "react-router-dom";
 import { Navigate, RouteProps } from "react-router";
+import { Route, useLocation } from "react-router-dom";
 
-type StateType = {
-  _register_1: boolean;
-  _register_2: boolean;
+export type StateType = {
+  _register_1: { email: string };
+  _register_2: { email: string; firstName: string; lastName: string };
 };
 
 type NoTrespassingProps = {

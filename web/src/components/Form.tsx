@@ -1,7 +1,7 @@
 import "../styles/Form.css";
 
 import { FieldError, UseFormRegister, useForm } from "react-hook-form";
-import { Link, Prompt, useNavigate } from "react-router-dom";
+import { Link, Prompt, useLocation, useNavigate } from "react-router-dom";
 import {
   faEdit,
   faEnvelope,
@@ -11,6 +11,7 @@ import {
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "./FormErrorMessage";
+import { StateType } from "./NoTrespassing";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 
@@ -73,21 +74,29 @@ export function ForgotPasswordForm() {
 
 type RegisterForm1Inputs = {
   code: string;
+  email: string;
 };
 
 export function RegisterForm1() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const auth = useAuth();
 
   return (
     <form
-      onSubmit={handleSubmit(({ code }) =>
-        navigate("./1", { state: { _register_1: true } })
-      )}
+      onSubmit={handleSubmit(async ({ code, email }) => {
+        if (await auth.verifyRegistrationEligibility(code, email)) {
+          navigate("./1", { state: { _register_1: { email } } });
+        } else
+          setError("code", {
+            message: "Einladungscode oder Email sind falsch",
+          });
+      })}
     >
       <label>
         {errors.code && <FormErrorMessage message={errors.code.message} />}
@@ -103,6 +112,7 @@ export function RegisterForm1() {
           })}
         />
       </label>
+      <EmailInputField register={register} emailErrors={errors.email} />
       <Button className="formButton" type="submit" label="Registrieren" />
     </form>
   );
@@ -111,7 +121,6 @@ export function RegisterForm1() {
 type RegisterForm2Inputs = {
   firstName: string;
   lastName: string;
-  email: string;
 };
 
 export function RegisterForm2() {
@@ -122,11 +131,20 @@ export function RegisterForm2() {
     formState: { errors },
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const location = useLocation().state as StateType;
 
   return (
     <form
-      onSubmit={handleSubmit(({ firstName, lastName, email }) =>
-        navigate("../2", { state: { _register_2: true } })
+      onSubmit={handleSubmit(({ firstName, lastName }) =>
+        navigate("../2", {
+          state: {
+            _register_2: {
+              email: location._register_1.email,
+              firstName,
+              lastName,
+            },
+          },
+        })
       )}
     >
       <label>
@@ -154,12 +172,9 @@ export function RegisterForm2() {
           })}
         />
       </label>
-      <EmailInputField register={register} emailErrors={errors.email} />
       <Button className="formButton" type="submit" label="Weiter" />
       <Prompt
-        when={Boolean(
-          getValues().firstName || getValues().lastName || getValues().email
-        )}
+        when={Boolean(getValues().firstName || getValues().lastName)}
         message="Sicher, dass du die Seite verlassen möchtest?"
       />
     </form>
@@ -180,16 +195,28 @@ export function RegisterForm3() {
     formState: { errors },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const location = useLocation().state as StateType;
+  const auth = useAuth();
 
   return (
     <form
-      onSubmit={handleSubmit(({ password, passwordRepeated }) =>
-        password === passwordRepeated
-          ? navigate("/")
-          : setError("password", {
-              message: "Passwörter stimmen nicht überein",
-            })
-      )}
+      onSubmit={handleSubmit(async ({ password, passwordRepeated }) => {
+        const { firstName, lastName, email } = location._register_2;
+        if (
+          await auth.register(
+            firstName,
+            lastName,
+            email,
+            password,
+            passwordRepeated
+          )
+        )
+          navigate("/");
+        else
+          setError("password", {
+            message: "Der Nutzer konnte nicht erstellt werden",
+          });
+      })}
     >
       <label>
         {errors.password && (
