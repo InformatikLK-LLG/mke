@@ -25,23 +25,36 @@ type auth = {
   user: user;
   signin: (email: string, password: string) => Promise<user>;
   signout: () => void;
-  register: register;
   validateInviteCode: (code: number) => boolean;
+  verifyRegistrationEligibility: (
+    code: number,
+    email: string
+  ) => Promise<boolean>;
+  register: (
+    code: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) => Promise<user>;
 };
 
 const defaultAuth: auth = {
   user: undefined,
-  signin: (email, password) => {
+  signin: () => {
     return new Promise(() => undefined);
   },
   signout: () => {
     return;
   },
-  register: () => {
-    return;
+  verifyRegistrationEligibility: () => {
+    return new Promise(() => false);
   },
   validateInviteCode: () => {
     return false;
+  },
+  register: () => {
+    return new Promise(() => undefined);
   },
 };
 
@@ -68,7 +81,6 @@ function useProvideAuth(): auth {
       setUser(response.data);
       return response.data;
     } catch (error) {
-      setUser(undefined);
       return undefined;
     }
   };
@@ -78,27 +90,56 @@ function useProvideAuth(): auth {
     setUser(undefined);
   };
 
-  const register: register = (
-    code,
-    firstName,
-    lastName,
-    email,
-    password,
-    passwordRepeated
-  ) => {
-    return;
-  };
-
   const validateInviteCode = (code: number) => {
-    // TODO check whether invite code is valid or not
     return true;
   };
 
+  const verifyRegistrationEligibility = async (code: number, email: string) => {
+    try {
+      const response = await axios.get<boolean>(
+        "http://localhost:8080/invite",
+        {
+          params: { code, email },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return false;
+    }
+  };
   // TODO maybe implement more methods for reset password, register, ...
+
+  const register = async (
+    code: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) => {
+    try {
+      const response = await axios.post<user>("http://localhost:8080/user", {
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+      setUser(response.data);
+      return response.data;
+    } catch (error) {
+      return undefined;
+    }
+  };
 
   useEffect(() => {
     // TODO logic to fetch user on mount
   });
 
-  return { user, signin, signout, register, validateInviteCode };
+  return {
+    user,
+    signin,
+    signout,
+    verifyRegistrationEligibility,
+    validateInviteCode,
+    register,
+  };
 }

@@ -6,6 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import lombok.Data;
 
@@ -20,7 +23,7 @@ public class User {
     private String lastName;
     @Column(unique = true)
     private String email;
-    @JsonIgnore
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
     public User() {
@@ -34,7 +37,7 @@ public class User {
     }
 
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
 }

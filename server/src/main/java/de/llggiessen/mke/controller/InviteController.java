@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.repository.InviteRepository;
+import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Invite;
 
 @RestController
@@ -25,24 +26,30 @@ import de.llggiessen.mke.schema.Invite;
 public class InviteController {
 
     @Autowired
-    InviteRepository repository;
+    InviteRepository inviteRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     static final Logger log = LoggerFactory.getLogger(InviteController.class);
 
     @GetMapping("")
     public Iterable<Invite> getInvites() {
-        return repository.findAll();
+        return inviteRepository.findAll();
     }
 
     @GetMapping(value = "", params = { "code", "email" })
     public boolean isInvite(@RequestParam int code, @RequestParam String email) {
-        return repository.findByAttributes(code, email).isPresent();
+        return inviteRepository.findByAttributes(code, email).isPresent();
     }
 
     @PostMapping("")
     public Invite createInvite(@RequestBody Invite invite) {
+        if (userRepository.findExactByEmail(invite.getEmail()).isPresent())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already exists");
+
         while (true) {
-            Optional<Invite> inviteFromDb = repository.findById(invite.getInviteCode());
+            Optional<Invite> inviteFromDb = inviteRepository.findById(invite.getInviteCode());
             if (inviteFromDb.isPresent()) {
                 invite.setEmail(inviteFromDb.get().getEmail());
             } else {
@@ -54,12 +61,12 @@ public class InviteController {
                 // inviteCode should be six digits long and always positive
                 int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
 
-                if (!repository.findById(inviteCode).isPresent())
+                if (!inviteRepository.findById(inviteCode).isPresent())
                     invite.setInviteCode(inviteCode);
             }
 
             try {
-                return repository.save(invite);
+                return inviteRepository.save(invite);
             } catch (Exception e) {
                 if (e.getCause().getClass().equals(ConstraintViolationException.class))
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already invited");

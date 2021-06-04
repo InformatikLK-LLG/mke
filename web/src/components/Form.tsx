@@ -32,7 +32,6 @@ import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "./FormErrorMessage";
-import { classicNameResolver } from "typescript";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 import useViewport from "../hooks/useViewport";
@@ -398,15 +397,14 @@ export function RegisterForm3() {
 
   return (
     <Form
-      onSubmit={handleSubmit(({ password, passwordRepeated }) => {
+      onSubmit={handleSubmit(async ({ password, passwordRepeated }) => {
         if (password === passwordRepeated) {
-          auth.register(
+          await auth.register(
             registerState.code,
             registerState.firstName,
             registerState.lastName,
             registerState.email,
-            password,
-            passwordRepeated
+            password
           );
           navigate("/");
         } else
