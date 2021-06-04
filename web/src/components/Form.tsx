@@ -110,8 +110,7 @@ export function LoginForm() {
       inputs={inputs}
       onSubmit={handleSubmit(async ({ email, password }) => {
         if (await auth.signin(email, password)) navigate("/");
-        else
-          setError("password", { message: "Email oder Passwort ist falsch" });
+        else setError("email", { message: "Email oder Passwort ist falsch" });
       })}
       width="40%"
       otherElements={{
