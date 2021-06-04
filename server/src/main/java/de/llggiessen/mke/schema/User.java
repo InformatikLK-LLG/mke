@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Entity
@@ -18,6 +20,7 @@ public class User {
     private String lastName;
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
 
     public User() {
@@ -34,7 +37,4 @@ public class User {
         return email;
     }
 
-    public void setUsername(String username) {
-        this.email = username;
-    }
 }

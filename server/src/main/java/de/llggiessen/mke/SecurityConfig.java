@@ -15,20 +15,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import de.llggiessen.mke.repository.UserRepository;
-
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    UserRepository userRepo;
-
-    private final UserRepository userRepository;
     private final JwtTokenFilter jwtTokenFilter;
 
     @Autowired
-    public SecurityConfig(UserRepository userRepository, JwtTokenFilter jwtTokenFilter) {
-        this.userRepository = userRepository;
+    public SecurityConfig(JwtTokenFilter jwtTokenFilter) {
         this.jwtTokenFilter = jwtTokenFilter;
     }
 
