@@ -3,12 +3,14 @@ package de.llggiessen.mke.controller;
 import java.security.SecureRandom;
 import java.util.Optional;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.id.IdentifierGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +33,9 @@ public class InviteController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     static final Logger log = LoggerFactory.getLogger(InviteController.class);
 
     @GetMapping("")
@@ -39,8 +44,21 @@ public class InviteController {
     }
 
     @GetMapping(value = "", params = { "code", "email" })
-    public boolean isInvite(@RequestParam int code, @RequestParam String email) {
-        return inviteRepository.findByAttributes(code, email).isPresent();
+    public Invite isInvite(@RequestParam String code, @RequestParam String email) {
+        for (Invite invite : inviteRepository.findAll()) {
+            if (passwordEncoder.matches(code + email, invite.getInviteCode()))
+                return invite;
+        }
+        return null;
+    }
+
+    @GetMapping(value = "", params = { "inviteCode" })
+    public Invite isInvite(@RequestParam String inviteCode) {
+        try {
+            return inviteRepository.findById(new String(Base64.decodeBase64(inviteCode))).orElse(null);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("")
@@ -49,9 +67,11 @@ public class InviteController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already exists");
 
         while (true) {
-            Optional<Invite> inviteFromDb = inviteRepository.findById(invite.getInviteCode());
+            Optional<Invite> inviteFromDb = inviteRepository
+                    .findById(invite.getInviteCode() == null ? "" : invite.getInviteCode());
             if (inviteFromDb.isPresent()) {
                 invite.setEmail(inviteFromDb.get().getEmail());
+                invite.setCode(inviteFromDb.get().getCode());
             } else {
                 // generate invite code
                 // do some modulo and add it to 100.000 such that it is always in range. in
@@ -60,13 +80,18 @@ public class InviteController {
 
                 // inviteCode should be six digits long and always positive
                 int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
+                invite.setCode(inviteCode);
 
-                if (!inviteRepository.findById(inviteCode).isPresent())
-                    invite.setInviteCode(inviteCode);
+                String encodedInviteCode = passwordEncoder.encode(String.valueOf(inviteCode) + invite.getEmail());
+                if (!inviteRepository.findById(encodedInviteCode).isPresent())
+                    invite.setInviteCode(encodedInviteCode);
             }
 
             try {
-                return inviteRepository.save(invite);
+                Invite finalInvite = inviteRepository.save(invite);
+                log.info("http://localhost:3000/register?inviteCode={}",
+                        new String(Base64.encodeBase64(finalInvite.getInviteCode().getBytes())));
+                return finalInvite;
             } catch (Exception e) {
                 if (e.getCause().getClass().equals(ConstraintViolationException.class))
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already invited");

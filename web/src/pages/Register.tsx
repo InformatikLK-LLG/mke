@@ -1,10 +1,36 @@
-import { RegisterForm1, RegisterForm2, RegisterForm3 } from "../components/Form";
 import { Outlet, useNavigate } from "react-router-dom";
-import { SideBox } from "../components/SideBox";
-import useViewport from "../hooks/useViewport";
+import {
+  RegisterForm1,
+  RegisterForm2,
+  RegisterForm3,
+} from "../components/Form";
+
 import Button from "../components/Button";
+import { SideBox } from "../components/SideBox";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
+import { useLocation } from "react-router";
+import useViewport from "../hooks/useViewport";
 
 export default function Register() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const inviteCode = new URLSearchParams(useLocation().search).get(
+    "inviteCode"
+  );
+
+  useEffect(() => {
+    async function skipFirstStep() {
+      if (inviteCode) {
+        const invite = await auth.skipFirstRegisterStep(inviteCode);
+        if (invite)
+          navigate("./1", { state: { _register_1: { email: invite.email } } });
+      }
+    }
+
+    skipFirstStep();
+  }, [auth, navigate, inviteCode]);
+
   return <Outlet />;
 }
 
@@ -23,7 +49,11 @@ export function Register1() {
         </div>
         <SideBox
           headline="Hallo!"
-          subtitle={["hier ganz viel Begrüßungstext", "mehrere Zeilen", "sogar"]}
+          subtitle={[
+            "hier ganz viel Begrüßungstext",
+            "mehrere Zeilen",
+            "sogar",
+          ]}
           Button={
             <Button
               type={"button"}
@@ -47,7 +77,11 @@ export function Register1() {
         </div>
         <div className="lower">
           <p>Neu? Stattdessen einloggen?</p>
-          <Button label="LOGIN" type="button" onClick={() => navigate("/login")} />
+          <Button
+            label="LOGIN"
+            type="button"
+            onClick={() => navigate("/login")}
+          />
         </div>
       </>
     )
