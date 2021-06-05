@@ -4,13 +4,37 @@ import {
   RegisterForm2,
   RegisterForm3,
 } from "../components/Form";
+<<<<<<< HEAD
 import { makeStyles, useTheme } from "@material-ui/core";
+=======
+>>>>>>> 69d18bc (Add direct link with secure, unique invite code)
 
 import Button from "../components/Button";
 import { SideBox } from "../components/SideBox";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
+import { useLocation } from "react-router";
 import useViewport from "../hooks/useViewport";
 
 export default function Register() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const inviteCode = new URLSearchParams(useLocation().search).get(
+    "inviteCode"
+  );
+
+  useEffect(() => {
+    async function skipFirstStep() {
+      if (inviteCode) {
+        const invite = await auth.skipFirstRegisterStep(inviteCode);
+        if (invite)
+          navigate("./1", { state: { _register_1: { email: invite.email } } });
+      }
+    }
+
+    skipFirstStep();
+  }, [auth, navigate, inviteCode]);
+
   return <Outlet />;
 }
 
@@ -64,11 +88,17 @@ export function Register1() {
         <div className="lower">
           <p>Neu? Stattdessen einloggen?</p>
           <Button
+<<<<<<< HEAD
             textColor={theme.palette.primary.main}
             label="Login"
             type="button"
             onClick={() => navigate("/login")}
             isCapitalized
+=======
+            label="LOGIN"
+            type="button"
+            onClick={() => navigate("/login")}
+>>>>>>> 69d18bc (Add direct link with secure, unique invite code)
           />
         </div>
       </>

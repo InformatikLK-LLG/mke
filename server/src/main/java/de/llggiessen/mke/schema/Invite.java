@@ -1,10 +1,13 @@
 package de.llggiessen.mke.schema;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,11 +20,13 @@ import lombok.NoArgsConstructor;
 public class Invite {
 
     @Id
-    private int inviteCode;
+    private String inviteCode;
+    private int code;
     @Column(unique = true)
     private String email;
     @UpdateTimestamp
-    private Date creationDate;
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private LocalDateTime creationDate;
 
     public Invite(String email) {
         this.email = email;

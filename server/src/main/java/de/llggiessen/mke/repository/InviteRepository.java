@@ -12,9 +12,9 @@ import de.llggiessen.mke.schema.Invite;
 
 @Repository
 @RepositoryRestResource(exported = false)
-public interface InviteRepository extends CrudRepository<Invite, Integer> {
+public interface InviteRepository extends CrudRepository<Invite, String> {
 
     @Query(value = "SELECT * FROM invite WHERE invite.invite_code = :code AND invite.email = :email", nativeQuery = true)
-    Optional<Invite> findByAttributes(@Param("code") int code, @Param("email") String email);
+    Optional<Invite> findByAttributes(@Param("code") String code, @Param("email") String email);
 
 }
