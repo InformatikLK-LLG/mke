@@ -1,12 +1,13 @@
 import "../styles/Form.css";
 
 import { FieldError, UseFormRegister, useForm } from "react-hook-form";
-import { Link, Prompt, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, usePrompt } from "react-router-dom";
 import {
   faEdit,
   faEnvelope,
   faKeyboard,
 } from "@fortawesome/free-regular-svg-icons";
+import { useEffect, useState } from "react";
 
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +15,9 @@ import FormErrorMessage from "./FormErrorMessage";
 import { StateType } from "./NoTrespassing";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
+
+const promptMessage =
+  "Sicher, dass du die Seite verlassen möchtest? Nein bist du nicht. Geh weg.";
 
 type LoginFormInputs = {
   email: string;
@@ -127,15 +131,16 @@ export function RegisterForm2() {
   const {
     register,
     handleSubmit,
-    getValues,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const location = useLocation().state as StateType;
 
+  usePrompt(promptMessage, isDirty && !isSubmitting);
+
   return (
     <form
-      onSubmit={handleSubmit(({ firstName, lastName }) =>
+      onSubmit={handleSubmit(({ firstName, lastName }) => {
         navigate("../2", {
           state: {
             _register_2: {
@@ -144,8 +149,8 @@ export function RegisterForm2() {
               lastName,
             },
           },
-        })
-      )}
+        });
+      })}
     >
       <label>
         {errors.firstName && (
@@ -173,10 +178,10 @@ export function RegisterForm2() {
         />
       </label>
       <Button className="formButton" type="submit" label="Weiter" />
-      <Prompt
+      {/* <Prompt
         when={Boolean(getValues().firstName || getValues().lastName)}
         message="Sicher, dass du die Seite verlassen möchtest?"
-      />
+      /> */}
     </form>
   );
 }
@@ -191,12 +196,13 @@ export function RegisterForm3() {
     register,
     handleSubmit,
     setError,
-    getValues,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const location = useLocation().state as StateType;
   const auth = useAuth();
+
+  usePrompt(promptMessage, isDirty && !isSubmitting);
 
   return (
     <form
@@ -251,10 +257,10 @@ export function RegisterForm3() {
         />
       </label>
       <Button className="formButton" type="submit" label="Weiter" />
-      <Prompt
+      {/* <Prompt
         when={Boolean(getValues().password || getValues().passwordRepeated)}
         message="Sicher, dass du die Seite verlassen möchtest?"
-      />
+      /> */}
     </form>
   );
 }
