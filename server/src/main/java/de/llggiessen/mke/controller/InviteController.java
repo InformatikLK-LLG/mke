@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import de.llggiessen.mke.EmailService;
 import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Invite;
@@ -35,6 +36,9 @@ public class InviteController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    EmailService emailService;
 
     static final Logger log = LoggerFactory.getLogger(InviteController.class);
 
@@ -88,8 +92,10 @@ public class InviteController {
 
             try {
                 Invite finalInvite = inviteRepository.save(invite);
-                log.info("http://localhost:3000/register?inviteCode={}",
+                String link = String.format("http://localhost:3000/register?inviteCode=%s",
                         new String(Base64.encodeBase64(finalInvite.getInviteCode().getBytes())));
+
+                emailService.sendSimpleMessage(finalInvite.getEmail(), "Du wurdest eingeladen", link);
                 return finalInvite;
             } catch (Exception e) {
                 if (e.getCause().getClass().equals(ConstraintViolationException.class))
