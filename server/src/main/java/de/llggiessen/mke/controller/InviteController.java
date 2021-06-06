@@ -71,7 +71,6 @@ public class InviteController {
                     .findById(invite.getInviteCode() == null ? "" : invite.getInviteCode());
             if (inviteFromDb.isPresent()) {
                 invite.setEmail(inviteFromDb.get().getEmail());
-                invite.setCode(inviteFromDb.get().getCode());
             } else {
                 // generate invite code
                 // do some modulo and add it to 100.000 such that it is always in range. in
@@ -80,8 +79,8 @@ public class InviteController {
 
                 // inviteCode should be six digits long and always positive
                 int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
-                invite.setCode(inviteCode);
 
+                log.info(String.valueOf(inviteCode));
                 String encodedInviteCode = passwordEncoder.encode(String.valueOf(inviteCode) + invite.getEmail());
                 if (!inviteRepository.findById(encodedInviteCode).isPresent())
                     invite.setInviteCode(encodedInviteCode);
