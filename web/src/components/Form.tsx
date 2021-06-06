@@ -7,7 +7,6 @@ import {
   faEnvelope,
   faKeyboard,
 } from "@fortawesome/free-regular-svg-icons";
-import { useEffect, useState } from "react";
 
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
