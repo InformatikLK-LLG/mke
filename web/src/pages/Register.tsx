@@ -4,10 +4,7 @@ import {
   RegisterForm2,
   RegisterForm3,
 } from "../components/Form";
-<<<<<<< HEAD
 import { makeStyles, useTheme } from "@material-ui/core";
-=======
->>>>>>> 69d18bc (Add direct link with secure, unique invite code)
 
 import Button from "../components/Button";
 import { SideBox } from "../components/SideBox";
@@ -88,17 +85,11 @@ export function Register1() {
         <div className="lower">
           <p>Neu? Stattdessen einloggen?</p>
           <Button
-<<<<<<< HEAD
             textColor={theme.palette.primary.main}
             label="Login"
             type="button"
             onClick={() => navigate("/login")}
             isCapitalized
-=======
-            label="LOGIN"
-            type="button"
-            onClick={() => navigate("/login")}
->>>>>>> 69d18bc (Add direct link with secure, unique invite code)
           />
         </div>
       </>

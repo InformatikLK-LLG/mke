@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.llggiessen.mke.schema.User;
 
@@ -16,8 +17,9 @@ import de.llggiessen.mke.schema.User;
 public interface UserRepository extends CrudRepository<User, Long> {
 
     @Modifying
+    @Transactional
     @Query(value = "DELETE FROM user WHERE user.email = :email", nativeQuery = true)
-    User deleteByEmail(@Param("email") String email);
+    void deleteByEmail(@Param("email") String email);
 
     @Query(value = "SELECT * FROM user WHERE user.email LIKE %:email%", nativeQuery = true)
     Iterable<User> findAllByEmail(@Param("email") String email);

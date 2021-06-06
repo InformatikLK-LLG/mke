@@ -1,5 +1,7 @@
 package de.llggiessen.mke.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.User;
 
@@ -21,33 +24,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
     @Autowired
-    UserRepository repository;
+    UserRepository userRepository;
+
+    @Autowired
+    InviteRepository inviteRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("")
     public Iterable<User> getUsers(@RequestParam(value = "email", required = false, defaultValue = "") String email,
             @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
             @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName) {
 
-        return repository.findAllByAttributes(email, firstName, lastName);
+        return userRepository.findAllByAttributes(email, firstName, lastName);
     }
 
     @DeleteMapping("")
-    public User deleteByEmail(@RequestParam(value = "email") String email) {
-        return repository.deleteByEmail(email);
+    public void deleteByEmail(@RequestParam(value = "email") String email) {
+        userRepository.deleteByEmail(email);
     }
 
     @PostMapping("")
     public User createUser(@RequestBody User user) {
         if (user.getEmail() == null || user.getFirstName() == null || user.getLastName() == null
-                || user.getPassword() == null)
+                || user.getPassword() == null || !inviteRepository.findByEmail(user.getEmail()).isPresent())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            return repository.save(user);
+            inviteRepository.deleteByEmail(user.getEmail());
+            return userRepository.save(user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
