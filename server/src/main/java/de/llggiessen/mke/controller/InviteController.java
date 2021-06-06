@@ -1,6 +1,8 @@
 package de.llggiessen.mke.controller;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.EmailService;
+import de.llggiessen.mke.Mail;
 import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Invite;
@@ -95,7 +98,17 @@ public class InviteController {
                 String link = String.format("http://localhost:3000/register?inviteCode=%s",
                         new String(Base64.encodeBase64(finalInvite.getInviteCode().getBytes())));
 
-                emailService.sendSimpleMessage(finalInvite.getEmail(), "Du wurdest eingeladen", link);
+                Mail mail = new Mail();
+                mail.setFrom("test@ddietzler.dev");
+                mail.setTo(finalInvite.getEmail());
+                mail.setSubject("Du wurdest eingeladen :)");
+
+                Map<String, Object> model = new HashMap<>();
+                model.put("link", link);
+                mail.setProps(model);
+
+                emailService.sendFancyEmail(mail);
+
                 return finalInvite;
             } catch (Exception e) {
                 if (e.getCause().getClass().equals(ConstraintViolationException.class))
