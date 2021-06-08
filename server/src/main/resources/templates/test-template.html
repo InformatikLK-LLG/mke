@@ -9,11 +9,25 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            font-size: 48px;
+            font-size: 18px;
+        }
+        .square {
+            padding: 1em;
+            background-color: lightblue;
+            width: 20vw;
+            height: 20vw;
         }
     </style>
 </head>
  <body>
-    <p th:text="${link}"></p>
+    <p>
+        <h2>EINLADUNG MKE</h2>
+        <span>Hey you</span>
+        <div class="square">
+        <p>Du wurdest dazu eingeladen ein Mitglied der mobilen Kanueinheit in einem Standort zu werden. Mit folgendem Link oder dem Code darunter kannst du dich registrieren.</p>
+        </div>
+        <a th:href="${link}">Jetzt registrieren!</a>
+        <p th:text="${code}"></p>
+    </p>
   </body>
 </html>
