@@ -21,6 +21,7 @@ public class Invite {
 
     @Id
     private String inviteCode;
+    private String encodedInviteCode;
     @Column(unique = true)
     private String email;
     @UpdateTimestamp

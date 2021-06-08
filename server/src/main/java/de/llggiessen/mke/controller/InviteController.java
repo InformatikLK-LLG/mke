@@ -53,7 +53,7 @@ public class InviteController {
     @GetMapping(value = "", params = { "code", "email" })
     public Invite isInvite(@RequestParam String code, @RequestParam String email) {
         for (Invite invite : inviteRepository.findAll()) {
-            if (passwordEncoder.matches(code + email, invite.getInviteCode()))
+            if (passwordEncoder.matches(code + email, invite.getEncodedInviteCode()))
                 return invite;
         }
         return null;
@@ -62,7 +62,7 @@ public class InviteController {
     @GetMapping(value = "", params = { "inviteCode" })
     public Invite isInvite(@RequestParam String inviteCode) {
         try {
-            return inviteRepository.findById(new String(Base64.decodeBase64(inviteCode))).orElse(null);
+            return inviteRepository.findByEncodedInviteCode(new String(Base64.decodeBase64(inviteCode))).orElse(null);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -79,24 +79,21 @@ public class InviteController {
             if (inviteFromDb.isPresent()) {
                 invite.setEmail(inviteFromDb.get().getEmail());
             } else {
-                // generate invite code
-                // do some modulo and add it to 100.000 such that it is always in range. in
-                // addition, multiply the modulo thing with email hash for extra security
                 SecureRandom random = new SecureRandom();
 
                 // inviteCode should be six digits long and always positive
                 int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
 
-                log.info(String.valueOf(inviteCode));
+                invite.setInviteCode(String.valueOf(inviteCode));
                 String encodedInviteCode = passwordEncoder.encode(String.valueOf(inviteCode) + invite.getEmail());
-                if (!inviteRepository.findById(encodedInviteCode).isPresent())
-                    invite.setInviteCode(encodedInviteCode);
+                if (!inviteRepository.findByEncodedInviteCode(encodedInviteCode).isPresent())
+                    invite.setEncodedInviteCode(encodedInviteCode);
             }
 
             try {
                 Invite finalInvite = inviteRepository.save(invite);
                 String link = String.format("http://localhost:3000/register?inviteCode=%s",
-                        new String(Base64.encodeBase64(finalInvite.getInviteCode().getBytes())));
+                        new String(Base64.encodeBase64(finalInvite.getEncodedInviteCode().getBytes())));
 
                 Mail mail = new Mail();
                 mail.setFrom("test@ddietzler.dev");
@@ -105,6 +102,7 @@ public class InviteController {
 
                 Map<String, Object> model = new HashMap<>();
                 model.put("link", link);
+                model.put("code", finalInvite.getInviteCode());
                 mail.setProps(model);
 
                 emailService.sendFancyEmail(mail);
