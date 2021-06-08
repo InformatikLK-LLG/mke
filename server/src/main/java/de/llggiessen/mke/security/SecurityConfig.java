@@ -1,4 +1,4 @@
-package de.llggiessen.mke;
+package de.llggiessen.mke.security;
 
 import javax.servlet.http.HttpServletResponse;
 
