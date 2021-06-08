@@ -1,6 +1,5 @@
-package de.llggiessen.mke;
+package de.llggiessen.mke.mail;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -45,7 +44,7 @@ public class EmailService {
     private SpringTemplateEngine templateEngine;
 
     @Async
-    public void sendFancyEmail(Mail mail) throws MessagingException, IOException {
+    public void sendFancyEmail(Mail mail) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());

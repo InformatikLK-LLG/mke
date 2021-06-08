@@ -1,4 +1,4 @@
-package de.llggiessen.mke;
+package de.llggiessen.mke.mail;
 
 import java.util.List;
 import java.util.Map;

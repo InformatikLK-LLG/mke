@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.llggiessen.mke.EmailService;
-import de.llggiessen.mke.Mail;
+import de.llggiessen.mke.mail.EmailService;
+import de.llggiessen.mke.mail.Mail;
 import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Invite;
