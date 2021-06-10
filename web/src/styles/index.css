@@ -24,15 +24,15 @@ h2 {
   font-size: 2em;
 }
 
-*:focus {
-  /* outline-color: var(--border); */
+/* *:focus {
   outline: none;
   box-shadow: 0 0 5px var(--border);
 }
 
 input:focus {
   outline-color: var(--highlighting);
-}
+  box-shadow: none;
+} */
 
 @media (prefers-color-scheme: light) {
   :root {
