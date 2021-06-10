@@ -4,6 +4,7 @@ import {
   RegisterForm2,
   RegisterForm3,
 } from "../components/Form";
+import { makeStyles, useTheme } from "@material-ui/core";
 
 import Button from "../components/Button";
 import { SideBox } from "../components/SideBox";
@@ -17,6 +18,9 @@ export function Register1() {
   const width = useViewport();
   const navigate = useNavigate();
   const isDesktop = width > 730;
+  const theme = useTheme();
+  const useStyles = makeStyles({ button: { border: "1px solid white" } });
+  const buttonStyle = useStyles();
 
   return (
     // <div className={isDesktop ? "flexrow" : "flexcolumn"}>
@@ -36,11 +40,13 @@ export function Register1() {
           Button={
             <Button
               type={"button"}
-              label={"LOGIN"}
+              label={"Login"}
               onClick={() => {
                 navigate("/login");
               }}
-              color="primary"
+              backgroundColor={theme.palette.primary.main}
+              buttonStyle={buttonStyle}
+              isCapitalized
             />
           }
           color="blue"
@@ -58,10 +64,11 @@ export function Register1() {
         <div className="lower">
           <p>Neu? Stattdessen einloggen?</p>
           <Button
-            color="primary"
-            label="LOGIN"
+            textColor={theme.palette.primary.main}
+            label="Login"
             type="button"
             onClick={() => navigate("/login")}
+            isCapitalized
           />
         </div>
       </>

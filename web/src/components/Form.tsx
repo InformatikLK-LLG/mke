@@ -7,6 +7,7 @@ import {
   faEnvelope,
   faKeyboard,
 } from "@fortawesome/free-regular-svg-icons";
+import { makeStyles, useTheme } from "@material-ui/core";
 
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,12 +15,22 @@ import FormErrorMessage from "./FormErrorMessage";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 
+const useStyles = makeStyles({
+  button: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "2em",
+    padding: "0.5em 10%",
+  },
+});
+
 type LoginFormInputs = {
   email: string;
   password: string;
 };
 
 export function LoginForm() {
+  const formButton = useStyles();
   const {
     register,
     handleSubmit,
@@ -27,6 +38,7 @@ export function LoginForm() {
   } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
   const auth = useAuth();
+  const theme = useTheme();
 
   return (
     <form
@@ -46,10 +58,11 @@ export function LoginForm() {
       </label>
       <Link to="/forgotpassword">Passwort vergessen?</Link>
       <Button
-        color="primary"
-        className="formButton"
         type="submit"
         label="Login"
+        buttonStyle={formButton}
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
       />
     </form>
   );
@@ -60,21 +73,24 @@ type ForgotPasswordFormInputs = {
 };
 
 export function ForgotPasswordForm() {
+  const formButton = useStyles();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ForgotPasswordFormInputs>();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form onSubmit={handleSubmit(({ email }) => navigate("/login"))}>
       <EmailInputField register={register} emailErrors={errors.email} />
       <Button
-        color="primary"
-        className="formButton"
         type="submit"
         label="Weiter"
+        buttonStyle={formButton}
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
       />
     </form>
   );
@@ -85,12 +101,14 @@ type RegisterForm1Inputs = {
 };
 
 export function RegisterForm1() {
+  const formButton = useStyles();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form
@@ -113,10 +131,11 @@ export function RegisterForm1() {
         />
       </label>
       <Button
-        color="primary"
-        className="formButton"
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
         type="submit"
         label="Registrieren"
+        buttonStyle={formButton}
       />
     </form>
   );
@@ -129,6 +148,7 @@ type RegisterForm2Inputs = {
 };
 
 export function RegisterForm2() {
+  const formButton = useStyles();
   const {
     register,
     handleSubmit,
@@ -136,6 +156,7 @@ export function RegisterForm2() {
     formState: { errors },
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form
@@ -170,10 +191,11 @@ export function RegisterForm2() {
       </label>
       <EmailInputField register={register} emailErrors={errors.email} />
       <Button
-        color="primary"
-        className="formButton"
+        textColor={theme.palette.primary.main}
+        backgroundColor={theme.palette.primary.main}
         type="submit"
         label="Weiter"
+        buttonStyle={formButton}
       />
       <Prompt
         when={Boolean(
@@ -191,6 +213,7 @@ type RegisterForm3Inputs = {
 };
 
 export function RegisterForm3() {
+  const formButton = useStyles();
   const {
     register,
     handleSubmit,
@@ -199,6 +222,7 @@ export function RegisterForm3() {
     formState: { errors },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form
@@ -243,10 +267,10 @@ export function RegisterForm3() {
         />
       </label>
       <Button
-        color="primary"
-        className="formButton"
+        textColor={theme.palette.primary.main}
         type="submit"
         label="Weiter"
+        buttonStyle={formButton}
       />
       <Prompt
         when={Boolean(getValues().password || getValues().passwordRepeated)}
