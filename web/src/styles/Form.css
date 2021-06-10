@@ -3,9 +3,23 @@ form {
   flex-flow: column nowrap;
   align-items: center;
   margin-top: 1em;
+  width: fit-content;
 }
 
-form > label {
+.halfstuff {
+  display: flex;
+  flex-flow: row wrap;
+  width: 50%;
+}
+
+form > .halfstuff > .half {
+  padding: 0 1em;
+  /* width: calc(50% - 1em); */
+  /* width: 50%; */
+}
+
+form > label,
+form > .halfstuff > label {
   position: relative;
 }
 

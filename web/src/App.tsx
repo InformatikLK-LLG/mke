@@ -1,10 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import CreateInstitution, { Institutions } from "./pages/Institution";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
 
 import { ForgotPassword } from "./pages/ForgotPassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NoTrespassing from "./components/NoTrespassing";
+import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import ProvideAuth from "./hooks/useAuth";
 import { ThemeProvider } from "@material-ui/styles";
@@ -34,7 +36,13 @@ function App() {
                   <NoTrespassing path="1" element={<Register2 />} />
                   <NoTrespassing path="2" element={<Register3 />} />
                 </Route>
+                <PrivateRoute
+                  path="/institutions/create"
+                  element={<CreateInstitution />}
+                />
+                <PrivateRoute path="/institutions" element={<Institutions />} />
               </Route>
+              <Route path="/*" element={<PageNotFound />} />
             </Routes>
           </BrowserRouter>
         </div>

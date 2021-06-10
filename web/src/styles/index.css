@@ -2,6 +2,10 @@
   font-size: 18px;
 }
 
+*::selection {
+  background: yellowgreen;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -125,6 +129,9 @@ h2 {
 /* .flexcolumn.reverse {
   flex-direction: column-reverse;
 } */
+.flexrow.reverse {
+  flex-direction: row-reverse;
+}
 
 .lower {
   display: flex;

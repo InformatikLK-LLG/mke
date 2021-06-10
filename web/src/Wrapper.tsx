@@ -1,25 +1,71 @@
+import NavBar, { NavBarItem } from "./components/NavBar";
 import { Outlet, useLocation } from "react-router-dom";
-import NavBar from "./components/NavBar";
-import type { NavBarType } from "./components/NavBar";
+
+interface RouteItem extends NavBarItem {
+  heading: string;
+  subroutes?: RouteType;
+}
+
+interface RouteType extends Array<RouteItem> {}
 
 export default function Wrapper() {
   const location = useLocation();
 
-  const routesWithNavBar = ["/"];
-  const routes: NavBarType = [
-    { path: "/", name: "Homie" },
-    { path: "/login", name: "Login" },
-    { path: "/", name: "something" },
-    { path: "/", name: "else" },
+  const routes: RouteType = [
+    {
+      path: "/",
+      name: "Homie",
+      heading: "Home",
+      subroutes: [
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+      ],
+    },
+    {
+      path: "/institutions",
+      name: "Institutionen",
+      heading: "Institutionen",
+      subroutes: [
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+        {
+          path: "/institutions/create",
+          name: "Erstellen",
+          heading: "Institution erstellen",
+        },
+      ],
+    },
   ];
 
-  const hasNavBar = routesWithNavBar.includes(location.pathname);
+  let currentRoute = routes.find((obj) => obj.path === location.pathname);
+
+  if (!currentRoute) {
+    currentRoute = routes.find((obj) =>
+      obj.subroutes?.find((o) => o.path === location.pathname)
+    );
+  }
 
   return (
-    <div className={`wrapper ${hasNavBar ? "hasNavBar" : ""}`}>
-      {hasNavBar && (
+    <div className={`wrapper ${currentRoute ? "hasNavBar" : ""}`}>
+      {currentRoute && (
         <div className="header">
-          <h1>Heading</h1>
+          <h1>{currentRoute.heading}</h1>
           <NavBar routes={routes} />
         </div>
       )}
