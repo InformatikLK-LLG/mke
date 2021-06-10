@@ -17,6 +17,10 @@ const useStyles: (props: { backgroundColor: string; textColor: string }) => {
       filter: "brightness(1.05)",
       backgroundColor: ({ backgroundColor }) => backgroundColor,
     },
+    "&:focus": {
+      outline: "none",
+      boxShadow: "0 0 5px var(--border)",
+    },
   },
 });
 

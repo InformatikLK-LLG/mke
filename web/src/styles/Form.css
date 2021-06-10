@@ -29,7 +29,13 @@ form > a {
     width: 120%;
     height: 0.1em;
     margin-top: 0.5em;
-    background-color: var(--border);
+    border-bottom: 2px solid var(--border);
+  }
+
+  form > a:focus::after {
+    transition: transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+    border-bottom: 2px solid var(--highlighting);
+    transform: scaleX(1);
   }
 }
 
@@ -40,6 +46,13 @@ form > a {
     height: 0.1em;
     margin-bottom: 0.5em;
     background-color: var(--border);
+    transition: transform 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+    border-bottom: 2px solid var(--highlighting);
+    transform: scaleX();
+  }
+
+  form > a::before:focus {
+    width: 120%;
   }
 }
 
