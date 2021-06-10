@@ -36,6 +36,7 @@ export default function Dropdown({
         {isActive && (
           <div className="dropdown-items">
             <ul>
+<<<<<<< HEAD
               {subroutes?.map(
                 (subroute, i) =>
                   subroute.name && (
@@ -44,6 +45,13 @@ export default function Dropdown({
                     </li>
                   )
               )}
+=======
+              {subroutes?.map((subroute, i) => (
+                <li key={i}>
+                  <NavLink to={subroute.path}>{subroute.name}</NavLink>
+                </li>
+              ))}
+>>>>>>> 24d9462 (Rebase main into feature/13-institutionView)
             </ul>
           </div>
         )}

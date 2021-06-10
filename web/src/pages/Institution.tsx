@@ -628,96 +628,6 @@ export function CreateInstitution({
   );
 }
 
-const dummyInstitutions: Array<InstitutionType> = [
-  {
-    id: 1,
-    name: "name",
-    address: { street: "asdf", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 2,
-    name: "name",
-    address: { street: "bsdf", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 3,
-    name: "name",
-    address: { street: "csdf", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 4,
-    name: "name",
-    address: { street: "gsdf", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 5,
-    name: "name",
-    address: {
-      street: "efsadf",
-      streetNumber: 42,
-      town: "bla",
-      zipCode: 31415,
-    },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: "LLGGI",
-    name: "Landgraf Ludwigs Gymnasium Gießen wir brauchen mehr text hier jetzt das reicht noch nicht immer noch zu wenig die tabelle ist zu klein uff jetzt werd doch groß genug dass wir sehen was passiert pls oh sie reduziert automatisch padding und macht line breaks",
-    address: {
-      street: "Reichenberger Straße",
-      streetNumber: 11,
-      town: "Gießen",
-      zipCode: 35396,
-    },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 7,
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 8,
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 9,
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 10,
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: 11,
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 2 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-];
-
 const format = (value: boolean) => (
   <FontAwesomeIcon
     style={{ marginRight: "2em", fontSize: "1em" }}
@@ -748,22 +658,6 @@ export function Institutions() {
   const navigate = useNavigate();
   const formInput = useInputStyles();
   const queryClient = useQueryClient();
-
-  // useEffect(() => {
-  //   async function foo() {
-  //     try {
-  //       const response = await axios.get<Array<InstitutionType>>(
-  //         "http://localhost:8080/institution"
-  //       );
-  //       setInstitutions(response.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //     // setInstitutions(dummyInstitutions);
-  //     console.log("help");
-  //   }
-  //   foo();
-  // }, []);
 
   const onKeyDown = async (event: KeyboardEvent) => {
     if (event.key === "n" && event.altKey) {
