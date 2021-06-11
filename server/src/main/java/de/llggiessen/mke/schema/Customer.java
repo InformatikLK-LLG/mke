@@ -26,4 +26,11 @@ public class Customer {
     private String mobilePhone;
     private String businessPhone;
 
+    public Customer(String firstName, String lastName, String email, String mobilePhone, String businessPhone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.mobilePhone = mobilePhone;
+        this.businessPhone = businessPhone;
+    }
 }
