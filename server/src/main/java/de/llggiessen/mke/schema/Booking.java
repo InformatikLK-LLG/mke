@@ -1,5 +1,8 @@
 package de.llggiessen.mke.schema;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.tomcat.jni.Time;
 
 import javax.persistence.Embedded;
@@ -10,6 +13,9 @@ import java.util.Date;
 
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Booking {
 
     @Id
