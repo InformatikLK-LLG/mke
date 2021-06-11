@@ -10,6 +10,8 @@ web/package.json
 *.swp
 *.~ava
 *.iml
+*.log
+*.mdmp
 **/application.properties
 .env
 
