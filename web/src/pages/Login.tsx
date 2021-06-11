@@ -1,27 +1,40 @@
-import { SideBox } from "../components/SideBox";
-import useViewport from "../hooks/useViewport";
 import Button from "../components/Button";
-import { useNavigate } from "react-router-dom";
 import { LoginForm } from "../components/Form";
+import { SideBox } from "../components/SideBox";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import { useNavigate } from "react-router-dom";
+import useTheme from "@material-ui/core/styles/useTheme";
+import useViewport from "../hooks/useViewport";
 
 export default function Login() {
   const width = useViewport();
   const navigate = useNavigate();
   const isDesktop = width > 730;
+  const theme = useTheme();
+  const useStyle = makeStyles({ button: { border: "1px solid white" } });
+  const buttonStyle = useStyle();
 
   return (
     <div className={isDesktop ? "flexrow" : "flexcolumn reverse"}>
       {isDesktop ? (
         <SideBox
           headline="Willkommen zurück"
-          subtitle={["hier ganz viel Begrüßungstext", "mehrere Zeilen", "sogar"]}
+          subtitle={[
+            "hier ganz viel Begrüßungstext",
+            "mehrere Zeilen",
+            "sogar",
+          ]}
           Button={
             <Button
+              backgroundColor={theme.palette.primary.main}
+              textColor={"white"}
               type={"button"}
-              label={"REGISTRIEREN"}
+              label={"Registrieren"}
               onClick={() => {
                 navigate("/register");
               }}
+              buttonStyle={buttonStyle}
+              isCapitalized
             />
           }
           color="blue"
@@ -30,7 +43,12 @@ export default function Login() {
       ) : (
         <div className="mobile lower">
           <p>Neu? Stattdessen registrieren?</p>
-          <Button label="REGISTRIEREN" type="button" onClick={() => navigate("/register")} />
+          <Button
+            label="Registrieren"
+            type="button"
+            onClick={() => navigate("/register")}
+            textColor="primary"
+          />
         </div>
       )}
       <div className="container">

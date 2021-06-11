@@ -1,12 +1,52 @@
 import "../styles/Form.css";
-import { FieldError, useForm, UseFormRegister } from "react-hook-form";
-import { useNavigate, Link, Prompt } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+
+import { FieldError, UseFormRegister, useForm } from "react-hook-form";
+import {
+  InputAdornment,
+  TextField,
+  makeStyles,
+  useTheme,
+} from "@material-ui/core";
+import { Link, Prompt, useNavigate } from "react-router-dom";
+import {
+  faEdit,
+  faEnvelope,
+  faKeyboard,
+  faUser,
+} from "@fortawesome/free-regular-svg-icons";
+
 import Button from "./Button";
-import FormErrorMessage from "./FormErrorMessage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faEnvelope, faKeyboard } from "@fortawesome/free-regular-svg-icons";
+import FormErrorMessage from "./FormErrorMessage";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../hooks/useAuth";
+
+const useButtonStyles = makeStyles({
+  button: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "2em",
+    padding: "0.5em 10%",
+  },
+});
+
+const useInputStyles = makeStyles({
+  input: {
+    margin: "0.5em",
+    width: "30vw",
+    minWidth: "200px",
+    maxWidth: "350px",
+    fontSize: "1em",
+    fontFamily: "inherit",
+    "& .MuiInput-underline:hover:not(.Mui-disabled)::before": {
+      borderColor: "var(--border)",
+      borderWidth: "1.5px",
+    },
+    "& .MuiInput-underline:after": {
+      transitionDuration: "300ms",
+    },
+  },
+});
 
 type LoginFormInputs = {
   email: string;
@@ -14,6 +54,8 @@ type LoginFormInputs = {
 };
 
 export function LoginForm() {
+  const formButton = useButtonStyles();
+  const formInput = useInputStyles();
   const {
     register,
     handleSubmit,
@@ -21,6 +63,7 @@ export function LoginForm() {
   } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
   const auth = useAuth();
+  const theme = useTheme();
 
   return (
     <form
@@ -30,12 +73,28 @@ export function LoginForm() {
       })}
     >
       <EmailInputField register={register} emailErrors={errors.email} />
-      <label id="password">
-        <FontAwesomeIcon className="inputIcon" icon={faKey} />
-        <input placeholder="Password" {...register("password")} type="password" />
-      </label>
+      <TextField
+        placeholder="Password"
+        {...register("password")}
+        type="password"
+        className={formInput.input}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FontAwesomeIcon className="inputIcon" icon={faKey} />
+            </InputAdornment>
+          ),
+          ...register("password"),
+        }}
+      />
       <Link to="/forgotpassword">Passwort vergessen?</Link>
-      <Button className="formButton" type="submit" label="Login" />
+      <Button
+        type="submit"
+        label="Login"
+        buttonStyle={formButton}
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
+      />
     </form>
   );
 }
@@ -45,17 +104,25 @@ type ForgotPasswordFormInputs = {
 };
 
 export function ForgotPasswordForm() {
+  const formButton = useButtonStyles();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ForgotPasswordFormInputs>();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form onSubmit={handleSubmit(({ email }) => navigate("/login"))}>
       <EmailInputField register={register} emailErrors={errors.email} />
-      <Button className="formButton" type="submit" label="Weiter" />
+      <Button
+        type="submit"
+        label="Weiter"
+        buttonStyle={formButton}
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
+      />
     </form>
   );
 }
@@ -65,30 +132,50 @@ type RegisterForm1Inputs = {
 };
 
 export function RegisterForm1() {
+  const formButton = useButtonStyles();
+  const formInput = useInputStyles();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
-    <form onSubmit={handleSubmit(({ code }) => navigate("./1", { state: { _register_1: true } }))}>
+    <form
+      onSubmit={handleSubmit(({ code }) =>
+        navigate("./1", { state: { _register_1: true } })
+      )}
+    >
       <label>
         {errors.code && <FormErrorMessage message={errors.code.message} />}
-        <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
-        <input
+        <TextField
           placeholder="Code"
-          {...register("code", {
-            required: "Einladungscode ist notwendig.",
-            pattern: {
-              value: /^[0-9]{6}$/,
-              message: "0-6 chars bla dass wir sehen dass was da ist.",
-            },
-          })}
+          className={formInput.input}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
+              </InputAdornment>
+            ),
+            ...register("code", {
+              required: "Einladungscode ist notwendig.",
+              pattern: {
+                value: /^[0-9]{6}$/,
+                message: "0-6 chars bla dass wir sehen dass was da ist.",
+              },
+            }),
+          }}
         />
       </label>
-      <Button className="formButton" type="submit" label="Registrieren" />
+      <Button
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
+        type="submit"
+        label="Registrieren"
+        buttonStyle={formButton}
+      />
     </form>
   );
 }
@@ -100,6 +187,8 @@ type RegisterForm2Inputs = {
 };
 
 export function RegisterForm2() {
+  const formButton = useButtonStyles();
+  const formInput = useInputStyles();
   const {
     register,
     handleSubmit,
@@ -107,36 +196,65 @@ export function RegisterForm2() {
     formState: { errors },
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form
-      onSubmit={handleSubmit(({ firstName, lastName, email }) => navigate("../2", { state: { _register_2: true } }))}
+      onSubmit={handleSubmit(({ firstName, lastName, email }) =>
+        navigate("../2", { state: { _register_2: true } })
+      )}
     >
       <label>
-        {errors.firstName && <FormErrorMessage message={errors.firstName.message} />}
-        <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-        <input
+        {errors.firstName && (
+          <FormErrorMessage message={errors.firstName.message} />
+        )}
+        <TextField
           placeholder="Vorname"
-          {...register("firstName", {
-            required: "Vorname muss angegeben werden",
-          })}
+          className={formInput.input}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faEdit} />
+              </InputAdornment>
+            ),
+            ...register("firstName", {
+              required: "Vorname muss angegeben werden",
+            }),
+          }}
           autoFocus
         />
       </label>
       <label>
-        {errors.lastName && <FormErrorMessage message={errors.lastName.message} />}
-        <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-        <input
+        {errors.lastName && (
+          <FormErrorMessage message={errors.lastName.message} />
+        )}
+        <TextField
           placeholder="Nachname"
-          {...register("lastName", {
-            required: "Nachname muss angegeben werden",
-          })}
+          className={formInput.input}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faUser} />
+              </InputAdornment>
+            ),
+            ...register("lastName", {
+              required: "Nachname muss angegeben werden",
+            }),
+          }}
         />
       </label>
       <EmailInputField register={register} emailErrors={errors.email} />
-      <Button className="formButton" type="submit" label="Weiter" />
+      <Button
+        textColor="white"
+        backgroundColor={theme.palette.primary.main}
+        type="submit"
+        label="Weiter"
+        buttonStyle={formButton}
+      />
       <Prompt
-        when={Boolean(getValues().firstName || getValues().lastName || getValues().email)}
+        when={Boolean(
+          getValues().firstName || getValues().lastName || getValues().email
+        )}
         message="Sicher, dass du die Seite verlassen möchtest?"
       />
     </form>
@@ -149,6 +267,8 @@ type RegisterForm3Inputs = {
 };
 
 export function RegisterForm3() {
+  const formButton = useButtonStyles();
+  const formInput = useInputStyles();
   const {
     register,
     handleSubmit,
@@ -157,6 +277,7 @@ export function RegisterForm3() {
     formState: { errors },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <form
@@ -169,33 +290,58 @@ export function RegisterForm3() {
       )}
     >
       <label>
-        {errors.password && <FormErrorMessage message={errors.password.message} />}
-        <FontAwesomeIcon className="inputIcon" icon={faKey} />
-        <input
+        {errors.password && (
+          <FormErrorMessage message={errors.password.message} />
+        )}
+        <TextField
           placeholder="Passwort"
-          {...register("password", {
-            required: "Passwort muss angegeben werden ",
-            pattern: {
-              value: /\w{8}/,
-              message: "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
-            },
-          })}
           type="password"
+          className={formInput.input}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faKey} />
+              </InputAdornment>
+            ),
+            ...register("password", {
+              required: "Passwort muss angegeben werden ",
+              pattern: {
+                value: /\w{8}/,
+                message:
+                  "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
+              },
+            }),
+          }}
           autoFocus
         />
       </label>
       <label>
-        {errors.passwordRepeated && <FormErrorMessage message={errors.passwordRepeated.message} />}
-        <FontAwesomeIcon className="inputIcon" icon={faKey} />
-        <input
+        {errors.passwordRepeated && (
+          <FormErrorMessage message={errors.passwordRepeated.message} />
+        )}
+        <TextField
           placeholder="Passwort bestätigen"
-          {...register("passwordRepeated", {
-            required: "Passwort muss angegeben werden",
-          })}
           type="password"
+          className={formInput.input}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faKey} />
+              </InputAdornment>
+            ),
+            ...register("passwordRepeated", {
+              required: "Passwort muss angegeben werden",
+            }),
+          }}
         />
       </label>
-      <Button className="formButton" type="submit" label="Weiter" />
+      <Button
+        textColor="white"
+        type="submit"
+        label="Weiter"
+        buttonStyle={formButton}
+        backgroundColor={theme.palette.primary.main}
+      />
       <Prompt
         when={Boolean(getValues().password || getValues().passwordRepeated)}
         message="Sicher, dass du die Seite verlassen möchtest?"
@@ -211,20 +357,30 @@ function EmailInputField({
   register: UseFormRegister<any>;
   emailErrors: FieldError | undefined;
 }) {
+  const formInput = useInputStyles();
   return (
-    <label>
-      {emailErrors && <FormErrorMessage message={emailErrors.message} />}
-      <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
-      <input
-        placeholder="Email"
-        {...register("email", {
-          required: "Email muss angegeben werden",
-          pattern: {
-            value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-            message: "gültige Email mit @ und so.",
-          },
-        })}
-      />
-    </label>
+    <>
+      <label>
+        {emailErrors && <FormErrorMessage message={emailErrors.message} />}
+        <TextField
+          placeholder="Email"
+          className={formInput.input}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
+              </InputAdornment>
+            ),
+            ...register("email", {
+              required: "Email muss angegeben werden",
+              pattern: {
+                value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+                message: "gültige Email mit @ und so.",
+              },
+            }),
+          }}
+        />
+      </label>
+    </>
   );
 }
