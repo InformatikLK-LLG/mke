@@ -1,4 +1,4 @@
 package de.llggiessen.mke.schema;
 
-public class Customer {HI
+public class Customer {
 }
