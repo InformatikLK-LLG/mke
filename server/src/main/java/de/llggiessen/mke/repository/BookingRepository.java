@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(exported = false)
-public interface bookingRepository extends CrudRepository<Booking, Long> {
+public interface BookingRepository extends CrudRepository<Booking, Long> {
 
 }
