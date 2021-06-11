@@ -22,14 +22,6 @@ public class Institution {
     @Embedded
     private Address address;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private class Address {
-        private String street;
-        private String streetNumber;
-        private int zipCode;
-        private String place;
-    }
+
 
 }
