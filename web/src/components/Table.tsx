@@ -254,6 +254,7 @@ export default function Table<T extends SimplestItem>({
   }
 
   function RenderRow(row: T) {
+    const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
     return (
       <TableRow
         // hover
