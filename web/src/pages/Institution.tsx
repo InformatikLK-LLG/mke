@@ -1,18 +1,13 @@
 import "../styles/Table.css";
 
-import {
-  InputAdornment,
-  TextField,
-  makeStyles,
-  useTheme,
-} from "@material-ui/core";
+import { InputAdornment, TextField, makeStyles, useTheme } from "@material-ui/core";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
+import Table, { TableHeaders } from "../components/Table";
 import { faEdit, faKeyboard } from "@fortawesome/free-regular-svg-icons";
 
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
-import Table from "../components/Table";
 import { useForm } from "react-hook-form";
 
 type Address = {
@@ -90,8 +85,7 @@ export function CreateInstitution() {
                 </InputAdornment>
               ),
               ...register("id", {
-                required:
-                  "INST-Code muss angegeben werden und eindeutig sein oder so",
+                required: "INST-Code muss angegeben werden und eindeutig sein oder so",
               }),
             }}
             autoFocus
@@ -116,9 +110,7 @@ export function CreateInstitution() {
           />
         </label>
         <label>
-          {errors.phoneNumber && (
-            <FormErrorMessage message={errors.phoneNumber.message} />
-          )}
+          {errors.phoneNumber && <FormErrorMessage message={errors.phoneNumber.message} />}
           <TextField
             placeholder="Telefonnummer"
             InputProps={{
@@ -139,9 +131,7 @@ export function CreateInstitution() {
           />
         </label>
         <label>
-          {errors.address?.street && (
-            <FormErrorMessage message={errors.address.street.message} />
-          )}
+          {errors.address?.street && <FormErrorMessage message={errors.address.street.message} />}
           <TextField
             placeholder="Straße"
             type="text"
@@ -160,9 +150,7 @@ export function CreateInstitution() {
         </label>
         <div className="halfstuff">
           <label className="half">
-            {errors.address?.zipCode && (
-              <FormErrorMessage message={errors.address.zipCode.message} />
-            )}
+            {errors.address?.zipCode && <FormErrorMessage message={errors.address.zipCode.message} />}
             <TextField
               placeholder="Postleitzahl"
               type="tel"
@@ -184,9 +172,7 @@ export function CreateInstitution() {
             />
           </label>
           <label className="half">
-            {errors.address?.town && (
-              <FormErrorMessage message={errors.address.town.message} />
-            )}
+            {errors.address?.town && <FormErrorMessage message={errors.address.town.message} />}
             <TextField
               placeholder="Stadt"
               type="text"
@@ -231,175 +217,114 @@ const institutions: Array<InstitutionType> = [
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: false,
   },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
-  {
-    id: "GI56789blubjfg",
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
-  },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
+  // {
+  //   id: "GI56789blubjfg",
+  //   name: "name",
+  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+  //   phoneNumber: 123456789,
+  //   schoolAdministrativeDistrict: false,
+  // },
 ];
+
+const tableHeaders: TableHeaders<InstitutionType> = {
+  id: { label: "INST-Code" },
+  name: { label: "Name" },
+  address: {
+    label: "Adresse",
+    children: {
+      street: { label: "Straße" },
+      streetNumber: { label: "Hausnummer" },
+      town: { label: "Ort" },
+      zipCode: { label: "PLZ" },
+    },
+  },
+  phoneNumber: { label: "Telefonnummer" },
+  schoolAdministrativeDistrict: { label: "Schulverwaltungsbezirk?" },
+};
 
 export function Institutions() {
   return (
@@ -408,28 +333,9 @@ export function Institutions() {
         {/* <Table tableHeaders={{ id: "ID", name: { vorname: { erstername: "Numero 1", zweitername: "Numero 2" }, nachname: "Nachname", }, }} rows={[ { id: 1, name: { vorname: { erstername: "first1", zweitername: "second1" }, nachname: "nachname1", }, }, { id: 2, name: { vorname: { erstername: "first2", zweitername: "second2" }, nachname: "nachname2", }, }, ]} /> */}
         {/* <Table tableHeaders={{ id: "ID", name: { vorname: { first: "Vorname 1", second: "Vorname 2" }, nachname: "Nachname", }, }} rows={[ { id: "id1", name: { vorname: { first: "vorname1", second: "vorname2" }, nachname: "lastname1", }, }, { id: "id2", name: { vorname: { first: "vorname1", second: "vorname2" }, nachname: "lastname2", }, }, ]} /> */}
         <Table
-          tableHeaders={{
-            id: "INST-Code",
-            name: "Name",
-            address: {
-              street: "Straße",
-              streetNumber: "Hausnummer",
-              town: "Ort",
-              zipCode: "PLZ",
-            },
-            phoneNumber: "Telefonnummer",
-            schoolAdministrativeDistrict: "Schulverwaltungsbezirk?",
-          }}
+          tableHeaders={tableHeaders}
           rows={institutions}
-          sort={[
-            "Name",
-            "INST-Code",
-            "Straße",
-            "Ort",
-            "PLZ",
-            "Telefonnummer",
-            "Schulverwaltungsbezirk?",
-          ]}
+          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer", "Schulverwaltungsbezirk?"]}
         />
       </div>
     </>
