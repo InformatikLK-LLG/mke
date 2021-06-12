@@ -3,7 +3,7 @@ import "../styles/Table.css";
 import { InputAdornment, TextField, makeStyles, useTheme } from "@material-ui/core";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
-import { faEdit, faKeyboard } from "@fortawesome/free-regular-svg-icons";
+import { faCheckSquare, faEdit, faKeyboard, faSquare } from "@fortawesome/free-regular-svg-icons";
 
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -204,111 +204,85 @@ export function CreateInstitution() {
 
 const institutions: Array<InstitutionType> = [
   {
-    id: "GI1234blub",
+    id: String(Math.random() * 999999),
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: "GI56789blubjfg",
+    id: String(Math.random() * 999999),
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
-    schoolAdministrativeDistrict: false,
+    schoolAdministrativeDistrict: true,
   },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
-  // {
-  //   id: "GI56789blubjfg",
-  //   name: "name",
-  //   address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-  //   phoneNumber: 123456789,
-  //   schoolAdministrativeDistrict: false,
-  // },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: String(Math.random() * 999999),
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
 ];
+
+const format = (value: boolean) => <FontAwesomeIcon icon={value ? faCheckSquare : faSquare} />;
 
 const tableHeaders: TableHeaders<InstitutionType> = {
   id: { label: "INST-Code" },
@@ -323,7 +297,7 @@ const tableHeaders: TableHeaders<InstitutionType> = {
     },
   },
   phoneNumber: { label: "Telefonnummer" },
-  schoolAdministrativeDistrict: { label: "Schulverwaltungsbezirk?" },
+  schoolAdministrativeDistrict: { label: "Schulverwaltungsbezirk?", format },
 };
 
 export function Institutions() {
