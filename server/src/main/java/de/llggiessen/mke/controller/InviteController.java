@@ -96,7 +96,7 @@ public class InviteController {
                         new String(Base64.encodeBase64(finalInvite.getEncodedInviteCode().getBytes())));
 
                 Mail mail = new Mail();
-                mail.setFrom("test@ddietzler.dev");
+                mail.setFrom(System.getenv("MAIL_FROM"));
                 mail.setTo(finalInvite.getEmail());
                 mail.setSubject("Du wurdest eingeladen :)");
 
