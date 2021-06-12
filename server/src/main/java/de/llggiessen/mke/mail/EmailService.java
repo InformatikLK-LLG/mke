@@ -9,6 +9,7 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +23,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
+    @Autowired
+    private Environment env;
+
     static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     @Async
@@ -31,7 +35,7 @@ public class EmailService {
         String message = String.format("<h3>%s</h3>", text);
         try {
             helper.setSubject(subject);
-            helper.setFrom("test@ddietzler.dev", "MKE Verwaltung");
+            helper.setFrom(env.getProperty("invite.mail.from.email"), env.getProperty("invite.mail.from.name"));
             mimeMessage.setContent(message, "text/html");
             helper.setTo(to);
             emailSender.send(mimeMessage);
@@ -44,10 +48,8 @@ public class EmailService {
     private SpringTemplateEngine templateEngine;
 
     @Async
-    public void sendFancyEmail(Mail mail) throws MessagingException {
+    public void sendFancyEmail(Mail mail) {
         MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                StandardCharsets.UTF_8.name());
         // helper.addAttachment("blub.jpeg", new ClassPathResource(path))
 
         Context context = new Context();
@@ -55,11 +57,18 @@ public class EmailService {
 
         String html = templateEngine.process("test-template", context);
 
-        helper.setTo(mail.getTo());
-        helper.setText(html, true);
-        helper.setSubject(mail.getSubject());
-        helper.setFrom(mail.getFrom());
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                    StandardCharsets.UTF_8.name());
 
-        emailSender.send(message);
+            helper.setTo(mail.getTo());
+            helper.setText(html, true);
+            helper.setSubject(mail.getSubject());
+            helper.setFrom(mail.getFrom());
+
+            emailSender.send(message);
+        } catch (MessagingException e) {
+            log.error(e.toString());
+        }
     }
 }

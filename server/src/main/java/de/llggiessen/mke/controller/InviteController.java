@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.mail.internet.InternetAddress;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.id.IdentifierGenerationException;
@@ -42,6 +44,9 @@ public class InviteController {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    private org.springframework.core.env.Environment env;
 
     static final Logger log = LoggerFactory.getLogger(InviteController.class);
 
@@ -96,7 +101,9 @@ public class InviteController {
                         new String(Base64.encodeBase64(finalInvite.getEncodedInviteCode().getBytes())));
 
                 Mail mail = new Mail();
-                mail.setFrom(System.getenv("MAIL_FROM"));
+
+                mail.setFrom(new InternetAddress(env.getProperty("invite.mail.from.email"),
+                        env.getProperty("invite.mail.from.name")));
                 mail.setTo(finalInvite.getEmail());
                 mail.setSubject("Du wurdest eingeladen :)");
 
