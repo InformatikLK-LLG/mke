@@ -60,28 +60,6 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   const [sortBy, setSortBy] = useState("id");
   const [direction, setDirection] = useState("asc");
 
-  function RenderNestedValue(row: T, value: T[keyof T][keyof T[keyof T]]): JSX.Element {
-    const isCheckedIcon = typeof value === "boolean" && value ? faCheckSquare : faSquare;
-
-    return (
-      <>
-        {objectValues(value).map((nestedValue) => {
-          if (isPrimitive(nestedValue)) {
-            return (
-              <td key={`${row.id}.${nestedValue}`}>
-                {typeof nestedValue !== "boolean" ? (
-                  nestedValue
-                ) : (
-                  <FontAwesomeIcon className="checkbox" icon={isCheckedIcon} />
-                )}
-              </td>
-            );
-          } else return RenderNestedValue(row, nestedValue);
-        })}
-      </>
-    );
-  }
-
   function RenderValue(
     element: T,
     key: keyof T & keyof SimplestItem,
@@ -117,7 +95,7 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   function RenderRow(row: T) {
     const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
     return (
-      <TableRow hover key={`row${row.id}`} className="link">
+      <TableRow hover className="link" key={`row.${row.id}`}>
         {keys.map((key) => {
           return RenderValue(row, key);
         })}
@@ -154,11 +132,15 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
             onClick={() => {
               doTheThing();
             }}
-            key={`${header}.label`}
+            key={`${header.label}.label`}
           >
             <span key={`${header.label}.span`}>{header.label}</span>
-            <FontAwesomeIcon className={`sortIcon${isAscendingAndActive}`} icon={faSortUp} key={`${header}.up`} />
-            <FontAwesomeIcon className={`sortIcon${isDescendingAndActive}`} icon={faSortDown} key={`${header}.down`} />
+            <FontAwesomeIcon className={`sortIcon${isAscendingAndActive}`} icon={faSortUp} key={`${header.label}.up`} />
+            <FontAwesomeIcon
+              className={`sortIcon${isDescendingAndActive}`}
+              icon={faSortDown}
+              key={`${header.label}.down`}
+            />
           </label>
         ) : (
           header.label
