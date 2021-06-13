@@ -9,8 +9,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
   /* font-size: 20px; */
   font-display: optional;
 }
@@ -99,7 +98,7 @@ h2 {
   flex-flow: row wrap;
   justify-content: space-between;
   height: 10%;
-  /* padding: 2em; */
+  padding-bottom: 2em;
 }
 
 .content {

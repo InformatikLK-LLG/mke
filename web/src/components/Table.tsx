@@ -8,6 +8,7 @@ import {
   TableRow,
   makeStyles,
 } from "@material-ui/core";
+import React, { Fragment } from "react";
 import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,6 +23,10 @@ const useStyles = makeStyles({
     position: "absolute",
     marginTop: "0.4em",
     marginLeft: "0.4em",
+  },
+  tableContainer: {
+    display: "flex",
+    justifyContent: "center",
   },
 });
 
@@ -85,11 +90,11 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     if (typeof value === "object") {
       const keys = Object.keys(value) as (keyof T & keyof SimplestItem)[];
       return (
-        <>
+        <React.Fragment key={`${uniqueId}.${nestedKey}`}>
           {keys.map((innerNestedKey) => {
             return RenderValue(value, key, nestedKey.concat(`.children.${innerNestedKey}`), uniqueId);
           })}
-        </>
+        </React.Fragment>
       );
     }
 
@@ -107,7 +112,7 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   function RenderRow(row: T) {
     const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
     return (
-      <TableRow hover className="link" key={`row.${row.id}`}>
+      <TableRow hover key={`row.${row.id}`}>
         {keys.map((key) => {
           return RenderValue(row, key);
         })}
@@ -138,13 +143,14 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     }
 
     return (
-      <TableCell key={header.label}>
+      <TableCell key={`${header.label}`}>
         {sort?.includes(header.label) ? (
           <label
             onClick={() => {
               doTheThing();
             }}
             key={`${header.label}.label`}
+            className="sortIcon"
           >
             <span key={`${header.label}.span`}>{header.label}</span>
             <FontAwesomeIcon
@@ -167,14 +173,14 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
 
   function RenderHeaders(headers: TableHeaders<T>): JSX.Element {
     return (
-      <>
+      <React.Fragment key="header">
         {objectValues(headers).map((header) => {
           if (!header.children) {
             return RenderHeader(header);
           }
           return RenderHeaders(header.children as TableHeaders<T>);
         })}
-      </>
+      </React.Fragment>
     );
   }
 
@@ -192,10 +198,10 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
 
   return (
     <>
-      <TableContainer>
+      <TableContainer className={classes.tableContainer}>
         <BetterTable stickyHeader className={classes.table}>
           <TableHead>
-            <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
+            <TableRow key="headerRow">{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>
           <TableBody>
             {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
