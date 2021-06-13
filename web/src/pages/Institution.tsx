@@ -297,7 +297,7 @@ const tableHeaders: TableHeaders<InstitutionType> = {
     },
   },
   phoneNumber: { label: "Telefonnummer" },
-  schoolAdministrativeDistrict: { label: "Schulverwaltungsbezirk?", format },
+  schoolAdministrativeDistrict: { label: "Schulverwaltungsbezirk?", format, align: "right" },
 };
 
 export function Institutions() {

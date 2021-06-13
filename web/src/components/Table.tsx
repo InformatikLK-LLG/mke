@@ -6,13 +6,24 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  makeStyles,
 } from "@material-ui/core";
-import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
-import { faSortDown, faSortUp, faStreetView } from "@fortawesome/free-solid-svg-icons";
+import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+
+const useStyles = makeStyles({
+  table: {
+    width: "70%",
+  },
+  sortIcon: {
+    position: "absolute",
+    marginTop: "0.4em",
+    marginLeft: "0.4em",
+  },
+});
 
 // returns array containing object values with correct type inferred
 function objectValues<T extends {}>(obj: T) {
@@ -59,6 +70,7 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState("id");
   const [direction, setDirection] = useState("asc");
+  const classes = useStyles();
 
   function RenderValue(
     element: T,
@@ -135,9 +147,13 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
             key={`${header.label}.label`}
           >
             <span key={`${header.label}.span`}>{header.label}</span>
-            <FontAwesomeIcon className={`sortIcon${isAscendingAndActive}`} icon={faSortUp} key={`${header.label}.up`} />
             <FontAwesomeIcon
-              className={`sortIcon${isDescendingAndActive}`}
+              className={`${classes.sortIcon} ${isAscendingAndActive}`}
+              icon={faSortUp}
+              key={`${header.label}.up`}
+            />
+            <FontAwesomeIcon
+              className={`${classes.sortIcon} ${isDescendingAndActive}`}
               icon={faSortDown}
               key={`${header.label}.down`}
             />
@@ -177,7 +193,7 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   return (
     <>
       <TableContainer>
-        <BetterTable stickyHeader>
+        <BetterTable stickyHeader className={classes.table}>
           <TableHead>
             <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>
