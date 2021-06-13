@@ -282,7 +282,9 @@ const institutions: Array<InstitutionType> = [
   },
 ];
 
-const format = (value: boolean) => <FontAwesomeIcon icon={value ? faCheckSquare : faSquare} />;
+const format = (value: boolean) => (
+  <FontAwesomeIcon style={{ marginRight: "2em", fontSize: "1em" }} icon={value ? faCheckSquare : faSquare} />
+);
 
 const tableHeaders: TableHeaders<InstitutionType> = {
   id: { label: "INST-Code" },

@@ -8,25 +8,46 @@ import {
   TableRow,
   makeStyles,
 } from "@material-ui/core";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 const useStyles = makeStyles({
-  table: {
-    width: "70%",
-  },
   sortIcon: {
     position: "absolute",
     marginTop: "0.4em",
     marginLeft: "0.4em",
+    color: "var(--border)",
+    "&.active": {
+      color: "black",
+    },
+  },
+  sortLabel: {
+    cursor: "pointer",
+    "& > span::selection": {
+      backgroundColor: "transparent",
+    },
   },
   tableContainer: {
     display: "flex",
     justifyContent: "center",
+    flexGrow: 1,
+    maxHeight: "60%",
+    maxWidth: "70%",
+    "&::-webkit-scrollbar": {
+      width: "0.5em",
+      backgroundColor: "var(--input)",
+      borderRadius: "1em",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "var(--border)",
+      borderRadius: "1em",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      backgroundColor: "var(--highlighting)",
+    },
   },
 });
 
@@ -57,7 +78,7 @@ interface SimplestItem {
 interface Header<T> {
   label: string;
   minWidth?: number;
-  align?: "right" | "left";
+  align?: "right" | "left" | "center";
   children?: { [key: string]: Header<T> };
   format?: (value: any) => JSX.Element;
 }
@@ -90,11 +111,11 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     if (typeof value === "object") {
       const keys = Object.keys(value) as (keyof T & keyof SimplestItem)[];
       return (
-        <React.Fragment key={`${uniqueId}.${nestedKey}`}>
+        <Fragment key={`${uniqueId}.${nestedKey}`}>
           {keys.map((innerNestedKey) => {
             return RenderValue(value, key, nestedKey.concat(`.children.${innerNestedKey}`), uniqueId);
           })}
-        </React.Fragment>
+        </Fragment>
       );
     }
 
@@ -150,7 +171,7 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
               doTheThing();
             }}
             key={`${header.label}.label`}
-            className="sortIcon"
+            className={classes.sortLabel}
           >
             <span key={`${header.label}.span`}>{header.label}</span>
             <FontAwesomeIcon
@@ -173,14 +194,14 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
 
   function RenderHeaders(headers: TableHeaders<T>): JSX.Element {
     return (
-      <React.Fragment key="header">
+      <Fragment key="header">
         {objectValues(headers).map((header) => {
           if (!header.children) {
             return RenderHeader(header);
           }
           return RenderHeaders(header.children as TableHeaders<T>);
         })}
-      </React.Fragment>
+      </Fragment>
     );
   }
 
@@ -199,7 +220,7 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   return (
     <>
       <TableContainer className={classes.tableContainer}>
-        <BetterTable stickyHeader className={classes.table}>
+        <BetterTable stickyHeader>
           <TableHead>
             <TableRow key="headerRow">{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>

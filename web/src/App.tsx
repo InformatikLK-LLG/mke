@@ -1,9 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Institution, {
-  CreateInstitution,
-  Institutions,
-  ViewDetails,
-} from "./pages/Institution";
+import Institution, { CreateInstitution, Institutions, ViewDetails } from "./pages/Institution";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
 
 import { ForgotPassword } from "./pages/ForgotPassword";
@@ -44,10 +40,7 @@ function App() {
                 <PrivateRoute path="/logout" element={<Logout />} />
                 <PrivateRoute path="/institutions" element={<Institution />}>
                   <PrivateRoute path="/" element={<Institutions />} />
-                  <PrivateRoute
-                    path="/create"
-                    element={<CreateInstitution />}
-                  />
+                  <PrivateRoute path="/create" element={<CreateInstitution />} />
                   <PrivateRoute path="/:instCode" element={<ViewDetails />} />
                 </PrivateRoute>
               </Route>
