@@ -1,13 +1,23 @@
 import "../styles/Table.css";
 
-import { InputAdornment, TextField, makeStyles, useTheme } from "@material-ui/core";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import {
+  InputAdornment,
+  TextField,
+  makeStyles,
+  useTheme,
+} from "@material-ui/core";
 import Table, { TableHeaders } from "../components/Table";
-import { faCheckSquare, faEdit, faKeyboard, faSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  faCheckSquare,
+  faEdit,
+  faKeyboard,
+  faSquare,
+} from "@fortawesome/free-regular-svg-icons";
 
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
+import { Outlet } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 type Address = {
@@ -24,6 +34,8 @@ type InstitutionType = {
   phoneNumber: number;
   schoolAdministrativeDistrict: boolean;
 };
+
+//id, name, strasse,
 
 const useButtonStyles = makeStyles({
   button: {
@@ -85,7 +97,8 @@ export function CreateInstitution() {
                 </InputAdornment>
               ),
               ...register("id", {
-                required: "INST-Code muss angegeben werden und eindeutig sein oder so",
+                required:
+                  "INST-Code muss angegeben werden und eindeutig sein oder so",
               }),
             }}
             autoFocus
@@ -110,7 +123,9 @@ export function CreateInstitution() {
           />
         </label>
         <label>
-          {errors.phoneNumber && <FormErrorMessage message={errors.phoneNumber.message} />}
+          {errors.phoneNumber && (
+            <FormErrorMessage message={errors.phoneNumber.message} />
+          )}
           <TextField
             placeholder="Telefonnummer"
             InputProps={{
@@ -131,7 +146,9 @@ export function CreateInstitution() {
           />
         </label>
         <label>
-          {errors.address?.street && <FormErrorMessage message={errors.address.street.message} />}
+          {errors.address?.street && (
+            <FormErrorMessage message={errors.address.street.message} />
+          )}
           <TextField
             placeholder="Straße"
             type="text"
@@ -150,7 +167,9 @@ export function CreateInstitution() {
         </label>
         <div className="halfstuff">
           <label className="half">
-            {errors.address?.zipCode && <FormErrorMessage message={errors.address.zipCode.message} />}
+            {errors.address?.zipCode && (
+              <FormErrorMessage message={errors.address.zipCode.message} />
+            )}
             <TextField
               placeholder="Postleitzahl"
               type="tel"
@@ -172,7 +191,9 @@ export function CreateInstitution() {
             />
           </label>
           <label className="half">
-            {errors.address?.town && <FormErrorMessage message={errors.address.town.message} />}
+            {errors.address?.town && (
+              <FormErrorMessage message={errors.address.town.message} />
+            )}
             <TextField
               placeholder="Stadt"
               type="text"
@@ -234,7 +255,12 @@ const institutions: Array<InstitutionType> = [
   {
     id: String(5),
     name: "name",
-    address: { street: "efsadf", streetNumber: 42, town: "bla", zipCode: 31415 },
+    address: {
+      street: "efsadf",
+      streetNumber: 42,
+      town: "bla",
+      zipCode: 31415,
+    },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
@@ -283,7 +309,10 @@ const institutions: Array<InstitutionType> = [
 ];
 
 const format = (value: boolean) => (
-  <FontAwesomeIcon style={{ marginRight: "2em", fontSize: "1em" }} icon={value ? faCheckSquare : faSquare} />
+  <FontAwesomeIcon
+    style={{ marginRight: "2em", fontSize: "1em" }}
+    icon={value ? faCheckSquare : faSquare}
+  />
 );
 
 const tableHeaders: TableHeaders<InstitutionType> = {
@@ -296,7 +325,11 @@ const tableHeaders: TableHeaders<InstitutionType> = {
     zipCode: { label: "PLZ" },
   },
   phoneNumber: { label: "Telefonnummer" },
-  schoolAdministrativeDistrict: { label: "Schulverwaltungsbezirk?", format, align: "right" },
+  schoolAdministrativeDistrict: {
+    label: "Schulverwaltungsbezirk?",
+    format,
+    align: "right",
+  },
 };
 
 export function Institutions() {
@@ -305,7 +338,15 @@ export function Institutions() {
       <Table
         tableHeaders={tableHeaders}
         rows={institutions}
-        sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer", "Schulverwaltungsbezirk?"]}
+        sort={[
+          "Name",
+          "INST-Code",
+          "Straße",
+          "Ort",
+          "PLZ",
+          "Telefonnummer",
+          "Schulverwaltungsbezirk?",
+        ]}
       />
     </div>
   );

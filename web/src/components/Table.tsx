@@ -12,6 +12,7 @@ import React, { Fragment, useState } from "react";
 import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
@@ -64,8 +65,13 @@ function comparator<T>(a: T, b: T, orderBy: string) {
   return 0;
 }
 
-function getComparator<Key extends keyof any, T>(order: "asc" | "desc", orderBy: string): (a: T, b: T) => number {
-  return order === "desc" ? (a, b) => comparator(a, b, orderBy) : (a, b) => -comparator(a, b, orderBy);
+function getComparator<Key extends keyof any, T>(
+  order: "asc" | "desc",
+  orderBy: string
+): (a: T, b: T) => number {
+  return order === "desc"
+    ? (a, b) => comparator(a, b, orderBy)
+    : (a, b) => -comparator(a, b, orderBy);
 }
 
 function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
@@ -83,12 +89,18 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 type PrimitiveType = string | number | boolean | Symbol;
 function isPrimitive(value: any): value is PrimitiveType {
   return (
-    typeof value === "string" || typeof value === "number" || typeof value === "boolean" || typeof value === "symbol"
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    typeof value === "symbol"
   );
 }
 function accessNestedValues(path: string, object: {}) {
   const properties = path.split(".");
-  return properties.reduce((accumulator: any, current) => accumulator && accumulator[current], object);
+  return properties.reduce(
+    (accumulator: any, current) => accumulator && accumulator[current],
+    object
+  );
 }
 
 // every item should have an id, that we can identify it by. This is used as a key for its row.
@@ -96,14 +108,21 @@ interface SimplestItem {
   id: string | number;
 }
 
-interface Header<T> {
+interface Header {
   label: string;
   minWidth?: number;
   align?: "right" | "left" | "center";
   format?: (value: any) => JSX.Element;
 }
 
-export type TableHeaders<T extends SimplestItem> = { [K in Paths<T>]: Header<T> | TableHeaders<T> };
+export type TableHeaders<T extends SimplestItem> = AllTableHeaders<T>;
+export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends object
+  ? {
+      [K in keyof T]: K extends string ? AllTableHeaders<T[K]> : never;
+    }
+  : Header;
 
 interface TableProps<T extends SimplestItem> {
   tableHeaders: TableHeaders<T>;
@@ -111,9 +130,37 @@ interface TableProps<T extends SimplestItem> {
   sort?: Array<string>;
 }
 
-type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...0[]];
+type Prev = [
+  never,
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  ...0[]
+];
 
-type Join<K, P> = K extends string ? (P extends string ? `${K}${"" extends P ? "" : "."}${P}` : never) : never;
+type Join<K, P> = K extends string
+  ? P extends string
+    ? `${K}${"" extends P ? "" : "."}${P}`
+    : never
+  : never;
 
 type Leaves<T, D extends number = 10> = [D] extends [never]
   ? never
@@ -125,15 +172,41 @@ type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
   ? {
-      [K in keyof T]-?: K extends string ? `${K}` | Paths<T[K], Prev[D]> : never;
+      [K in keyof T]-?: K extends string
+        ? `${K}` | Paths<T[K], Prev[D]>
+        : never;
     }[keyof T]
   : "";
 
-export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort }: TableProps<T>) {
+export default function Table<T extends SimplestItem>({
+  tableHeaders,
+  rows,
+  sort,
+}: TableProps<T>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState("id");
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const classes = useStyles();
+  const [accessKeys, setAccessKeys] = useState<Array<Leaves<T>>>([]);
+
+  useEffect(() => {
+    const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
+
+    const generateAccessKey = (key: string): Leaves<T> => {
+      const childObject = accessNestedValues(key, tableHeaders);
+      const hasChildren = !childObject.label;
+      if (!hasChildren) return key;
+
+      const nestedKeys = Object.keys(childObject) as (keyof T &
+        keyof SimplestItem)[];
+      return nestedKeys.map((nestedKey) =>
+        generateAccessKey(`${key}.${nestedKey}`)
+      );
+    };
+    // (typeof tableHeaders[key]) extends Header ? key : generateAccessKey(blub);
+    // setAccessKeys
+    setAccessKeys(keys.map((key) => generateAccessKey(key)));
+  }, []);
 
   function RenderValue(
     element: T,
@@ -150,16 +223,25 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
       return (
         <Fragment key={`${uniqueId}.${nestedKey}`}>
           {keys.map((innerNestedKey) => {
-            return RenderValue(value, key, nestedKey.concat(`.children.${innerNestedKey}`), uniqueId);
+            return RenderValue(
+              value,
+              key,
+              nestedKey.concat(`.children.${innerNestedKey}`),
+              uniqueId
+            );
           })}
         </Fragment>
       );
     }
 
-    const trimmedKey = nestedKey.slice(nestedKey.lastIndexOf(".") === -1 ? 0 : nestedKey.lastIndexOf(".") + 1);
-    const valueToRender = !value ? accessNestedValues(trimmedKey, element) : value;
+    const trimmedKey = nestedKey.slice(
+      nestedKey.lastIndexOf(".") === -1 ? 0 : nestedKey.lastIndexOf(".") + 1
+    );
+    const valueToRender = !value
+      ? accessNestedValues(trimmedKey, element)
+      : value;
     const uniqueKey = `${uniqueId}.${nestedKey}`;
-    const header: Header<T> = accessNestedValues(nestedKey, tableHeaders);
+    const header: Header = accessNestedValues(nestedKey, tableHeaders);
     return (
       <TableCell key={uniqueKey} align={header.align}>
         {header.format ? header.format(valueToRender) : valueToRender}
@@ -178,13 +260,15 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     );
   }
 
-  function RenderHeader(header: Header<T>, orderBy: string) {
+  function RenderHeader(header: Header, orderBy: string) {
     const isAscending = direction === "asc";
     const isDescending = direction === "desc";
     const isCurrentlySortedBy = sortBy === orderBy;
 
-    const isAscendingAndActive = isAscending && isCurrentlySortedBy ? " active" : "";
-    const isDescendingAndActive = isDescending && isCurrentlySortedBy ? " active" : "";
+    const isAscendingAndActive =
+      isAscending && isCurrentlySortedBy ? " active" : "";
+    const isDescendingAndActive =
+      isDescending && isCurrentlySortedBy ? " active" : "";
 
     const toggleDirection = () => {
       setDirection(direction === "asc" ? "desc" : "asc");
@@ -229,11 +313,14 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     );
   }
 
-  function RenderHeaders(headers: TableHeaders<T>, nestedKey: string = ""): JSX.Element {
+  function RenderHeaders(
+    headers: TableHeaders<T>,
+    nestedKey: string = ""
+  ): JSX.Element {
     const keys = Object.keys(headers) as (keyof T)[];
     return (
       <Fragment key="header">
-        {objectValues(headers).map((header, index) => {
+        {/* {objectValues(headers).map((header, index) => {
           if (!header.children) {
             if (!nestedKey) return RenderHeader(header, String(keys[index]));
             return RenderHeader(header, nestedKey);
@@ -242,10 +329,17 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
           childrenKeys.map((childKey) => {
             const nestedPath = `${keys[index]}.children.${childKey}`;
             const innerChildren = accessNestedValues(nestedPath, header);
-            if (!innerChildren.children) return RenderHeader(innerChildren.children as Header<T>, nestedPath);
-            return RenderHeaders(header.children as TableHeaders<T>, nestedPath);
+            if (!innerChildren.children)
+              return RenderHeader(
+                innerChildren.children as Header,
+                nestedPath
+              );
+            return RenderHeaders(
+              header.children as TableHeaders<T>,
+              nestedPath
+            );
           });
-        })}
+        })} */}
       </Fragment>
     );
   }
@@ -257,7 +351,9 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -265,30 +361,22 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   stableSort(rows, getComparator(direction, sortBy));
 
   return (
-    <>
-      <TableContainer className={classes.tableContainer}>
-        <BetterTable stickyHeader>
-          <TableHead>
-            <TableRow key="headerRow">{RenderHeaders(tableHeaders)}</TableRow>
-          </TableHead>
-          <TableBody>
-            {stableSort(rows, getComparator(direction, sortBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return RenderRow(row);
-              })}
-          </TableBody>
-        </BetterTable>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 20]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </>
+    <div className="table">
+      <ul>
+        {accessKeys.map((e, index) => (
+          <li key={index}>{e}</li>
+        ))}
+      </ul>
+      <table cellSpacing={0}>
+        <thead>
+          <tr>{RenderHeaders(tableHeaders)}</tr>
+        </thead>
+        <tbody>
+          {/* {rows.map((row) => {
+            return RenderRow(row);
+          })} */}
+        </tbody>
+      </table>
+    </div>
   );
 }
