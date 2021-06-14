@@ -3,13 +3,9 @@ package de.llggiessen.mke.schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.jni.Time;
-
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.util.Date;
+import javax.persistence.*;
+import java.sql.Time;
+import java.sql.Date;
 
 
 @Entity
@@ -23,7 +19,7 @@ public class Booking {
     private long bookingNo;
     private int numberOfParticipants;
     @Embedded
-    private Collection collection;
+    private Abholung abholung;
     @Embedded
     private Abgabe abgabe;
     private String year;
@@ -31,15 +27,22 @@ public class Booking {
     private char status;
     private int salePercent;
 
-
-
-    private class Collection {
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Embeddable
+    private static class Abholung {
         private Date date;
         private Time time;
     }
 
-    private class Abgabe{
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Embeddable
+    private static class Abgabe {
         private Date date;
         private Time time;
     }
 }
+
