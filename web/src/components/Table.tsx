@@ -56,6 +56,27 @@ function objectValues<T extends {}>(obj: T) {
   return Object.keys(obj).map((key) => obj[key as keyof T]);
 }
 
+function comparator<T>(a: T, b: T, orderBy: string) {
+  const newA = accessNestedValues(String(orderBy), a);
+  const newB = accessNestedValues(String(orderBy), b);
+  if (newA > newB) return -1;
+  if (newA < newB) return 1;
+  return 0;
+}
+
+function getComparator<Key extends keyof any, T>(order: "asc" | "desc", orderBy: string): (a: T, b: T) => number {
+  return order === "desc" ? (a, b) => comparator(a, b, orderBy) : (a, b) => -comparator(a, b, orderBy);
+}
+
+function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
+  array.sort((a, b) => {
+    const order = comparator(a, b);
+    if (order !== 0) return order;
+    return -1;
+  });
+  return array;
+}
+
 // type guard for primitives
 // https://www.typescriptlang.org/docs/handbook/advanced-types.html
 // items of this type will just be printed directly
@@ -79,23 +100,39 @@ interface Header<T> {
   label: string;
   minWidth?: number;
   align?: "right" | "left" | "center";
-  children?: { [key: string]: Header<T> };
   format?: (value: any) => JSX.Element;
 }
 
-// object type with property keys from T whose property values are of type string
-export type TableHeaders<T extends SimplestItem> = Record<keyof T, Header<T>>;
+export type TableHeaders<T extends SimplestItem> = { [K in Paths<T>]: Header<T> | TableHeaders<T> };
 
 interface TableProps<T extends SimplestItem> {
   tableHeaders: TableHeaders<T>;
-  rows: Array<T>;
+  rows: T[];
   sort?: Array<string>;
 }
+
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...0[]];
+
+type Join<K, P> = K extends string ? (P extends string ? `${K}${"" extends P ? "" : "."}${P}` : never) : never;
+
+type Leaves<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends object
+  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+  : "";
+
+type Paths<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends object
+  ? {
+      [K in keyof T]-?: K extends string ? `${K}` | Paths<T[K], Prev[D]> : never;
+    }[keyof T]
+  : "";
 
 export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort }: TableProps<T>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState("id");
-  const [direction, setDirection] = useState("asc");
+  const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const classes = useStyles();
 
   function RenderValue(
@@ -141,10 +178,10 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     );
   }
 
-  function RenderHeader(header: Header<T>) {
+  function RenderHeader(header: Header<T>, orderBy: string) {
     const isAscending = direction === "asc";
     const isDescending = direction === "desc";
-    const isCurrentlySortedBy = sortBy === header.label;
+    const isCurrentlySortedBy = sortBy === orderBy;
 
     const isAscendingAndActive = isAscending && isCurrentlySortedBy ? " active" : "";
     const isDescendingAndActive = isDescending && isCurrentlySortedBy ? " active" : "";
@@ -154,35 +191,35 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     };
 
     function doTheThing() {
-      if (sortBy === header.label) {
+      if (sortBy === orderBy) {
         toggleDirection();
       } else {
-        setSortBy(header.label);
+        setSortBy(orderBy);
         setDirection("asc");
       }
-      console.log(sortBy, direction);
+      console.log(orderBy, direction, header);
     }
 
     return (
-      <TableCell key={`${header.label}`}>
+      <TableCell key={`${orderBy}`}>
         {sort?.includes(header.label) ? (
           <label
             onClick={() => {
               doTheThing();
             }}
-            key={`${header.label}.label`}
+            key={`${orderBy}.label`}
             className={classes.sortLabel}
           >
-            <span key={`${header.label}.span`}>{header.label}</span>
+            <span key={`${orderBy}.span`}>{header.label}</span>
             <FontAwesomeIcon
               className={`${classes.sortIcon} ${isAscendingAndActive}`}
               icon={faSortUp}
-              key={`${header.label}.up`}
+              key={`${orderBy}.up`}
             />
             <FontAwesomeIcon
               className={`${classes.sortIcon} ${isDescendingAndActive}`}
               icon={faSortDown}
-              key={`${header.label}.down`}
+              key={`${orderBy}.down`}
             />
           </label>
         ) : (
@@ -192,14 +229,22 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     );
   }
 
-  function RenderHeaders(headers: TableHeaders<T>): JSX.Element {
+  function RenderHeaders(headers: TableHeaders<T>, nestedKey: string = ""): JSX.Element {
+    const keys = Object.keys(headers) as (keyof T)[];
     return (
       <Fragment key="header">
-        {objectValues(headers).map((header) => {
+        {objectValues(headers).map((header, index) => {
           if (!header.children) {
-            return RenderHeader(header);
+            if (!nestedKey) return RenderHeader(header, String(keys[index]));
+            return RenderHeader(header, nestedKey);
           }
-          return RenderHeaders(header.children as TableHeaders<T>);
+          const childrenKeys = Object.keys(header.children);
+          childrenKeys.map((childKey) => {
+            const nestedPath = `${keys[index]}.children.${childKey}`;
+            const innerChildren = accessNestedValues(nestedPath, header);
+            if (!innerChildren.children) return RenderHeader(innerChildren.children as Header<T>, nestedPath);
+            return RenderHeaders(header.children as TableHeaders<T>, nestedPath);
+          });
         })}
       </Fragment>
     );
@@ -217,6 +262,8 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     setPage(0);
   };
 
+  stableSort(rows, getComparator(direction, sortBy));
+
   return (
     <>
       <TableContainer className={classes.tableContainer}>
@@ -225,9 +272,11 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
             <TableRow key="headerRow">{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-              return RenderRow(row);
-            })}
+            {stableSort(rows, getComparator(direction, sortBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => {
+                return RenderRow(row);
+              })}
           </TableBody>
         </BetterTable>
       </TableContainer>
