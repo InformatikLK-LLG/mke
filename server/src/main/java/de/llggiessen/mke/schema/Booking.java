@@ -19,9 +19,9 @@ public class Booking {
     private long bookingNo;
     private int numberOfParticipants;
     @Embedded
-    private Abholung abholung;
+    private RetrievalBoat retrievalBoat;
     @Embedded
-    private Abgabe abgabe;
+    private ReturnBoat returnBoat;
     private String year;
     private double spaceUtilizationFee;
     private char status;
@@ -31,7 +31,7 @@ public class Booking {
     @AllArgsConstructor
     @NoArgsConstructor
     @Embeddable
-    private static class Abholung {
+    private static class RetrievalBoat {
         private Date date;
         private Time time;
     }
@@ -40,7 +40,7 @@ public class Booking {
     @AllArgsConstructor
     @NoArgsConstructor
     @Embeddable
-    private static class Abgabe {
+    private static class ReturnBoat {
         private Date date;
         private Time time;
     }
