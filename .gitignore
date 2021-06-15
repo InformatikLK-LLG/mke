@@ -10,6 +10,9 @@ web/package.json
 *.swp
 *.~ava
 *.iml
+*.log
+*.mdmp
+**/.DS_Store
 **/application.properties
 .env
 
