@@ -160,44 +160,30 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     setAccessKeys(keys.map((key) => generateAccessKey(key)));
   }, []);
 
-  function RenderValue(
-    element: T,
-    key: keyof T & keyof SimplestItem,
-    nestedKey: string = "",
-    id?: string | number
-  ): JSX.Element {
+  function RenderValue(element: T, key: Leaves<T> | Leaves<T>[], id?: string | number): JSX.Element {
     const uniqueId = id ? id : element.id;
-    const value = element[key];
-    if (!nestedKey) nestedKey = key;
+    const uniqueKey = `${uniqueId}.${key}`;
 
-    if (typeof value === "object") {
-      const keys = Object.keys(value) as (keyof T & keyof SimplestItem)[];
-      return (
-        <Fragment key={`${uniqueId}.${nestedKey}`}>
-          {keys.map((innerNestedKey) => {
-            return RenderValue(value, key, nestedKey.concat(`.children.${innerNestedKey}`), uniqueId);
-          })}
-        </Fragment>
-      );
+    if (Array.isArray(key)) {
+      return key.map((nestedKey) => {
+        return <Fragment> {RenderValue(element, nestedKey)}</Fragment>;
+      });
     }
 
-    const trimmedKey = nestedKey.slice(nestedKey.lastIndexOf(".") === -1 ? 0 : nestedKey.lastIndexOf(".") + 1);
-    const valueToRender = !value ? accessNestedValues(trimmedKey, element) : value;
-    const uniqueKey = `${uniqueId}.${nestedKey}`;
-    const header: Header = accessNestedValues(nestedKey, tableHeaders);
+    const header = accessNestedValues(key, tableHeaders);
+    const value = accessNestedValues(key, element);
     return (
       <TableCell key={uniqueKey} align={header.align}>
-        {header.format ? header.format(valueToRender) : valueToRender}
+        {header.format ? header.format(value) : value}
       </TableCell>
     );
   }
 
   function RenderRow(row: T) {
-    const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
     return (
       <TableRow hover key={`row.${row.id}`}>
-        {keys.map((key) => {
-          return RenderValue(row, key);
+        {accessKeys.map((nestedKey) => {
+          return RenderValue(row, nestedKey);
         })}
       </TableRow>
     );
@@ -222,7 +208,6 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
         setSortBy(orderBy);
         setDirection("asc");
       }
-      console.log(orderBy, direction, header);
     }
 
     return (
@@ -285,9 +270,9 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
           <tr>{RenderHeaders(tableHeaders)}</tr>
         </thead>
         <tbody>
-          {/* {rows.map((row) => {
+          {rows.map((row) => {
             return RenderRow(row);
-          })} */}
+          })}
         </tbody>
       </table>
     </div>
