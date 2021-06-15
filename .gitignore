@@ -12,6 +12,7 @@ web/package.json
 *.iml
 *.log
 *.mdmp
+**/.DS_Store
 **/application.properties
 .env
 
