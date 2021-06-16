@@ -31,7 +31,7 @@ public class Booking {
     @AllArgsConstructor
     @NoArgsConstructor
     @Embeddable
-    private static class RetrievalBoat {
+    private class RetrievalBoat {
         private Date retrievalDate;
         private Time retrievalTime;
     }
@@ -40,7 +40,7 @@ public class Booking {
     @AllArgsConstructor
     @NoArgsConstructor
     @Embeddable
-    private static class ReturnBoat {
+    private class ReturnBoat {
         private Date returnDate;
         private Time returnTime;
     }
