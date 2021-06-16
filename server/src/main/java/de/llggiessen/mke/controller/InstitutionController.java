@@ -23,7 +23,12 @@ public class InstitutionController {
 
     @GetMapping(value = "",params = {"instCode"})
     public Institution getInstitutionByID(@RequestParam String instCode){
-    return repository.findInstitutionByID(instCode);
+        return repository.findInstitutionByID(instCode);
+    }
+
+    @GetMapping(value = "",params = {"svb"})
+    public Iterable<Institution> getInstitutionsBySvb(@RequestParam boolean svb){
+        return repository.findInstitutionBySvb(svb);
     }
 
 

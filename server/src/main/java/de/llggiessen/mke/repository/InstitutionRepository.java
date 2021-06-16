@@ -14,4 +14,7 @@ public interface InstitutionRepository extends CrudRepository<Institution, Strin
     @Query(value = "SELECT * FROM institution WHERE institution.inst_code = :instCode", nativeQuery = true)
     Institution findInstitutionByID(@Param("instCode") String instCode);
 
+    @Query(value = "SELECT * FROM institution WHERE institution.svb = :svb", nativeQuery = true)
+    Iterable<Institution> findInstitutionBySvb(@Param("svb") boolean svb);
+
 }
