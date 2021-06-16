@@ -6,7 +6,7 @@ name: Java CI with Maven
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_review:
     branches: [main]
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
           java-version: "16"
           distribution: "adopt"
       - name: Build with Maven
-        if: ${{ github.repository == 'InformatikLK-LLG/mke' }}
+        if: ${{ github.repository == 'InformatikLK-LLG/mke' && github.event.review.state == 'approved' || github.event_name == 'push'}}
         run: mvn -B package --file server/pom.xml
         env:
           DB_USER: ${{ secrets.DB_USER }}
