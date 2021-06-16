@@ -2,20 +2,10 @@ package de.llggiessen.mke.controller;
 
 import de.llggiessen.mke.repository.BookingRepository;
 import de.llggiessen.mke.schema.Booking;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
-import de.llggiessen.mke.repository.UserRepository;
-import de.llggiessen.mke.schema.User;
-
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -26,8 +16,12 @@ public class BookingController {
     BookingRepository repository;
 
     @GetMapping("")
-    public Iterable<Booking> getBookings() {
-        return repository.findAll();
+    public Iterable<Booking> getBookings(@RequestParam(value = "retrievalBoat", required = false, defaultValue = "") Booking.RetrievalBoat retrievalBoat,
+                                         @RequestParam(value = "returnBoat", required = false, defaultValue = "") Booking.ReturnBoat returnBoat,
+                                         @RequestParam(value = "bookingNo", required = false, defaultValue = "") long bookingNo,
+                                         @RequestParam(value = "status", required = false, defaultValue = "") char status,
+                                         @RequestParam(value = "year", required = false, defaultValue = "") String year) {
+        return repository.findAllByAttributes(retrievalBoat, returnBoat, bookingNo, status, year);
     }
 }
 
