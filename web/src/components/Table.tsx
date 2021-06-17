@@ -364,8 +364,6 @@ export default function Table<T extends SimplestItem>({
     setPage(0);
   };
 
-  stableSort(rows, getComparator(direction, sortBy));
-
   return (
     <>
       <TableContainer className={classes.tableContainer}>

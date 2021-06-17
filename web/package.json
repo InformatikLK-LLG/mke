@@ -42,7 +42,10 @@
     "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "^4.0.3",
     "typescript": "^4.3.2",
+<<<<<<< HEAD
     "use-places-autocomplete": "^1.9.3",
+=======
+>>>>>>> dcb7235 (Generate flat accessKeys array and add pagination. Update npm packages.)
     "web-vitals": "^2.0.1",
     "workbox-background-sync": "^6.1.5",
     "workbox-broadcast-update": "^6.1.5",
