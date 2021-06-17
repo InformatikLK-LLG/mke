@@ -58,12 +58,18 @@ const useStyles = makeStyles({
 type PrimitiveType = string | number | boolean | Symbol;
 function isPrimitive(value: any): value is PrimitiveType {
   return (
-    typeof value === "string" || typeof value === "number" || typeof value === "boolean" || typeof value === "symbol"
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    typeof value === "symbol"
   );
 }
 function accessNestedValues(path: string, object: {}) {
   const properties = path.split(".");
-  return properties.reduce((accumulator: any, current) => accumulator && accumulator[current], object);
+  return properties.reduce(
+    (accumulator: any, current) => accumulator && accumulator[current],
+    object
+  );
 }
 
 // every item should have an id, that we can identify it by. This is used as a key for its row.
@@ -93,11 +99,41 @@ interface TableProps<T extends SimplestItem> {
   sort?: Array<string>;
 }
 
-type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...0[]];
+type Prev = [
+  never,
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  ...0[]
+];
 
-type Join<K, P> = K extends string ? (P extends string ? `${K}${"" extends P ? "" : "."}${P}` : never) : never;
+type Join<K, P> = K extends string
+  ? P extends string
+    ? P extends ""
+      ? `${K}`
+      : `${K}.${P}`
+    : never
+  : never;
 
-type Leaves<T, D extends number = 10> = [D] extends [never]
+type Leaves<T, D extends number = 5> = [D] extends [never]
   ? never
   : T extends object
   ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
@@ -107,7 +143,9 @@ type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
   ? {
-      [K in keyof T]-?: K extends string ? `${K}` | Paths<T[K], Prev[D]> : never;
+      [K in keyof T]-?: K extends string
+        ? `${K}` | Paths<T[K], Prev[D]>
+        : never;
     }[keyof T]
   : "";
 
@@ -124,8 +162,13 @@ function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
   return 0;
 }
 
-function getComparator<Key extends keyof any, T>(order: "asc" | "desc", orderBy: Leaves<T>): (a: T, b: T) => number {
-  return order === "desc" ? (a, b) => comparator(a, b, orderBy) : (a, b) => -comparator(a, b, orderBy);
+function getComparator<T>(
+  order: "asc" | "desc",
+  orderBy: Leaves<T>
+): (a: T, b: T) => number {
+  return order === "desc"
+    ? (a, b) => comparator(a, b, orderBy)
+    : (a, b) => -comparator(a, b, orderBy);
 }
 
 function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
@@ -137,9 +180,13 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
   return array;
 }
 
-export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort }: TableProps<T>) {
+export default function Table<T extends SimplestItem>({
+  tableHeaders,
+  rows,
+  sort,
+}: TableProps<T>) {
   const navigate = useNavigate();
-  const [sortBy, setSortBy] = useState("id");
+  const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const classes = useStyles();
   const [accessKeys, setAccessKeys] = useState<Array<Leaves<T>>>([]);
@@ -147,28 +194,44 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
   useEffect(() => {
     const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
 
-    const generateAccessKey = (key: string): Leaves<T> => {
-      const childObject = accessNestedValues(key, tableHeaders);
-      const hasChildren = !childObject.label;
-      if (!hasChildren) return key;
-
-      const nestedKeys = Object.keys(childObject) as (keyof T & keyof SimplestItem)[];
-      return nestedKeys.map((nestedKey) => generateAccessKey(`${key}.${nestedKey}`));
+    const generateAccessKeys = (
+      keys: string | (keyof T & keyof SimplestItem)[],
+      tmpAccessKeys: Leaves<T>[] = []
+    ): Leaves<T>[] => {
+      if (Array.isArray(keys)) {
+        keys.forEach((key) => {
+          const childObject = accessNestedValues(key, tableHeaders);
+          const hasChildren = !childObject.label;
+          if (!hasChildren) tmpAccessKeys.push(key as Leaves<T>);
+          else {
+            const nestedKeys = Object.keys(childObject) as (keyof T &
+              keyof SimplestItem)[];
+            nestedKeys.forEach((nestedKey) => {
+              generateAccessKeys(`${key}.${nestedKey}`, tmpAccessKeys);
+            });
+          }
+        });
+      } else {
+        const childObject = accessNestedValues(keys, tableHeaders);
+        const hasChildren = !childObject.label;
+        if (!hasChildren) tmpAccessKeys.push(keys as Leaves<T>);
+        else {
+          const nestedKeys = Object.keys(childObject) as (keyof T &
+            keyof SimplestItem)[];
+          nestedKeys.forEach((nestedKey) =>
+            generateAccessKeys(`${keys}.${nestedKey}`, tmpAccessKeys)
+          );
+        }
+      }
+      return tmpAccessKeys;
     };
-    // (typeof tableHeaders[key]) extends Header ? key : generateAccessKey(blub);
-    // setAccessKeys
-    setAccessKeys(keys.map((key) => generateAccessKey(key)));
+
+    setAccessKeys(generateAccessKeys(keys));
   }, []);
 
-  function RenderValue(element: T, key: Leaves<T> | Leaves<T>[], id?: string | number): JSX.Element {
+  function RenderValue(element: T, key: Leaves<T>, id?: string | number) {
     const uniqueId = id ? id : element.id;
     const uniqueKey = `${uniqueId}.${key}`;
-
-    if (Array.isArray(key)) {
-      return key.map((nestedKey) => {
-        return <Fragment> {RenderValue(element, nestedKey)}</Fragment>;
-      });
-    }
 
     const header = accessNestedValues(key, tableHeaders);
     const value = accessNestedValues(key, element);
@@ -189,13 +252,15 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     );
   }
 
-  function RenderHeader(header: Header, orderBy: string) {
+  function RenderHeader(header: Header, orderBy: Leaves<T>) {
     const isAscending = direction === "asc";
     const isDescending = direction === "desc";
     const isCurrentlySortedBy = sortBy === orderBy;
 
-    const isAscendingAndActive = isAscending && isCurrentlySortedBy ? " active" : "";
-    const isDescendingAndActive = isDescending && isCurrentlySortedBy ? " active" : "";
+    const isAscendingAndActive =
+      isAscending && isCurrentlySortedBy ? " active" : "";
+    const isDescendingAndActive =
+      isDescending && isCurrentlySortedBy ? " active" : "";
 
     const toggleDirection = () => {
       setDirection(direction === "asc" ? "desc" : "asc");
@@ -239,11 +304,16 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     );
   }
 
-  function RenderHeaders(headers: TableHeaders<T>, nestedKeys: Leaves<T> | Leaves<T>[] = accessKeys): JSX.Element {
+  function RenderHeaders(
+    headers: TableHeaders<T>,
+    nestedKeys: Leaves<T> | Leaves<T>[] = accessKeys
+  ): JSX.Element {
     return (
       <Fragment key="header">
         {Array.isArray(nestedKeys)
-          ? nestedKeys.map((innerNestedKey) => RenderHeaders(headers, innerNestedKey))
+          ? nestedKeys.map((innerNestedKey) =>
+              RenderHeaders(headers, innerNestedKey)
+            )
           : RenderHeader(accessNestedValues(nestedKeys, headers), nestedKeys)}
       </Fragment>
     );
@@ -256,12 +326,12 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  stableSort(rows, getComparator(direction, sortBy));
 
   return (
     <div className="table">
@@ -270,11 +340,22 @@ export default function Table<T extends SimplestItem>({ tableHeaders, rows, sort
           <tr>{RenderHeaders(tableHeaders)}</tr>
         </thead>
         <tbody>
-          {rows.map((row) => {
-            return RenderRow(row);
-          })}
+          {stableSort(rows, getComparator(direction, sortBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((row) => {
+              return RenderRow(row);
+            })}
         </tbody>
       </table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
     </div>
   );
 }

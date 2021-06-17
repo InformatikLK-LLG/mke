@@ -35,8 +35,6 @@ type InstitutionType = {
   schoolAdministrativeDistrict: boolean;
 };
 
-//id, name, strasse,
-
 const useButtonStyles = makeStyles({
   button: {
     display: "flex",
