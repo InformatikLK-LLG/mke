@@ -5,6 +5,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
   makeStyles,
 } from "@material-ui/core";
 import React, { Fragment, useState } from "react";
@@ -30,6 +31,13 @@ const useStyles = makeStyles({
       backgroundColor: "transparent",
     },
   },
+  row: {
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "var(--input)",
+    },
+  },
+  table: {},
   tableContainer: {
     display: "flex",
     justifyContent: "center",
@@ -84,6 +92,7 @@ interface TableProps<T extends SimplestItem> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
   sort?: Array<string>;
+  search?: (query: string) => void;
 }
 
 type Prev = [
@@ -161,6 +170,7 @@ export default function Table<T extends SimplestItem>({
   tableHeaders,
   rows,
   sort,
+  search,
 }: TableProps<T>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
@@ -178,30 +188,25 @@ export default function Table<T extends SimplestItem>({
     ): Leaves<T>[] => {
       if (Array.isArray(keys)) {
         keys.forEach((key) => {
-          const childObject = accessNestedValues(key, tableHeaders);
-          const hasChildren = !childObject.label;
-          if (!hasChildren) tmpAccessKeys.push(key as Leaves<T>);
-          else {
-            const nestedKeys = Object.keys(childObject) as (keyof T &
-              keyof SimplestItem)[];
-            nestedKeys.forEach((nestedKey) => {
-              generateAccessKeys(`${key}.${nestedKey}`, tmpAccessKeys);
-            });
-          }
+          pushAccessKey(key, tmpAccessKeys);
         });
       } else {
-        const childObject = accessNestedValues(keys, tableHeaders);
-        const hasChildren = !childObject.label;
-        if (!hasChildren) tmpAccessKeys.push(keys as Leaves<T>);
-        else {
-          const nestedKeys = Object.keys(childObject) as (keyof T &
-            keyof SimplestItem)[];
-          nestedKeys.forEach((nestedKey) =>
-            generateAccessKeys(`${keys}.${nestedKey}`, tmpAccessKeys)
-          );
-        }
+        pushAccessKey(keys, tmpAccessKeys);
       }
       return tmpAccessKeys;
+    };
+
+    const pushAccessKey = (key: string, tmpAccessKeys: Leaves<T>[]) => {
+      const childObject = accessNestedValues(key, tableHeaders);
+      const hasChildren = !childObject.label;
+      if (!hasChildren) tmpAccessKeys.push(key as Leaves<T>);
+      else {
+        const nestedKeys = Object.keys(childObject) as (keyof T &
+          keyof SimplestItem)[];
+        nestedKeys.forEach((nestedKey) =>
+          generateAccessKeys(`${key}.${nestedKey}`, tmpAccessKeys)
+        );
+      }
     };
 
     setAccessKeys(generateAccessKeys(keys));
@@ -223,9 +228,10 @@ export default function Table<T extends SimplestItem>({
   function RenderRow(row: T) {
     return (
       <TableRow
-        hover
+        // hover
         key={`row.${row.id}`}
         onClick={() => navigate(`./${row.id}`)}
+        className={classes.row}
       >
         {accessKeys.map((nestedKey) => {
           return RenderValue(row, nestedKey);
@@ -317,7 +323,15 @@ export default function Table<T extends SimplestItem>({
   };
 
   return (
-    <div className="table">
+    <div className={classes.table}>
+      {search && (
+        <TextField
+          id="searchbox"
+          label="Suche"
+          variant="outlined"
+          onChange={(e) => search(e.target.value)}
+        />
+      )}
       <BetterTable>
         <TableHead>
           <TableRow>{RenderHeaders(tableHeaders)}</TableRow>

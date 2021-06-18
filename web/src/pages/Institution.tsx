@@ -18,7 +18,10 @@ import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import { Outlet } from "react-router-dom";
+import axios from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 type Address = {
   street: string;
@@ -221,7 +224,7 @@ export function CreateInstitution() {
   );
 }
 
-const institutions: Array<InstitutionType> = [
+const dummyInstitutions: Array<InstitutionType> = [
   {
     id: 1,
     name: "name",
@@ -336,12 +339,36 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 };
 
 export function Institutions() {
+  const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
+
+  useEffect(() => {
+    async function foo() {
+      // const response = await axios.get<Array<InstitutionType>>(
+      //   "http://localhost:8080/institution"
+      // );
+      // setInstitutions(response.data);
+      setInstitutions(dummyInstitutions);
+    }
+    foo();
+  }, []);
+
+  async function search(query: string) {
+    const response = await axios.get<Array<InstitutionType>>(
+      "http://localhost:8080/institution",
+      {
+        params: { id: query },
+      }
+    );
+    setInstitutions(response.data);
+  }
+
   return (
     <div className="container">
       <Table
         tableHeaders={tableHeaders}
         rows={institutions}
         sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
+        // search={search}
       />
     </div>
   );
