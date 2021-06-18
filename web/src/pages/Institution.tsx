@@ -28,7 +28,7 @@ type Address = {
 };
 
 type InstitutionType = {
-  id: string;
+  id: number | string;
   name: string;
   address: Address;
   phoneNumber: number;
@@ -223,35 +223,35 @@ export function CreateInstitution() {
 
 const institutions: Array<InstitutionType> = [
   {
-    id: String(1),
+    id: 1,
     name: "name",
     address: { street: "asdf", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(2),
+    id: 2,
     name: "name",
     address: { street: "bsdf", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(3),
+    id: 3,
     name: "name",
     address: { street: "csdf", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(4),
+    id: 4,
     name: "name",
     address: { street: "gsdf", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(5),
+    id: 5,
     name: "name",
     address: {
       street: "efsadf",
@@ -263,42 +263,47 @@ const institutions: Array<InstitutionType> = [
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(6),
-    name: "name",
-    address: { street: "asldf", streetNumber: 42, town: "bla", zipCode: 31415 },
+    id: "LLGGI",
+    name: "Landgraf Ludwigs Gymnasium Gießen wir brauchen mehr text hier jetzt das reicht noch nicht immer noch zu wenig die tabelle ist zu klein uff jetzt werd doch groß genug dass wir sehen was passiert pls oh sie reduziert automatisch padding und macht line breaks",
+    address: {
+      street: "Reichenberger Straße",
+      streetNumber: 11,
+      town: "Gießen",
+      zipCode: 35396,
+    },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(7),
-    name: "name",
-    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
-    phoneNumber: 123456789,
-    schoolAdministrativeDistrict: true,
-  },
-  {
-    id: String(8),
+    id: 7,
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(9),
+    id: 8,
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(10),
+    id: 9,
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
     phoneNumber: 123456789,
     schoolAdministrativeDistrict: true,
   },
   {
-    id: String(11),
+    id: 10,
+    name: "name",
+    address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 31415 },
+    phoneNumber: 123456789,
+    schoolAdministrativeDistrict: true,
+  },
+  {
+    id: 11,
     name: "name",
     address: { street: "blub", streetNumber: 42, town: "bla", zipCode: 2 },
     phoneNumber: 123456789,
@@ -324,7 +329,7 @@ const tableHeaders: TableHeaders<InstitutionType> = {
   },
   phoneNumber: { label: "Telefonnummer" },
   schoolAdministrativeDistrict: {
-    label: "Schulverwaltungsbezirk?",
+    label: "SVB?",
     format,
     align: "right",
   },
@@ -336,15 +341,7 @@ export function Institutions() {
       <Table
         tableHeaders={tableHeaders}
         rows={institutions}
-        sort={[
-          "Name",
-          "INST-Code",
-          "Straße",
-          "Ort",
-          "PLZ",
-          "Telefonnummer",
-          "Schulverwaltungsbezirk?",
-        ]}
+        sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
       />
     </div>
   );

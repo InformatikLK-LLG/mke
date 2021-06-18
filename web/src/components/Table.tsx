@@ -2,7 +2,6 @@ import {
   Table as BetterTable,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -52,18 +51,6 @@ const useStyles = makeStyles({
   },
 });
 
-// type guard for primitives
-// https://www.typescriptlang.org/docs/handbook/advanced-types.html
-// items of this type will just be printed directly
-type PrimitiveType = string | number | boolean | Symbol;
-function isPrimitive(value: any): value is PrimitiveType {
-  return (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    typeof value === "symbol"
-  );
-}
 function accessNestedValues(path: string, object: {}) {
   const properties = path.split(".");
   return properties.reduce(
@@ -139,24 +126,14 @@ type Leaves<T, D extends number = 5> = [D] extends [never]
   ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
   : "";
 
-type Paths<T, D extends number = 10> = [D] extends [never]
-  ? never
-  : T extends object
-  ? {
-      [K in keyof T]-?: K extends string
-        ? `${K}` | Paths<T[K], Prev[D]>
-        : never;
-    }[keyof T]
-  : "";
-
-// returns array containing object values with correct type inferred
-function objectValues<T extends {}>(obj: T) {
-  return Object.keys(obj).map((key) => obj[key as keyof T]);
-}
-
 function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
-  const newA = accessNestedValues(orderBy, a);
-  const newB = accessNestedValues(orderBy, b);
+  let newA = accessNestedValues(orderBy, a);
+  let newB = accessNestedValues(orderBy, b);
+  if (!isNaN(newA) && !isNaN(newB)) {
+    newA = parseInt(newA);
+    newB = parseInt(newB);
+  }
+
   if (newA > newB) return -1;
   if (newA < newB) return 1;
   return 0;
@@ -190,6 +167,7 @@ export default function Table<T extends SimplestItem>({
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const classes = useStyles();
   const [accessKeys, setAccessKeys] = useState<Array<Leaves<T>>>([]);
+  let keyThing = 0;
 
   useEffect(() => {
     const keys = Object.keys(tableHeaders) as (keyof T & keyof SimplestItem)[];
@@ -227,7 +205,7 @@ export default function Table<T extends SimplestItem>({
     };
 
     setAccessKeys(generateAccessKeys(keys));
-  }, []);
+  }, [tableHeaders]);
 
   function RenderValue(element: T, key: Leaves<T>, id?: string | number) {
     const uniqueId = id ? id : element.id;
@@ -244,7 +222,11 @@ export default function Table<T extends SimplestItem>({
 
   function RenderRow(row: T) {
     return (
-      <TableRow hover key={`row.${row.id}`}>
+      <TableRow
+        hover
+        key={`row.${row.id}`}
+        onClick={() => navigate(`./${row.id}`)}
+      >
         {accessKeys.map((nestedKey) => {
           return RenderValue(row, nestedKey);
         })}
@@ -308,8 +290,9 @@ export default function Table<T extends SimplestItem>({
     headers: TableHeaders<T>,
     nestedKeys: Leaves<T> | Leaves<T>[] = accessKeys
   ): JSX.Element {
+    keyThing++;
     return (
-      <Fragment key="header">
+      <Fragment key={`headers.${keyThing}`}>
         {Array.isArray(nestedKeys)
           ? nestedKeys.map((innerNestedKey) =>
               RenderHeaders(headers, innerNestedKey)
@@ -335,18 +318,18 @@ export default function Table<T extends SimplestItem>({
 
   return (
     <div className="table">
-      <table cellSpacing={0}>
-        <thead>
-          <tr>{RenderHeaders(tableHeaders)}</tr>
-        </thead>
-        <tbody>
+      <BetterTable>
+        <TableHead>
+          <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
+        </TableHead>
+        <TableBody>
           {stableSort(rows, getComparator(direction, sortBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row) => {
               return RenderRow(row);
             })}
-        </tbody>
-      </table>
+        </TableBody>
+      </BetterTable>
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
