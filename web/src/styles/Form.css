@@ -5,7 +5,6 @@ form {
   margin-top: 1em;
   width: fit-content;
 }
-
 .halfstuff {
   display: flex;
   flex-flow: row wrap;
@@ -19,7 +18,8 @@ form > .halfstuff > .half {
 }
 
 form > label,
-form > .halfstuff > label {
+form > .halfstuff > label,
+.MuiGrid-item > label {
   position: relative;
 }
 

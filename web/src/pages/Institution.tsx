@@ -1,12 +1,14 @@
 import "../styles/Table.css";
 
 import {
+  Checkbox,
   Grid,
   InputAdornment,
   TextField,
   makeStyles,
   useTheme,
 } from "@material-ui/core";
+import { Controller, useForm } from "react-hook-form";
 import Table, { TableHeaders } from "../components/Table";
 import {
   faCheckSquare,
@@ -21,7 +23,6 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { useState } from "react";
 
 type Address = {
@@ -45,13 +46,14 @@ const useButtonStyles = makeStyles({
     justifyContent: "center",
     marginTop: "2em",
     padding: "0.5em 10%",
+    maxWidth: "1em",
   },
 });
 
 const useInputStyles = makeStyles({
   input: {
     margin: "0.5em",
-    width: "30vw",
+    minWidth: "100%",
     fontSize: "1em",
     fontFamily: "inherit",
     "& .MuiInput-underline:hover:not(.Mui-disabled)::before": {
@@ -61,6 +63,9 @@ const useInputStyles = makeStyles({
     "& .MuiInput-underline:after": {
       transitionDuration: "300ms",
     },
+  },
+  checkbox: {
+    color: "var(--border)",
   },
 });
 
@@ -72,6 +77,8 @@ export function CreateInstitution() {
   const {
     register,
     handleSubmit,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<InstitutionType>({ mode: "onChange" });
   const formInput = useInputStyles();
@@ -84,6 +91,7 @@ export function CreateInstitution() {
         onSubmit={handleSubmit((data) => {
           console.log(data);
         })}
+        style={{ width: "75%" }}
       >
         <Grid
           container
@@ -91,9 +99,8 @@ export function CreateInstitution() {
           direction="row"
           alignItems="center"
           justify="center"
-          xs={10}
         >
-          <Grid item xs={10}>
+          <Grid item xs={6}>
             <label>
               {errors.name && (
                 <FormErrorMessage message={errors.name.message} />
@@ -112,10 +119,12 @@ export function CreateInstitution() {
                     required: "Name der Institution muss angegeben werden",
                   }),
                 }}
+                autoFocus
               />
             </label>
           </Grid>
-          <Grid item xs={5}>
+
+          <Grid item xs={6}>
             <label>
               {errors.id && <FormErrorMessage message={errors.id.message} />}
               <TextField
@@ -136,11 +145,11 @@ export function CreateInstitution() {
                       "INST-Code muss angegeben werden und eindeutig sein oder so",
                   }),
                 }}
-                autoFocus
               />
             </label>
           </Grid>
-          <Grid item xs={5}>
+
+          <Grid item xs={6}>
             <label>
               {errors.phoneNumber && (
                 <FormErrorMessage message={errors.phoneNumber.message} />
@@ -166,7 +175,81 @@ export function CreateInstitution() {
               />
             </label>
           </Grid>
-          <Grid item xs={5}>
+
+          <Grid item xs={4}>
+            <label>
+              {errors.address?.town && (
+                <FormErrorMessage message={errors.address.town.message} />
+              )}
+              <TextField
+                placeholder="Stadt"
+                type="text"
+                className={formInput.input}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
+                    </InputAdornment>
+                  ),
+                  ...register("address.town", {
+                    required: "Ort muss angegeben werden",
+                  }),
+                }}
+              />
+            </label>
+          </Grid>
+
+          <Grid item xs={2}>
+            <label>
+              {errors.address?.zipCode && (
+                <FormErrorMessage message={errors.address.zipCode.message} />
+              )}
+              <TextField
+                placeholder="Postleitzahl"
+                type="tel"
+                className={formInput.input}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
+                    </InputAdornment>
+                  ),
+                  ...register("address.zipCode", {
+                    required: "Postleitzahl muss angegeben werden",
+                    pattern: {
+                      value: /^[0-9]+$/,
+                      message: "Was denn bei deiner Postleitzahl los?!",
+                    },
+                  }),
+                  onChange: (e) => {
+                    setValue(
+                      "schoolAdministrativeDistrict",
+                      e.target.value === "" ? false : true
+                    );
+                  },
+                }}
+              />
+            </label>
+          </Grid>
+
+          <Grid item xs={6}>
+            <span>Liegt im Schulverwaltungsbezirk?</span>
+            <Controller
+              control={control}
+              name="schoolAdministrativeDistrict"
+              defaultValue={true}
+              render={({ field }) => (
+                <Checkbox
+                  color="primary"
+                  className={formInput.checkbox}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  checked={field.value}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={4}>
             <label>
               {errors.address?.street && (
                 <FormErrorMessage message={errors.address.street.message} />
@@ -188,7 +271,8 @@ export function CreateInstitution() {
               />
             </label>
           </Grid>
-          <Grid item xs={5}>
+
+          <Grid item xs={2}>
             <label>
               {errors.address?.streetNumber && (
                 <FormErrorMessage
@@ -212,55 +296,8 @@ export function CreateInstitution() {
               />
             </label>
           </Grid>
-          <Grid item xs={5}>
-            <label>
-              {errors.address?.zipCode && (
-                <FormErrorMessage message={errors.address.zipCode.message} />
-              )}
-              <TextField
-                placeholder="Postleitzahl"
-                type="tel"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("address.zipCode", {
-                    required: "Postleitzahl muss angegeben werden",
-                    pattern: {
-                      value: /^[0-9]+$/,
-                      message: "Was denn bei deiner Postleitzahl los?!",
-                    },
-                  }),
-                }}
-              />
-            </label>
-          </Grid>
-          <Grid item xs={5}>
-            <label>
-              {errors.address?.town && (
-                <FormErrorMessage message={errors.address.town.message} />
-              )}
-              <TextField
-                placeholder="Stadt"
-                type="text"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("address.town", {
-                    required: "Ort muss angegeben werden",
-                  }),
-                }}
-              />
-            </label>
-          </Grid>
         </Grid>
+
         <Button
           type="submit"
           label="Weiter"

@@ -75,7 +75,6 @@ export function LoginForm() {
       <EmailInputField register={register} emailErrors={errors.email} />
       <TextField
         placeholder="Password"
-        {...register("password")}
         type="password"
         className={formInput.input}
         InputProps={{
