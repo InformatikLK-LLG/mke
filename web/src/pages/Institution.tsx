@@ -115,7 +115,7 @@ export function CreateInstitution() {
     <div className="container">
       <form
         onSubmit={handleSubmit((data) => {
-          console.log(data);
+          console.log(data, "bin hier");
         })}
         style={{ width: "75%" }}
       >
@@ -230,21 +230,24 @@ export function CreateInstitution() {
           </Grid>
 
           <Grid item xs={4}>
-            <PlacesAutocomplete watch={watch} setValueInForm={setValue}>
-              <label>
-                {errors.address?.street && (
-                  <FormErrorMessage message={errors.address.street.message} />
-                )}
-                <Controller
-                  control={control}
-                  name="address.street"
-                  rules={{ required: "Straße muss angegeben werden" }}
-                  render={({ field }) => (
+            <label>
+              {errors.address?.street && (
+                <FormErrorMessage message={errors.address.street.message} />
+              )}
+              <Controller
+                control={control}
+                name="address.street"
+                rules={{ required: "Straße muss angegeben werden" }}
+                render={({ field }) => (
+                  <PlacesAutocomplete
+                    watch={watch}
+                    setValueInForm={setValue}
+                    params={field}
+                  >
                     <TextField
                       placeholder="Straße"
                       type="text"
                       className={formInput.input}
-                      {...field}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -256,10 +259,10 @@ export function CreateInstitution() {
                         ),
                       }}
                     />
-                  )}
-                />
-              </label>
-            </PlacesAutocomplete>
+                  </PlacesAutocomplete>
+                )}
+              />
+            </label>
           </Grid>
 
           <Grid item xs={2}>
