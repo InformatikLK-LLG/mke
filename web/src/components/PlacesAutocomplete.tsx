@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   ControllerRenderProps,
   Path,
@@ -11,17 +10,10 @@ import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
-import { InputProps } from "@material-ui/core";
-=======
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
-import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
-
-import { Autocomplete } from "@material-ui/lab";
 import { FormInstitutionType } from "../pages/Institution";
+import { InputProps } from "@material-ui/core";
 import { Loader } from "@googlemaps/js-api-loader";
-import { useEffect } from "react";
 import useOnclickOutside from "react-cool-onclickoutside";
->>>>>>> e474087 (First draft autocomplete)
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -29,7 +21,6 @@ import useOnclickOutside from "react-cool-onclickoutside";
 //   libraries: ["places"],
 // });
 
-<<<<<<< HEAD
 export default function PlacesAutocomplete<
   T extends {
     address: {
@@ -62,24 +53,10 @@ export default function PlacesAutocomplete<
   const {
     suggestions: { status, data },
     value,
-=======
-export default function PlacesAutocomplete({
-  watch,
-  setValueInForm,
-  children,
-}: {
-  watch: UseFormWatch<FormInstitutionType>;
-  setValueInForm: UseFormSetValue<FormInstitutionType>;
-  children: JSX.Element;
-}) {
-  const {
-    suggestions: { status, data },
->>>>>>> e474087 (First draft autocomplete)
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
     debounce: 300,
-<<<<<<< HEAD
     requestOptions: {
       componentRestrictions: { country: "de" },
       types,
@@ -87,20 +64,12 @@ export default function PlacesAutocomplete({
   });
 
   const handleSelect =
-    ({ place_id, description }: { place_id: string; description: string }) =>
-=======
-  });
-  const address = watch("address.street");
-
-  const handleSelect =
     ({ place_id, description }: { place_id: any; description: string }) =>
->>>>>>> e474087 (First draft autocomplete)
     async () => {
       setValue(description, false);
       clearSuggestions();
       const parameter = {
         placeId: place_id,
-<<<<<<< HEAD
         fields: ["address_components", "formatted_phone_number", "name"],
       };
       try {
@@ -165,32 +134,6 @@ export default function PlacesAutocomplete({
                   shouldValidate: true,
                 }
               );
-=======
-        fields: ["address_components"],
-      };
-      console.log(await getDetails({ placeId: place_id }));
-
-      try {
-        const { address_components }: { address_components: any } =
-          await getDetails(parameter);
-        address_components.forEach((component: any) => {
-          switch (component.types[0]) {
-            case "street_number":
-              setValueInForm("address.streetNumber", component.long_name);
-              console.log(component.long_name);
-              break;
-            case "route":
-              setValueInForm("address.street", component.long_name);
-              console.log(component.long_name);
-              break;
-            case "locality":
-              setValueInForm("address.town", component.long_name);
-              console.log(component.long_name);
-              break;
-            case "postal_code":
-              setValueInForm("address.zipCode", component.long_name);
-              console.log(component.long_name);
->>>>>>> e474087 (First draft autocomplete)
               break;
 
             default:
@@ -202,20 +145,11 @@ export default function PlacesAutocomplete({
       }
     };
 
-<<<<<<< HEAD
-  const renderSuggestions = () =>
-    data.map((suggestion) => {
-      const data = suggestion;
-=======
-  const ref = useOnclickOutside(() => {
-    clearSuggestions();
-  });
 
   const renderSuggestions = () =>
     data.map((suggestion) => {
       const data = suggestion;
       console.log(data);
->>>>>>> e474087 (First draft autocomplete)
       return (
         <li key={data.place_id} onClick={handleSelect(suggestion)}>
           <strong>{data.structured_formatting.main_text}</strong>{" "}
@@ -225,13 +159,9 @@ export default function PlacesAutocomplete({
     });
 
   useEffect(() => {
-<<<<<<< HEAD
     setValue(params.value as string);
   }, [params.value, setValue]);
-=======
-    setValue(address);
-  }, [address, setValue]);
->>>>>>> e474087 (First draft autocomplete)
+
 
   // useEffect(() => {
   //   async function load() {
@@ -241,7 +171,6 @@ export default function PlacesAutocomplete({
   // }, []);
 
   return (
-<<<<<<< HEAD
     <Autocomplete
       freeSolo
       autoComplete
@@ -277,42 +206,6 @@ export default function PlacesAutocomplete({
           inputProps: { ...params.inputProps, autoComplete },
         })
       }
-      getOptionLabel={(option) =>
-        option && option.structured_formatting
-          ? `${option.structured_formatting.main_text} ${option.structured_formatting.secondary_text}`
-          : ""
-      }
     />
-=======
-    <>
-      <Autocomplete
-        freeSolo
-        autoComplete
-        includeInputInList
-        filterSelectedOptions
-        ref={ref}
-        renderInput={() => children}
-        options={data}
-        renderOption={(option) => (
-          <span key={option.place_id}>
-            {option.structured_formatting.main_text}{" "}
-            {option.structured_formatting.secondary_text}
-          </span>
-        )}
-      />
-      {status === "OK" && (
-        <ul
-          style={{
-            zIndex: 5,
-            position: "absolute",
-            backgroundColor: "white",
-            boxShadow: "0 0 5px var(--border)",
-          }}
-        >
-          {renderSuggestions()}
-        </ul>
-      )}
-    </>
->>>>>>> e474087 (First draft autocomplete)
   );
 }
