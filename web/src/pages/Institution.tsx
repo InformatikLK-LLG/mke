@@ -21,6 +21,7 @@ import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import { Outlet } from "react-router-dom";
+import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -37,6 +38,21 @@ type InstitutionType = {
   name: string;
   address: Address;
   phoneNumber: number;
+  schoolAdministrativeDistrict: boolean;
+};
+
+type FormAddress = {
+  street: string;
+  streetNumber: string;
+  zipCode: string;
+  town: string;
+};
+
+export type FormInstitutionType = {
+  id: string;
+  name: string;
+  address: FormAddress;
+  phoneNumber: string;
   schoolAdministrativeDistrict: boolean;
 };
 
@@ -79,8 +95,18 @@ export function CreateInstitution() {
     handleSubmit,
     setValue,
     control,
+    watch,
     formState: { errors },
-  } = useForm<InstitutionType>({ mode: "onChange" });
+  } = useForm<FormInstitutionType>({
+    mode: "onChange",
+    defaultValues: {
+      id: "",
+      name: "",
+      phoneNumber: "",
+      schoolAdministrativeDistrict: false,
+      address: { street: "", streetNumber: "", town: "", zipCode: "" },
+    },
+  });
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const theme = useTheme();
@@ -105,21 +131,31 @@ export function CreateInstitution() {
               {errors.name && (
                 <FormErrorMessage message={errors.name.message} />
               )}
-              <TextField
-                placeholder="Name"
-                type="text"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("name", {
-                    required: "Name der Institution muss angegeben werden",
-                  }),
+              <Controller
+                control={control}
+                name="name"
+                rules={{
+                  required: "Name der Institution muss angegeben werden",
                 }}
-                autoFocus
+                render={({ field }) => (
+                  <TextField
+                    placeholder="Name"
+                    type="text"
+                    className={formInput.input}
+                    {...field}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                    autoFocus
+                  />
+                )}
               />
             </label>
           </Grid>
@@ -127,24 +163,31 @@ export function CreateInstitution() {
           <Grid item xs={6}>
             <label>
               {errors.id && <FormErrorMessage message={errors.id.message} />}
-              <TextField
-                placeholder="INST-Code"
-                type="text"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon
-                        className="inputIcon"
-                        icon={faKeyboard}
-                      />
-                    </InputAdornment>
-                  ),
-                  ...register("id", {
-                    required:
-                      "INST-Code muss angegeben werden und eindeutig sein oder so",
-                  }),
+              <Controller
+                control={control}
+                name="id"
+                rules={{
+                  required:
+                    "INST-Code muss angegeben werden und eindeutig sein oder so",
                 }}
+                render={({ field }) => (
+                  <TextField
+                    placeholder="INST-Code"
+                    type="text"
+                    className={formInput.input}
+                    {...field}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faKeyboard}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
               />
             </label>
           </Grid>
@@ -154,122 +197,69 @@ export function CreateInstitution() {
               {errors.phoneNumber && (
                 <FormErrorMessage message={errors.phoneNumber.message} />
               )}
-              <TextField
-                placeholder="Telefonnummer"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("phoneNumber", {
-                    required: "Telefonnummer muss angegeben werden",
-                    pattern: {
-                      value: /^[0-9\s-/]+$/,
-                      message: "Telefonnummer nur aus Zahlen",
-                    },
-                  }),
-                }}
-                type="tel"
-              />
-            </label>
-          </Grid>
-
-          <Grid item xs={4}>
-            <label>
-              {errors.address?.town && (
-                <FormErrorMessage message={errors.address.town.message} />
-              )}
-              <TextField
-                placeholder="Stadt"
-                type="text"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("address.town", {
-                    required: "Ort muss angegeben werden",
-                  }),
-                }}
-              />
-            </label>
-          </Grid>
-
-          <Grid item xs={2}>
-            <label>
-              {errors.address?.zipCode && (
-                <FormErrorMessage message={errors.address.zipCode.message} />
-              )}
-              <TextField
-                placeholder="Postleitzahl"
-                type="tel"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("address.zipCode", {
-                    required: "Postleitzahl muss angegeben werden",
-                    pattern: {
-                      value: /^[0-9]+$/,
-                      message: "Was denn bei deiner Postleitzahl los?!",
-                    },
-                  }),
-                  onChange: (e) => {
-                    setValue(
-                      "schoolAdministrativeDistrict",
-                      e.target.value === "" ? false : true
-                    );
+              <Controller
+                control={control}
+                name="phoneNumber"
+                rules={{
+                  required: "Telefonnummer muss angegeben werden",
+                  pattern: {
+                    value: /^[0-9\s-/]+$/,
+                    message: "Telefonnummer nur aus Zahlen",
                   },
                 }}
+                render={({ field }) => (
+                  <TextField
+                    placeholder="Telefonnummer"
+                    className={formInput.input}
+                    {...field}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                    type="tel"
+                  />
+                )}
               />
             </label>
-          </Grid>
-
-          <Grid item xs={6}>
-            <span>Liegt im Schulverwaltungsbezirk?</span>
-            <Controller
-              control={control}
-              name="schoolAdministrativeDistrict"
-              defaultValue={true}
-              render={({ field }) => (
-                <Checkbox
-                  color="primary"
-                  className={formInput.checkbox}
-                  onChange={(e) => field.onChange(e.target.checked)}
-                  checked={field.value}
-                />
-              )}
-            />
           </Grid>
 
           <Grid item xs={4}>
-            <label>
-              {errors.address?.street && (
-                <FormErrorMessage message={errors.address.street.message} />
-              )}
-              <TextField
-                placeholder="Straße"
-                type="text"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("address.street", {
-                    required: "Straße muss angegeben werden",
-                  }),
-                }}
-              />
-            </label>
+            <PlacesAutocomplete watch={watch} setValueInForm={setValue}>
+              <label>
+                {errors.address?.street && (
+                  <FormErrorMessage message={errors.address.street.message} />
+                )}
+                <Controller
+                  control={control}
+                  name="address.street"
+                  rules={{ required: "Straße muss angegeben werden" }}
+                  render={({ field }) => (
+                    <TextField
+                      placeholder="Straße"
+                      type="text"
+                      className={formInput.input}
+                      {...field}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <FontAwesomeIcon
+                              className="inputIcon"
+                              icon={faEdit}
+                            />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </label>
+            </PlacesAutocomplete>
           </Grid>
 
           <Grid item xs={2}>
@@ -279,20 +269,120 @@ export function CreateInstitution() {
                   message={errors.address.streetNumber.message}
                 />
               )}
-              <TextField
-                placeholder="Hausnummer"
-                type="text"
-                className={formInput.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-                    </InputAdornment>
-                  ),
-                  ...register("address.streetNumber", {
-                    required: "Hausnummer muss angegeben werden",
-                  }),
+              <Controller
+                control={control}
+                name="address.streetNumber"
+                rules={{ required: "Hausnummer muss angegeben werden" }}
+                render={({ field }) => (
+                  <TextField
+                    placeholder="Hausnummer"
+                    type="text"
+                    className={formInput.input}
+                    {...field}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </label>
+          </Grid>
+
+          <Grid item xs={6}>
+            <span>Liegt im Schulverwaltungsbezirk?</span>
+            <Controller
+              control={control}
+              name="schoolAdministrativeDistrict"
+              render={({ field }) => (
+                <Checkbox
+                  color="primary"
+                  className={formInput.checkbox}
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
+                />
+              )}
+            />
+          </Grid>
+
+          <Grid item xs={4}>
+            <label>
+              {errors.address?.town && (
+                <FormErrorMessage message={errors.address.town.message} />
+              )}
+              <Controller
+                control={control}
+                name="address.town"
+                defaultValue=""
+                rules={{ required: "Stadt muss angegeben werden" }}
+                render={({ field }) => (
+                  <TextField
+                    placeholder="Stadt"
+                    type="text"
+                    className={formInput.input}
+                    {...field}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </label>
+          </Grid>
+
+          <Grid item xs={2}>
+            <label>
+              {errors.address?.zipCode && (
+                <FormErrorMessage message={errors.address.zipCode.message} />
+              )}
+              <Controller
+                control={control}
+                name="address.zipCode"
+                rules={{
+                  required: "Postleitzahl muss angegeben werden",
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: "Was denn bei deiner Postleitzahl los?!",
+                  },
                 }}
+                render={({ field }) => (
+                  <TextField
+                    placeholder="Postleitzahl"
+                    type="tel"
+                    className={formInput.input}
+                    {...field}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                      onChange: (e) => {
+                        setValue(
+                          "schoolAdministrativeDistrict",
+                          e.target.value === "" ? false : true
+                        );
+                        field.onChange(e.target.value);
+                      },
+                    }}
+                  />
+                )}
               />
             </label>
           </Grid>

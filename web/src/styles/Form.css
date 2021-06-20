@@ -17,9 +17,7 @@ form > .halfstuff > .half {
   /* width: 50%; */
 }
 
-form > label,
-form > .halfstuff > label,
-.MuiGrid-item > label {
+label {
   position: relative;
 }
 
