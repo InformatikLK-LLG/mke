@@ -5,8 +5,11 @@ import {
   UnpackNestedValue,
   UseFormSetValue,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   UseFormTrigger,
+=======
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
   UseFormWatch,
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
 } from "react-hook-form";
@@ -16,9 +19,16 @@ import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 import { Autocomplete } from "@material-ui/lab";
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
 import { FormInstitutionType } from "../pages/Institution";
+<<<<<<< HEAD
 import { InputProps } from "@material-ui/core";
 import { Loader } from "@googlemaps/js-api-loader";
 import useOnclickOutside from "react-cool-onclickoutside";
+=======
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { InputProps } from "@material-ui/core";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -48,7 +58,11 @@ export default function PlacesAutocomplete<
   disabled = false,
 =======
   value,
+<<<<<<< HEAD
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
+=======
+  InputProps,
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 }: {
   setValueInForm: UseFormSetValue<T>;
   children: JSX.Element;
@@ -62,7 +76,11 @@ export default function PlacesAutocomplete<
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
   searchFor?: "school" | "address";
   value: string;
+<<<<<<< HEAD
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
+=======
+  InputProps: InputProps;
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
@@ -99,6 +117,7 @@ export default function PlacesAutocomplete<
           details.formatted_phone_number &&
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             setValueInForm(
               "phoneNumber" as Path<T>,
               details.formatted_phone_number as UnpackNestedValue<
@@ -127,11 +146,16 @@ export default function PlacesAutocomplete<
           details.name &&
             setValueInForm("name", details.name, { shouldValidate: true });
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
+=======
+            setValueInForm("phoneNumber", details.formatted_phone_number);
+          details.name && setValueInForm("name", details.name);
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
               setValueInForm(
@@ -175,18 +199,18 @@ export default function PlacesAutocomplete<
                 shouldValidate: true,
               });
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
+=======
+              setValueInForm("address.streetNumber", component.long_name);
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
               break;
             case "route":
-              setValueInForm("address.street", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm("address.street", component.long_name);
               break;
             case "locality":
-              setValueInForm("address.town", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm("address.town", component.long_name);
               break;
             case "postal_code":
+<<<<<<< HEAD
 <<<<<<< HEAD
               setValueInForm("address.zipCode", component.long_name);
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
@@ -195,6 +219,9 @@ export default function PlacesAutocomplete<
                 shouldValidate: true,
               });
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
+=======
+              setValueInForm("address.zipCode", component.long_name);
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
               break;
 
             default:
@@ -242,9 +269,13 @@ export default function PlacesAutocomplete<
       includeInputInList
       filterSelectedOptions
       disableClearable
+<<<<<<< HEAD
       disabled={disabled}
       style={{ display: "inline" }}
       inputValue={value as string}
+=======
+      inputValue={params.value}
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
         if (typeof option !== "string" && option) {
@@ -268,6 +299,7 @@ export default function PlacesAutocomplete<
         cloneElement(children, {
           ...params,
 <<<<<<< HEAD
+<<<<<<< HEAD
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
 =======
@@ -280,6 +312,9 @@ export default function PlacesAutocomplete<
             ),
           },
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
+=======
+          InputProps: { ...params.InputProps, ...InputProps, className: "" },
+>>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
         })
       }
     />
