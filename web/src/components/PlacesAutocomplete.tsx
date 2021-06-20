@@ -4,6 +4,11 @@ import {
   PathValue,
   UnpackNestedValue,
   UseFormSetValue,
+<<<<<<< HEAD
+=======
+  UseFormTrigger,
+  UseFormWatch,
+>>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
 } from "react-hook-form";
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
@@ -93,6 +98,7 @@ export default function PlacesAutocomplete<
         if (searchFor !== "address") {
           details.formatted_phone_number &&
 <<<<<<< HEAD
+<<<<<<< HEAD
             setValueInForm(
               "phoneNumber" as Path<T>,
               details.formatted_phone_number as UnpackNestedValue<
@@ -114,11 +120,19 @@ export default function PlacesAutocomplete<
             setValueInForm("phoneNumber", details.formatted_phone_number);
           details.name && setValueInForm("name", details.name);
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
+=======
+            setValueInForm("phoneNumber", details.formatted_phone_number, {
+              shouldValidate: true,
+            });
+          details.name &&
+            setValueInForm("name", details.name, { shouldValidate: true });
+>>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
+<<<<<<< HEAD
 <<<<<<< HEAD
               setValueInForm(
                 "address.streetNumber" as Path<T>,
@@ -156,16 +170,31 @@ export default function PlacesAutocomplete<
               );
 =======
               setValueInForm("address.streetNumber", component.long_name);
+=======
+              setValueInForm("address.streetNumber", component.long_name, {
+                shouldValidate: true,
+              });
+>>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
               break;
             case "route":
-              setValueInForm("address.street", component.long_name);
+              setValueInForm("address.street", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "locality":
-              setValueInForm("address.town", component.long_name);
+              setValueInForm("address.town", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "postal_code":
+<<<<<<< HEAD
               setValueInForm("address.zipCode", component.long_name);
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
+=======
+              setValueInForm("address.zipCode", component.long_name, {
+                shouldValidate: true,
+              });
+>>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
               break;
 
             default:
