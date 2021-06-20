@@ -37,17 +37,27 @@ export default function PlacesAutocomplete<
   children,
   params,
   searchFor,
+<<<<<<< HEAD
   InputProps,
   autoComplete,
   disabled = false,
+=======
+  value,
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
 }: {
   setValueInForm: UseFormSetValue<T>;
   children: JSX.Element;
+<<<<<<< HEAD
   params: ControllerRenderProps<T>;
   searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
   autoComplete?: AutocompleteType;
   disabled?: boolean;
+=======
+  params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
+  searchFor?: "school" | "address";
+  value: string;
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
@@ -72,12 +82,17 @@ export default function PlacesAutocomplete<
         placeId: place_id,
         fields: ["address_components", "formatted_phone_number", "name"],
       };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
       try {
         const details = await getDetails(parameter);
         if (typeof details === "string") return;
         if (!details.address_components) return;
         if (searchFor !== "address") {
           details.formatted_phone_number &&
+<<<<<<< HEAD
             setValueInForm(
               "phoneNumber" as Path<T>,
               details.formatted_phone_number as UnpackNestedValue<
@@ -95,11 +110,16 @@ export default function PlacesAutocomplete<
                 shouldValidate: true,
               }
             );
+=======
+            setValueInForm("phoneNumber", details.formatted_phone_number);
+          details.name && setValueInForm("name", details.name);
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
+<<<<<<< HEAD
               setValueInForm(
                 "address.streetNumber" as Path<T>,
                 component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
@@ -134,6 +154,18 @@ export default function PlacesAutocomplete<
                   shouldValidate: true,
                 }
               );
+=======
+              setValueInForm("address.streetNumber", component.long_name);
+              break;
+            case "route":
+              setValueInForm("address.street", component.long_name);
+              break;
+            case "locality":
+              setValueInForm("address.town", component.long_name);
+              break;
+            case "postal_code":
+              setValueInForm("address.zipCode", component.long_name);
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
               break;
 
             default:
@@ -149,7 +181,6 @@ export default function PlacesAutocomplete<
   const renderSuggestions = () =>
     data.map((suggestion) => {
       const data = suggestion;
-      console.log(data);
       return (
         <li key={data.place_id} onClick={handleSelect(suggestion)}>
           <strong>{data.structured_formatting.main_text}</strong>{" "}
@@ -159,9 +190,14 @@ export default function PlacesAutocomplete<
     });
 
   useEffect(() => {
+<<<<<<< HEAD
     setValue(params.value as string);
   }, [params.value, setValue]);
 
+=======
+    setValue(value);
+  }, [value, setValue]);
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
 
   // useEffect(() => {
   //   async function load() {
@@ -202,8 +238,19 @@ export default function PlacesAutocomplete<
       renderInput={(params) =>
         cloneElement(children, {
           ...params,
+<<<<<<< HEAD
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
+=======
+          InputProps: {
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faEdit} />
+              </InputAdornment>
+            ),
+          },
+>>>>>>> 0f99dfe (Split up search for institution by name and address)
         })
       }
     />
