@@ -19,7 +19,10 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@googlemaps/js-api-loader": "^1.12.1",
     "@material-ui/core": "^4.11.4",
+<<<<<<< HEAD
     "@material-ui/icons": "^4.11.2",
+=======
+>>>>>>> e474087 (First draft autocomplete)
     "@material-ui/lab": "^4.0.0-alpha.58",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
@@ -33,10 +36,13 @@
     "@use-it/event-listener": "^0.1.6",
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
+<<<<<<< HEAD
     "framer-motion": "^4.1.17",
 =======
     "axios": "^0.21.1",
 >>>>>>> 23ab92b (Add Search Field for querying table)
+=======
+>>>>>>> e474087 (First draft autocomplete)
     "react": "^17.0.2",
     "react-calendar": "^3.4.0",
     "react-cool-onclickoutside": "^1.6.2",
@@ -47,9 +53,13 @@
     "react-scripts": "^4.0.3",
     "typescript": "^4.3.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "use-places-autocomplete": "^1.9.3",
 =======
 >>>>>>> dcb7235 (Generate flat accessKeys array and add pagination. Update npm packages.)
+=======
+    "use-places-autocomplete": "^1.9.3",
+>>>>>>> e474087 (First draft autocomplete)
     "web-vitals": "^2.0.1",
     "workbox-background-sync": "^6.1.5",
     "workbox-broadcast-update": "^6.1.5",
