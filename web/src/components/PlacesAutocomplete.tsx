@@ -1,6 +1,7 @@
 import {
   ControllerRenderProps,
   UseFormSetValue,
+  UseFormTrigger,
   UseFormWatch,
 } from "react-hook-form";
 import { cloneElement, useEffect } from "react";
@@ -57,23 +58,34 @@ export default function PlacesAutocomplete({
         if (!details.address_components) return;
         if (searchFor !== "address") {
           details.formatted_phone_number &&
-            setValueInForm("phoneNumber", details.formatted_phone_number);
-          details.name && setValueInForm("name", details.name);
+            setValueInForm("phoneNumber", details.formatted_phone_number, {
+              shouldValidate: true,
+            });
+          details.name &&
+            setValueInForm("name", details.name, { shouldValidate: true });
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
-              setValueInForm("address.streetNumber", component.long_name);
+              setValueInForm("address.streetNumber", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "route":
-              setValueInForm("address.street", component.long_name);
+              setValueInForm("address.street", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "locality":
-              setValueInForm("address.town", component.long_name);
+              setValueInForm("address.town", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "postal_code":
-              setValueInForm("address.zipCode", component.long_name);
+              setValueInForm("address.zipCode", component.long_name, {
+                shouldValidate: true,
+              });
               break;
 
             default:

@@ -96,6 +96,7 @@ export function CreateInstitution() {
     setValue,
     control,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<FormInstitutionType>({
     mode: "onChange",
@@ -300,7 +301,7 @@ export function CreateInstitution() {
                   tabIndex={-1}
                   className={formInput.checkbox}
                   checked={field.value}
-                  onChange={(e) => field.onChange(e.target.value)}
+                  onChange={(e) => field.onChange(e.target.checked)}
                 />
               )}
             />
