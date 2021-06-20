@@ -7,7 +7,10 @@ import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormInstitutionType } from "../pages/Institution";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -122,7 +125,18 @@ export default function PlacesAutocomplete({
         }
       }}
       options={data}
-      renderInput={(params) => cloneElement(children, params)}
+      renderInput={(params) =>
+        cloneElement(children, {
+          ...params,
+          InputProps: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <FontAwesomeIcon className="inputIcon" icon={faEdit} />
+              </InputAdornment>
+            ),
+          },
+        })
+      }
       getOptionLabel={(option) =>
         option && option.structured_formatting
           ? `${option.structured_formatting.main_text} ${option.structured_formatting.secondary_text}`

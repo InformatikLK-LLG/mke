@@ -248,16 +248,6 @@ export function CreateInstitution() {
                       placeholder="Straße"
                       type="text"
                       className={formInput.input}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <FontAwesomeIcon
-                              className="inputIcon"
-                              icon={faEdit}
-                            />
-                          </InputAdornment>
-                        ),
-                      }}
                     />
                   </PlacesAutocomplete>
                 )}
@@ -306,6 +296,7 @@ export function CreateInstitution() {
               render={({ field }) => (
                 <Checkbox
                   color="primary"
+                  tabIndex={-1}
                   className={formInput.checkbox}
                   checked={field.value}
                   onChange={(e) => field.onChange(e.target.value)}
