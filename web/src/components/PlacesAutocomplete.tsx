@@ -23,11 +23,15 @@ export default function PlacesAutocomplete({
   setValueInForm,
   children,
   params,
+  searchFor,
+  value,
 }: {
   watch: UseFormWatch<FormInstitutionType>;
   setValueInForm: UseFormSetValue<FormInstitutionType>;
   children: JSX.Element;
-  params: ControllerRenderProps<FormInstitutionType, "address.street">;
+  params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
+  searchFor?: "school" | "address";
+  value: string;
 }) {
   const {
     suggestions: { status, data },
@@ -36,7 +40,6 @@ export default function PlacesAutocomplete({
   } = usePlacesAutocomplete({
     debounce: 300,
   });
-  const address = watch("address.street");
 
   const handleSelect =
     ({ place_id, description }: { place_id: string; description: string }) =>
@@ -45,33 +48,32 @@ export default function PlacesAutocomplete({
       clearSuggestions();
       const parameter = {
         placeId: place_id,
-        fields: ["address_components"],
+        fields: ["address_components", "formatted_phone_number", "name"],
       };
-      console.log(await getDetails({ placeId: place_id }));
 
       try {
         const details = await getDetails(parameter);
         if (typeof details === "string") return;
-        const { address_components } = details;
-        if (!address_components) return;
+        if (!details.address_components) return;
+        if (searchFor !== "address") {
+          details.formatted_phone_number &&
+            setValueInForm("phoneNumber", details.formatted_phone_number);
+          details.name && setValueInForm("name", details.name);
+        }
 
-        address_components.forEach((component: any) => {
+        details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
               setValueInForm("address.streetNumber", component.long_name);
-              console.log(component.long_name);
               break;
             case "route":
               setValueInForm("address.street", component.long_name);
-              console.log(component.long_name);
               break;
             case "locality":
               setValueInForm("address.town", component.long_name);
-              console.log(component.long_name);
               break;
             case "postal_code":
               setValueInForm("address.zipCode", component.long_name);
-              console.log(component.long_name);
               break;
 
             default:
@@ -86,7 +88,6 @@ export default function PlacesAutocomplete({
   const renderSuggestions = () =>
     data.map((suggestion) => {
       const data = suggestion;
-      console.log(data);
       return (
         <li key={data.place_id} onClick={handleSelect(suggestion)}>
           <strong>{data.structured_formatting.main_text}</strong>{" "}
@@ -96,12 +97,8 @@ export default function PlacesAutocomplete({
     });
 
   useEffect(() => {
-    setValue(address);
-  }, [address, setValue]);
-
-  useEffect(() => {
-    console.log(data, "useEffect data");
-  }, [data]);
+    setValue(value);
+  }, [value, setValue]);
 
   // useEffect(() => {
   //   async function load() {
@@ -124,11 +121,23 @@ export default function PlacesAutocomplete({
           callbackFunction();
         }
       }}
+      filterOptions={(options) =>
+        searchFor
+          ? options.filter((option) =>
+              searchFor === "address"
+                ? ["premise", "route"].some((value) =>
+                    option.types.includes(value)
+                  )
+                : option.types.includes(searchFor)
+            )
+          : options
+      }
       options={data}
       renderInput={(params) =>
         cloneElement(children, {
           ...params,
           InputProps: {
+            ...params.InputProps,
             startAdornment: (
               <InputAdornment position="start">
                 <FontAwesomeIcon className="inputIcon" icon={faEdit} />

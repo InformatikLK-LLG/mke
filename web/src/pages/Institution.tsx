@@ -110,6 +110,8 @@ export function CreateInstitution() {
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const theme = useTheme();
+  const address = watch("address.street");
+  const name = watch("name");
 
   return (
     <div className="container">
@@ -117,7 +119,7 @@ export function CreateInstitution() {
         onSubmit={handleSubmit((data) => {
           console.log(data, "bin hier");
         })}
-        style={{ width: "75%" }}
+        style={{ width: "80%" }}
       >
         <Grid
           container
@@ -138,23 +140,20 @@ export function CreateInstitution() {
                   required: "Name der Institution muss angegeben werden",
                 }}
                 render={({ field }) => (
-                  <TextField
-                    placeholder="Name"
-                    type="text"
-                    className={formInput.input}
-                    {...field}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                    autoFocus
-                  />
+                  <PlacesAutocomplete
+                    watch={watch}
+                    setValueInForm={setValue}
+                    params={field}
+                    searchFor="school"
+                    value={name}
+                  >
+                    <TextField
+                      placeholder="Name"
+                      type="text"
+                      className={formInput.input}
+                      autoFocus
+                    />
+                  </PlacesAutocomplete>
                 )}
               />
             </label>
@@ -243,6 +242,8 @@ export function CreateInstitution() {
                     watch={watch}
                     setValueInForm={setValue}
                     params={field}
+                    searchFor="address"
+                    value={address}
                   >
                     <TextField
                       placeholder="Straße"
