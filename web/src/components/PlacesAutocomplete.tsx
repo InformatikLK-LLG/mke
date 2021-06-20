@@ -1,7 +1,6 @@
 import {
   ControllerRenderProps,
   UseFormSetValue,
-  UseFormTrigger,
   UseFormWatch,
 } from "react-hook-form";
 import { cloneElement, useEffect } from "react";
@@ -11,7 +10,9 @@ import { Autocomplete } from "@material-ui/lab";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormInstitutionType } from "../pages/Institution";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import { InputProps } from "@material-ui/core";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -26,6 +27,7 @@ export default function PlacesAutocomplete({
   params,
   searchFor,
   value,
+  InputProps,
 }: {
   watch: UseFormWatch<FormInstitutionType>;
   setValueInForm: UseFormSetValue<FormInstitutionType>;
@@ -33,6 +35,7 @@ export default function PlacesAutocomplete({
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
   searchFor?: "school" | "address";
   value: string;
+  InputProps: InputProps;
 }) {
   const {
     suggestions: { status, data },
@@ -58,34 +61,23 @@ export default function PlacesAutocomplete({
         if (!details.address_components) return;
         if (searchFor !== "address") {
           details.formatted_phone_number &&
-            setValueInForm("phoneNumber", details.formatted_phone_number, {
-              shouldValidate: true,
-            });
-          details.name &&
-            setValueInForm("name", details.name, { shouldValidate: true });
+            setValueInForm("phoneNumber", details.formatted_phone_number);
+          details.name && setValueInForm("name", details.name);
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
-              setValueInForm("address.streetNumber", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm("address.streetNumber", component.long_name);
               break;
             case "route":
-              setValueInForm("address.street", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm("address.street", component.long_name);
               break;
             case "locality":
-              setValueInForm("address.town", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm("address.town", component.long_name);
               break;
             case "postal_code":
-              setValueInForm("address.zipCode", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm("address.zipCode", component.long_name);
               break;
 
             default:
@@ -125,6 +117,7 @@ export default function PlacesAutocomplete({
       autoComplete
       includeInputInList
       filterSelectedOptions
+      disableClearable
       inputValue={params.value}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
@@ -148,14 +141,7 @@ export default function PlacesAutocomplete({
       renderInput={(params) =>
         cloneElement(children, {
           ...params,
-          InputProps: {
-            ...params.InputProps,
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-              </InputAdornment>
-            ),
-          },
+          InputProps: { ...params.InputProps, ...InputProps, className: "" },
         })
       }
       getOptionLabel={(option) =>

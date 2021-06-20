@@ -23,6 +23,7 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import { Outlet } from "react-router-dom";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import axios from "axios";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -83,6 +84,17 @@ const useInputStyles = makeStyles({
   checkbox: {
     color: "var(--border)",
   },
+  clearButton: {
+    width: "1em",
+    height: "1em",
+    borderRadius: "50%",
+    margin: 0,
+    padding: 0,
+    "&:hover": {
+      color: "red",
+      boxShadow: "0 0 0 2pt red",
+    },
+  },
 });
 
 export default function Institution() {
@@ -96,7 +108,7 @@ export function CreateInstitution() {
     setValue,
     control,
     watch,
-    trigger,
+    getValues,
     formState: { errors },
   } = useForm<FormInstitutionType>({
     mode: "onChange",
@@ -147,6 +159,30 @@ export function CreateInstitution() {
                     params={field}
                     searchFor="school"
                     value={name}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: getValues("name") && (
+                        <InputAdornment
+                          position="end"
+                          className={formInput.clearButton}
+                        >
+                          <FontAwesomeIcon
+                            className={`inputIcon`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("name", "", { shouldValidate: true })
+                            }
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
                   >
                     <TextField
                       placeholder="Name"
@@ -182,6 +218,17 @@ export function CreateInstitution() {
                           <FontAwesomeIcon
                             className="inputIcon"
                             icon={faKeyboard}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: getValues("id") && (
+                        <InputAdornment position="end" className={formInput.clearButton}>
+                          <FontAwesomeIcon
+                            className={`inputIcon`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("id", "", { shouldValidate: true })
+                            }
                           />
                         </InputAdornment>
                       ),
@@ -221,6 +268,19 @@ export function CreateInstitution() {
                           />
                         </InputAdornment>
                       ),
+                      endAdornment: getValues("phoneNumber") && (
+                        <InputAdornment position="end">
+                          <FontAwesomeIcon
+                            className={`inputIcon ${formInput.clearButton}`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("phoneNumber", "", {
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        </InputAdornment>
+                      ),
                     }}
                     type="tel"
                   />
@@ -245,6 +305,29 @@ export function CreateInstitution() {
                     params={field}
                     searchFor="address"
                     value={address}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className="inputIcon"
+                            icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: getValues("address.street") && (
+                        <InputAdornment position="end">
+                          <FontAwesomeIcon
+                            className={`inputIcon ${formInput.clearButton}`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("address.street", "", {
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
                   >
                     <TextField
                       placeholder="Straße"
@@ -280,6 +363,19 @@ export function CreateInstitution() {
                           <FontAwesomeIcon
                             className="inputIcon"
                             icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: getValues("address.streetNumber") && (
+                        <InputAdornment position="end">
+                          <FontAwesomeIcon
+                            className={`inputIcon ${formInput.clearButton}`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("address.streetNumber", "", {
+                                shouldValidate: true,
+                              })
+                            }
                           />
                         </InputAdornment>
                       ),
@@ -332,6 +428,19 @@ export function CreateInstitution() {
                           />
                         </InputAdornment>
                       ),
+                      endAdornment: getValues("address.town") && (
+                        <InputAdornment position="end">
+                          <FontAwesomeIcon
+                            className={`inputIcon ${formInput.clearButton}`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("address.town", "", {
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        </InputAdornment>
+                      ),
                     }}
                   />
                 )}
@@ -366,6 +475,19 @@ export function CreateInstitution() {
                           <FontAwesomeIcon
                             className="inputIcon"
                             icon={faEdit}
+                          />
+                        </InputAdornment>
+                      ),
+                      endAdornment: getValues("address.zipCode") && (
+                        <InputAdornment position="end">
+                          <FontAwesomeIcon
+                            className={`inputIcon ${formInput.clearButton}`}
+                            icon={faTimes}
+                            onClick={() =>
+                              setValue("address.zipCode", "", {
+                                shouldValidate: true,
+                              })
+                            }
                           />
                         </InputAdornment>
                       ),

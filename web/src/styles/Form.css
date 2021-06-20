@@ -96,6 +96,10 @@ input[type="number"] {
     0 0.0625rem 0.125rem rgba(0, 0, 0, 0.2);
 }
 
+.validationMessage::selection {
+  background-color: transparent;
+}
+
 .validationMessage::before,
 .validationMessage::after {
   content: "";
