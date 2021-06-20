@@ -465,6 +465,7 @@ export function CreateInstitution({
   return (
     <div className="container">
       <form
+<<<<<<< HEAD
         onSubmit={handleSubmit(async (data) => {
           try {
             const response = await axios.post<FormInstitutionType>(
@@ -476,6 +477,10 @@ export function CreateInstitution({
           } catch (error) {
             console.log(error);
           }
+=======
+        onSubmit={handleSubmit((data) => {
+          console.log(data, "bin hier");
+>>>>>>> 15cf4d0 (Fully implement address autocomplete for institution address, add possibility to navigate through suggestions with arrow keys)
         })}
         style={{ width: "80%" }}
       >
@@ -526,6 +531,7 @@ export function CreateInstitution({
             })}
           </Grid>
 
+<<<<<<< HEAD
           <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
             {RenderInput({
               name: "address.street",
@@ -536,6 +542,42 @@ export function CreateInstitution({
               autoComplete: "address-line1",
               formState,
             })}
+=======
+          <Grid item xs={4}>
+            <label>
+              {errors.address?.street && (
+                <FormErrorMessage message={errors.address.street.message} />
+              )}
+              <Controller
+                control={control}
+                name="address.street"
+                rules={{ required: "Straße muss angegeben werden" }}
+                render={({ field }) => (
+                  <PlacesAutocomplete
+                    watch={watch}
+                    setValueInForm={setValue}
+                    params={field}
+                  >
+                    <TextField
+                      placeholder="Straße"
+                      type="text"
+                      className={formInput.input}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <FontAwesomeIcon
+                              className="inputIcon"
+                              icon={faEdit}
+                            />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </PlacesAutocomplete>
+                )}
+              />
+            </label>
+>>>>>>> 15cf4d0 (Fully implement address autocomplete for institution address, add possibility to navigate through suggestions with arrow keys)
           </Grid>
 
           <Grid item xs={12} md={6} lg={2} className={inputFields.streetNumber}>
