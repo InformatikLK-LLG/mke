@@ -20,9 +20,13 @@
     "@googlemaps/js-api-loader": "^1.12.1",
     "@material-ui/core": "^4.11.4",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "@material-ui/icons": "^4.11.2",
 =======
 >>>>>>> e474087 (First draft autocomplete)
+=======
+    "@material-ui/icons": "^4.11.2",
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
     "@material-ui/lab": "^4.0.0-alpha.58",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",

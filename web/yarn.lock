@@ -1499,10 +1499,14 @@
     "chalk" "^4.0.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 "@material-ui/core@^4.0.0", "@material-ui/core@^4.11.4", "@material-ui/core@^4.9.10":
 =======
 "@material-ui/core@^4.11.4", "@material-ui/core@^4.9.10":
 >>>>>>> e474087 (First draft autocomplete)
+=======
+"@material-ui/core@^4.0.0", "@material-ui/core@^4.11.4", "@material-ui/core@^4.9.10":
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
   "integrity" "sha512-oqb+lJ2Dl9HXI9orc6/aN8ZIAMkeThufA5iZELf2LQeBn2NtjVilF5D2w7e9RpntAzDb4jK5DsVhkfOvFY/8fg=="
   "resolved" "https://registry.npmjs.org/@material-ui/core/-/core-4.11.4.tgz"
   "version" "4.11.4"
@@ -1521,6 +1525,9 @@
     "react-transition-group" "^4.4.0"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 "@material-ui/icons@^4.11.2":
   "integrity" "sha512-fQNsKX2TxBmqIGJCSi3tGTO/gZ+eJgWmMJkgDiOfyNaunNaxcklJQFaFogYcFl0qFuaEz1qaXYXboa/bUXVSOQ=="
   "resolved" "https://registry.npmjs.org/@material-ui/icons/-/icons-4.11.2.tgz"
@@ -1528,8 +1535,11 @@
   dependencies:
     "@babel/runtime" "^7.4.4"
 
+<<<<<<< HEAD
 =======
 >>>>>>> e474087 (First draft autocomplete)
+=======
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 "@material-ui/lab@^4.0.0-alpha.58":
   "integrity" "sha512-GKHlJqLxUeHH3L3dGQ48ZavYrqGOTXkFkiEiuYMAnAvXAZP4rhMIqeHOPXSUQan4Bd8QnafDcpovOSLnadDmKw=="
   "resolved" "https://registry.npmjs.org/@material-ui/lab/-/lab-4.0.0-alpha.58.tgz"

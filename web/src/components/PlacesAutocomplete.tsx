@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   ControllerRenderProps,
   Path,
@@ -13,10 +14,14 @@ import {
   UseFormWatch,
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
 } from "react-hook-form";
+=======
+import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
+<<<<<<< HEAD
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
 import { FormInstitutionType } from "../pages/Institution";
 <<<<<<< HEAD
@@ -29,6 +34,10 @@ import { InputProps } from "@material-ui/core";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+import { FormInstitutionType } from "../pages/Institution";
+import { InputProps } from "@material-ui/core";
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -36,6 +45,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 //   libraries: ["places"],
 // });
 
+<<<<<<< HEAD
 export default function PlacesAutocomplete<
   T extends {
     address: {
@@ -48,6 +58,9 @@ export default function PlacesAutocomplete<
     phoneNumber: string;
   }
 >({
+=======
+export default function PlacesAutocomplete({
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
   setValueInForm,
   children,
   params,
@@ -64,7 +77,11 @@ export default function PlacesAutocomplete<
   InputProps,
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 }: {
+<<<<<<< HEAD
   setValueInForm: UseFormSetValue<T>;
+=======
+  setValueInForm: UseFormSetValue<FormInstitutionType>;
+>>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
   children: JSX.Element;
 <<<<<<< HEAD
   params: ControllerRenderProps<T>;
@@ -254,6 +271,10 @@ export default function PlacesAutocomplete<
     setValue(value);
   }, [value, setValue]);
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   // useEffect(() => {
   //   async function load() {
