@@ -1,15 +1,32 @@
 import "../styles/Table.css";
 
 import {
-  Checkbox,
+  Controller,
+  ControllerRenderProps,
+  ValidationRule,
+  useForm,
+} from "react-hook-form";
+import {
+  FormControl,
   Grid,
   InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import { Controller, useForm } from "react-hook-form";
-import Table, { TableHeaders } from "../components/Table";
+import {
+  IconDefinition,
+  faMapMarkerAlt,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import Table, {
+  Leaves,
+  TableHeaders,
+  accessNestedValues,
+} from "../components/Table";
 import {
   faCheckSquare,
   faEdit,
@@ -23,7 +40,6 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import { Outlet } from "react-router-dom";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import axios from "axios";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -125,6 +141,91 @@ export function CreateInstitution() {
   const theme = useTheme();
   const address = watch("address.street");
   const name = watch("name");
+  const zipCode = watch("address.zipCode");
+
+  const RenderInput = ({
+    name,
+    placeholder,
+    required,
+    type = "text",
+    icon = faEdit,
+    autocompletePlaces = "address",
+    autofocus,
+    value,
+  }: {
+    name: Leaves<FormInstitutionType>;
+    placeholder: string;
+    required?: ValidationRule<boolean> | string;
+    type?: string;
+    icon?: IconDefinition;
+    autocompletePlaces?: "address" | "school";
+    autofocus?: boolean;
+    value?: string;
+  }) => {
+    const InputProps = {
+      startAdornment: (
+        <InputAdornment position="start">
+          <FontAwesomeIcon className="inputIcon" icon={icon} />
+        </InputAdornment>
+      ),
+      endAdornment: getValues(name) && (
+        <InputAdornment position="end" className={formInput.clearButton}>
+          <FontAwesomeIcon
+            className={`inputIcon`}
+            icon={faTimes}
+            onClick={() => setValue(name, "", { shouldValidate: true })}
+          />
+        </InputAdornment>
+      ),
+    };
+
+    return (
+      <label>
+        {accessNestedValues(name, errors) && (
+          <FormErrorMessage
+            message={accessNestedValues(name, errors).message}
+          />
+        )}
+        <Controller
+          control={control}
+          name={name}
+          rules={required ? { required } : undefined}
+          render={({ field }) =>
+            value ? (
+              <PlacesAutocomplete
+                setValueInForm={setValue}
+                params={
+                  field as ControllerRenderProps<
+                    FormInstitutionType,
+                    "name" | "address.street"
+                  >
+                }
+                searchFor={autocompletePlaces}
+                value={value}
+                InputProps={InputProps}
+              >
+                <TextField
+                  placeholder={placeholder}
+                  type="text"
+                  className={formInput.input}
+                  autoFocus={autofocus}
+                />
+              </PlacesAutocomplete>
+            ) : (
+              <TextField
+                placeholder={placeholder}
+                type={type}
+                className={formInput.input}
+                {...field}
+                InputProps={InputProps}
+                autoFocus={autofocus}
+              />
+            )
+          }
+        />
+      </label>
+    );
+  };
 
   return (
     <div className="container">
@@ -141,368 +242,95 @@ export function CreateInstitution() {
           alignItems="center"
           justify="center"
         >
-          <Grid item xs={6}>
-            <label>
-              {errors.name && (
-                <FormErrorMessage message={errors.name.message} />
-              )}
-              <Controller
-                control={control}
-                name="name"
-                rules={{
-                  required: "Name der Institution muss angegeben werden",
-                }}
-                render={({ field }) => (
-                  <PlacesAutocomplete
-                    watch={watch}
-                    setValueInForm={setValue}
-                    params={field}
-                    searchFor="school"
-                    value={name}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("name") && (
-                        <InputAdornment
-                          position="end"
-                          className={formInput.clearButton}
-                        >
-                          <FontAwesomeIcon
-                            className={`inputIcon`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("name", "", { shouldValidate: true })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  >
-                    <TextField
-                      placeholder="Name"
-                      type="text"
-                      className={formInput.input}
-                      autoFocus
-                    />
-                  </PlacesAutocomplete>
-                )}
-              />
-            </label>
+          <Grid item lg={6}>
+            {RenderInput({
+              name: "name",
+              placeholder: "Name",
+              autocompletePlaces: "school",
+              value: name,
+              required: "Institutions-Name muss angegeben werden",
+              autofocus: true,
+            })}
           </Grid>
 
-          <Grid item xs={6}>
-            <label>
-              {errors.id && <FormErrorMessage message={errors.id.message} />}
-              <Controller
-                control={control}
-                name="id"
-                rules={{
-                  required:
-                    "INST-Code muss angegeben werden und eindeutig sein oder so",
-                }}
-                render={({ field }) => (
-                  <TextField
-                    placeholder="INST-Code"
-                    type="text"
-                    className={formInput.input}
-                    {...field}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faKeyboard}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("id") && (
-                        <InputAdornment position="end" className={formInput.clearButton}>
-                          <FontAwesomeIcon
-                            className={`inputIcon`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("id", "", { shouldValidate: true })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </label>
+          <Grid item lg={6}>
+            {RenderInput({
+              name: "id",
+              placeholder: "INST-Code",
+              required: "INST-Code muss angegeben werden",
+            })}
           </Grid>
 
-          <Grid item xs={6}>
-            <label>
-              {errors.phoneNumber && (
-                <FormErrorMessage message={errors.phoneNumber.message} />
-              )}
-              <Controller
-                control={control}
-                name="phoneNumber"
-                rules={{
-                  required: "Telefonnummer muss angegeben werden",
-                  pattern: {
-                    value: /^[0-9\s-/]+$/,
-                    message: "Telefonnummer nur aus Zahlen",
-                  },
-                }}
-                render={({ field }) => (
-                  <TextField
-                    placeholder="Telefonnummer"
-                    className={formInput.input}
-                    {...field}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("phoneNumber") && (
-                        <InputAdornment position="end">
-                          <FontAwesomeIcon
-                            className={`inputIcon ${formInput.clearButton}`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("phoneNumber", "", {
-                                shouldValidate: true,
-                              })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                    type="tel"
-                  />
-                )}
-              />
-            </label>
+          <Grid item lg={4}>
+            {RenderInput({
+              name: "address.street",
+              placeholder: "Straße",
+              value: address,
+              required: "Straße muss angegeben werden",
+            })}
           </Grid>
 
-          <Grid item xs={4}>
-            <label>
-              {errors.address?.street && (
-                <FormErrorMessage message={errors.address.street.message} />
-              )}
-              <Controller
-                control={control}
-                name="address.street"
-                rules={{ required: "Straße muss angegeben werden" }}
-                render={({ field }) => (
-                  <PlacesAutocomplete
-                    watch={watch}
-                    setValueInForm={setValue}
-                    params={field}
-                    searchFor="address"
-                    value={address}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("address.street") && (
-                        <InputAdornment position="end">
-                          <FontAwesomeIcon
-                            className={`inputIcon ${formInput.clearButton}`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("address.street", "", {
-                                shouldValidate: true,
-                              })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  >
-                    <TextField
-                      placeholder="Straße"
-                      type="text"
-                      className={formInput.input}
-                    />
-                  </PlacesAutocomplete>
-                )}
-              />
-            </label>
+          <Grid item lg={2}>
+            {RenderInput({
+              name: "address.streetNumber",
+              placeholder: "Hausnummer",
+              required: "Hausnummer muss angegeben werden",
+            })}
           </Grid>
 
-          <Grid item xs={2}>
-            <label>
-              {errors.address?.streetNumber && (
-                <FormErrorMessage
-                  message={errors.address.streetNumber.message}
-                />
-              )}
-              <Controller
-                control={control}
-                name="address.streetNumber"
-                rules={{ required: "Hausnummer muss angegeben werden" }}
-                render={({ field }) => (
-                  <TextField
-                    placeholder="Hausnummer"
-                    type="text"
-                    className={formInput.input}
-                    {...field}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("address.streetNumber") && (
-                        <InputAdornment position="end">
-                          <FontAwesomeIcon
-                            className={`inputIcon ${formInput.clearButton}`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("address.streetNumber", "", {
-                                shouldValidate: true,
-                              })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </label>
+          <Grid item lg={6}>
+            {RenderInput({
+              name: "phoneNumber",
+              placeholder: "Telefonnummer",
+              required: "Telefonnummer muss angegeben werden",
+            })}
           </Grid>
 
-          <Grid item xs={6}>
-            <span>Liegt im Schulverwaltungsbezirk?</span>
+          <Grid item lg={4}>
+            {RenderInput({
+              name: "address.town",
+              placeholder: "Stadt",
+              required: "Stadt muss angegeben werden",
+            })}
+          </Grid>
+
+          <Grid item lg={2}>
+            {RenderInput({
+              name: "address.zipCode",
+              placeholder: "Postleitzahl",
+              required: "",
+            })}
+          </Grid>
+
+          <Grid item lg={6}>
             <Controller
               control={control}
               name="schoolAdministrativeDistrict"
               render={({ field }) => (
-                <Checkbox
-                  color="primary"
-                  tabIndex={-1}
-                  className={formInput.checkbox}
-                  checked={field.value}
-                  onChange={(e) => field.onChange(e.target.checked)}
-                />
+                <FormControl className={formInput.input}>
+                  <InputLabel id="schoolAdministrativeDistrict">
+                    Schulverwaltungsbezirk?
+                  </InputLabel>
+                  <Select
+                    {...field}
+                    value={field.value ? 1 : 0}
+                    className={formInput.input}
+                    startAdornment={
+                      <InputAdornment position="start">
+                        <FontAwesomeIcon
+                          icon={faMapMarkerAlt}
+                          className="inputIcon"
+                        />
+                      </InputAdornment>
+                    }
+                    labelId="schoolAdministrativeDistrict"
+                  >
+                    <MenuItem value={1}>Ja</MenuItem>
+                    <MenuItem value={0}>neeeeeeein</MenuItem>
+                  </Select>
+                </FormControl>
               )}
             />
-          </Grid>
-
-          <Grid item xs={4}>
-            <label>
-              {errors.address?.town && (
-                <FormErrorMessage message={errors.address.town.message} />
-              )}
-              <Controller
-                control={control}
-                name="address.town"
-                defaultValue=""
-                rules={{ required: "Stadt muss angegeben werden" }}
-                render={({ field }) => (
-                  <TextField
-                    placeholder="Stadt"
-                    type="text"
-                    className={formInput.input}
-                    {...field}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("address.town") && (
-                        <InputAdornment position="end">
-                          <FontAwesomeIcon
-                            className={`inputIcon ${formInput.clearButton}`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("address.town", "", {
-                                shouldValidate: true,
-                              })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </label>
-          </Grid>
-
-          <Grid item xs={2}>
-            <label>
-              {errors.address?.zipCode && (
-                <FormErrorMessage message={errors.address.zipCode.message} />
-              )}
-              <Controller
-                control={control}
-                name="address.zipCode"
-                rules={{
-                  required: "Postleitzahl muss angegeben werden",
-                  pattern: {
-                    value: /^[0-9]+$/,
-                    message: "Was denn bei deiner Postleitzahl los?!",
-                  },
-                }}
-                render={({ field }) => (
-                  <TextField
-                    placeholder="Postleitzahl"
-                    type="tel"
-                    className={formInput.input}
-                    {...field}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <FontAwesomeIcon
-                            className="inputIcon"
-                            icon={faEdit}
-                          />
-                        </InputAdornment>
-                      ),
-                      endAdornment: getValues("address.zipCode") && (
-                        <InputAdornment position="end">
-                          <FontAwesomeIcon
-                            className={`inputIcon ${formInput.clearButton}`}
-                            icon={faTimes}
-                            onClick={() =>
-                              setValue("address.zipCode", "", {
-                                shouldValidate: true,
-                              })
-                            }
-                          />
-                        </InputAdornment>
-                      ),
-                      onChange: (e) => {
-                        setValue(
-                          "schoolAdministrativeDistrict",
-                          e.target.value === "" ? false : true
-                        );
-                        field.onChange(e.target.value);
-                      },
-                    }}
-                  />
-                )}
-              />
-            </label>
           </Grid>
         </Grid>
 

@@ -59,7 +59,7 @@ const useStyles = makeStyles({
   },
 });
 
-function accessNestedValues(path: string, object: {}) {
+export function accessNestedValues(path: string, object: {}) {
   const properties = path.split(".");
   return properties.reduce(
     (accumulator: any, current) => accumulator && accumulator[current],
@@ -129,7 +129,7 @@ type Join<K, P> = K extends string
     : never
   : never;
 
-type Leaves<T, D extends number = 5> = [D] extends [never]
+export type Leaves<T, D extends number = 5> = [D] extends [never]
   ? never
   : T extends object
   ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]

@@ -1,18 +1,10 @@
-import {
-  ControllerRenderProps,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form";
+import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormInstitutionType } from "../pages/Institution";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import { InputProps } from "@material-ui/core";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -21,7 +13,6 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 // });
 
 export default function PlacesAutocomplete({
-  watch,
   setValueInForm,
   children,
   params,
@@ -29,7 +20,6 @@ export default function PlacesAutocomplete({
   value,
   InputProps,
 }: {
-  watch: UseFormWatch<FormInstitutionType>;
   setValueInForm: UseFormSetValue<FormInstitutionType>;
   children: JSX.Element;
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
@@ -103,6 +93,10 @@ export default function PlacesAutocomplete({
   useEffect(() => {
     setValue(value);
   }, [value, setValue]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   // useEffect(() => {
   //   async function load() {
