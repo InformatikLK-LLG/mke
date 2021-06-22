@@ -1,5 +1,6 @@
 package de.llggiessen.mke.repository;
 
+import de.llggiessen.mke.schema.Address;
 import de.llggiessen.mke.schema.Institution;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -15,6 +16,9 @@ public interface InstitutionRepository extends CrudRepository<Institution, Strin
     Institution findInstitutionByID(@Param("instCode") String instCode);
 
     @Query(value = "SELECT * FROM institution WHERE institution.svb = :svb", nativeQuery = true)
-    Iterable<Institution> findInstitutionBySvb(@Param("svb") boolean svb);
+    Iterable<Institution> findInstitutionsBySvb(@Param("svb") boolean svb);
+
+    @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name% AND institution.street LIKE %:street%", nativeQuery = true)
+    Iterable<Institution> findInstitutions(@Param("name")String name,@Param("street") String street);
 
 }
