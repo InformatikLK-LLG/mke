@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(path = "/booking")
 public class BookingController {
@@ -16,12 +18,9 @@ public class BookingController {
     BookingRepository repository;
 
     @GetMapping("")
-    public Iterable<Booking> getBookings(@RequestParam(value = "retrievalBoat", required = false, defaultValue = "") Booking.RetrievalBoat retrievalBoat,
-                                         @RequestParam(value = "returnBoat", required = false, defaultValue = "") Booking.ReturnBoat returnBoat,
-                                         @RequestParam(value = "bookingNo", required = false, defaultValue = "") long bookingNo,
-                                         @RequestParam(value = "status", required = false, defaultValue = "") char status,
-                                         @RequestParam(value = "year", required = false, defaultValue = "") String year) {
-        return repository.findAllByAttributes(retrievalBoat, returnBoat, bookingNo, status, year);
+    public Iterable<Booking> getBookings(@RequestParam(value = "year", required = false, defaultValue = "") String year) {
+        return repository.findAllByAttributes(year);
     }
+
 }
 

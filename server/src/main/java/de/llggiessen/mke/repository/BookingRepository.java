@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface BookingRepository extends CrudRepository<Booking, Long> {
 
-    @Query(value = "SELECT * FROM booking WHERE booking.retrieval_boat LIKE %:retrievalBoat% AND booking.return_boat LIKE %:returnBoat% " +
-            "AND booking.booking_no LIKE %:bookingNo% AND booking.status LIKE %:status% AND booking.year LIKE %:year%", nativeQuery = true)
-    Iterable<Booking> findAllByAttributes(@Param("retrievalBoat") Booking.RetrievalBoat retrievalBoat, @Param("returnBoat") Booking.ReturnBoat returnBoat,
-                                       @Param("bookingNo") long bookingNo, @Param("status") char status, @Param("year") String year);
+    @Query(value = "SELECT * FROM booking WHERE booking.year LIKE %:year%", nativeQuery = true)
+    Iterable<Booking> findAllByAttributes(@Param("year") String year);
 }
