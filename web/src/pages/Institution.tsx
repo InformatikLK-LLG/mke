@@ -78,7 +78,7 @@ const useButtonStyles = makeStyles({
     display: "flex",
     justifyContent: "center",
     marginTop: "2em",
-    padding: "0.5em 10%",
+    padding: "0.5em max(10%, 3em)",
     maxWidth: "1em",
   },
 });
@@ -139,6 +139,7 @@ export function CreateInstitution() {
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const theme = useTheme();
+  const zipCode = watch("address.zipCode");
 
   const RenderInput = ({
     name,
@@ -157,6 +158,11 @@ export function CreateInstitution() {
     autocompletePlaces?: "address" | "school";
     autofocus?: boolean;
   }) => {
+    useEffect(() => {
+      setValue("schoolAdministrativeDistrict", Boolean(zipCode), {
+        shouldValidate: true,
+      });
+    }, [zipCode]);
     const InputProps = {
       startAdornment: (
         <InputAdornment position="start">
@@ -236,7 +242,7 @@ export function CreateInstitution() {
           alignItems="center"
           justify="center"
         >
-          <Grid item lg={6}>
+          <Grid item xs={12} md={6} lg={6}>
             {RenderInput({
               name: "name",
               placeholder: "Name",
@@ -246,7 +252,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={6}>
+          <Grid item xs={12} md={6} lg={6}>
             {RenderInput({
               name: "id",
               placeholder: "INST-Code",
@@ -254,7 +260,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={4}>
+          <Grid item xs={12} md={6} lg={4}>
             {RenderInput({
               name: "address.street",
               placeholder: "Straße",
@@ -263,7 +269,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={2}>
+          <Grid item xs={12} md={6} lg={2}>
             {RenderInput({
               name: "address.streetNumber",
               placeholder: "Hausnummer",
@@ -271,7 +277,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={6}>
+          <Grid item xs={12} md={6} lg={6}>
             {RenderInput({
               name: "phoneNumber",
               placeholder: "Telefonnummer",
@@ -279,7 +285,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={4}>
+          <Grid item xs={12} md={6} lg={4}>
             {RenderInput({
               name: "address.town",
               placeholder: "Stadt",
@@ -287,7 +293,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={2}>
+          <Grid item xs={12} md={6} lg={2}>
             {RenderInput({
               name: "address.zipCode",
               placeholder: "Postleitzahl",
@@ -295,7 +301,7 @@ export function CreateInstitution() {
             })}
           </Grid>
 
-          <Grid item lg={6}>
+          <Grid item xs={12} md={6} lg={6}>
             <Controller
               control={control}
               name="schoolAdministrativeDistrict"
