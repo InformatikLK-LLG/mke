@@ -139,9 +139,6 @@ export function CreateInstitution() {
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const theme = useTheme();
-  const address = watch("address.street");
-  const name = watch("name");
-  const zipCode = watch("address.zipCode");
 
   const RenderInput = ({
     name,
@@ -149,9 +146,8 @@ export function CreateInstitution() {
     required,
     type = "text",
     icon = faEdit,
-    autocompletePlaces = "address",
+    autocompletePlaces,
     autofocus,
-    value,
   }: {
     name: Leaves<FormInstitutionType>;
     placeholder: string;
@@ -160,7 +156,6 @@ export function CreateInstitution() {
     icon?: IconDefinition;
     autocompletePlaces?: "address" | "school";
     autofocus?: boolean;
-    value?: string;
   }) => {
     const InputProps = {
       startAdornment: (
@@ -191,7 +186,7 @@ export function CreateInstitution() {
           name={name}
           rules={required ? { required } : undefined}
           render={({ field }) =>
-            value ? (
+            autocompletePlaces ? (
               <PlacesAutocomplete
                 setValueInForm={setValue}
                 params={
@@ -201,7 +196,6 @@ export function CreateInstitution() {
                   >
                 }
                 searchFor={autocompletePlaces}
-                value={value}
                 InputProps={InputProps}
               >
                 <TextField
@@ -247,7 +241,6 @@ export function CreateInstitution() {
               name: "name",
               placeholder: "Name",
               autocompletePlaces: "school",
-              value: name,
               required: "Institutions-Name muss angegeben werden",
               autofocus: true,
             })}
@@ -265,7 +258,7 @@ export function CreateInstitution() {
             {RenderInput({
               name: "address.street",
               placeholder: "Straße",
-              value: address,
+              autocompletePlaces: "address",
               required: "Straße muss angegeben werden",
             })}
           </Grid>
