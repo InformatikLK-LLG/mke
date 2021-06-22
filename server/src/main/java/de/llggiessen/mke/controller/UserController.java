@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping(path = "/user")
 public class UserController {
-
     @Autowired
     UserRepository repository;
 
