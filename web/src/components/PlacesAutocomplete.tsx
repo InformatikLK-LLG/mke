@@ -66,6 +66,7 @@ export default function PlacesAutocomplete({
   params,
   searchFor,
 <<<<<<< HEAD
+<<<<<<< HEAD
   InputProps,
   autoComplete,
   disabled = false,
@@ -74,6 +75,8 @@ export default function PlacesAutocomplete({
 <<<<<<< HEAD
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
 =======
+=======
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
   InputProps,
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 }: {
@@ -92,10 +95,13 @@ export default function PlacesAutocomplete({
 =======
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
   searchFor?: "school" | "address";
+<<<<<<< HEAD
   value: string;
 <<<<<<< HEAD
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
 =======
+=======
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
   InputProps: InputProps;
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 }) {
@@ -135,6 +141,7 @@ export default function PlacesAutocomplete({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             setValueInForm(
               "phoneNumber" as Path<T>,
               details.formatted_phone_number as UnpackNestedValue<
@@ -157,21 +164,27 @@ export default function PlacesAutocomplete({
           details.name && setValueInForm("name", details.name);
 >>>>>>> 0f99dfe (Split up search for institution by name and address)
 =======
+=======
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
             setValueInForm("phoneNumber", details.formatted_phone_number, {
               shouldValidate: true,
             });
           details.name &&
             setValueInForm("name", details.name, { shouldValidate: true });
+<<<<<<< HEAD
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
 =======
             setValueInForm("phoneNumber", details.formatted_phone_number);
           details.name && setValueInForm("name", details.name);
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -219,14 +232,24 @@ export default function PlacesAutocomplete({
 =======
               setValueInForm("address.streetNumber", component.long_name);
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+              setValueInForm("address.streetNumber", component.long_name, {
+                shouldValidate: true,
+              });
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
               break;
             case "route":
-              setValueInForm("address.street", component.long_name);
+              setValueInForm("address.street", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "locality":
-              setValueInForm("address.town", component.long_name);
+              setValueInForm("address.town", component.long_name, {
+                shouldValidate: true,
+              });
               break;
             case "postal_code":
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
               setValueInForm("address.zipCode", component.long_name);
@@ -239,6 +262,11 @@ export default function PlacesAutocomplete({
 =======
               setValueInForm("address.zipCode", component.long_name);
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+              setValueInForm("address.zipCode", component.long_name, {
+                shouldValidate: true,
+              });
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
               break;
 
             default:
@@ -264,6 +292,7 @@ export default function PlacesAutocomplete({
 
   useEffect(() => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     setValue(params.value as string);
   }, [params.value, setValue]);
 
@@ -275,6 +304,10 @@ export default function PlacesAutocomplete({
   useEffect(() => {
     console.log(data);
   }, [data]);
+=======
+    setValue(params.value);
+  }, [params.value, setValue]);
+>>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
 
   // useEffect(() => {
   //   async function load() {
