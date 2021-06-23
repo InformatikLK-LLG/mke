@@ -100,6 +100,10 @@ const useInputStyles = makeStyles({
   checkbox: {
     color: "var(--border)",
   },
+  select: {
+    marginBottom: 0,
+    marginLeft: 0,
+  },
   clearButton: {
     width: "1em",
     height: "1em",
@@ -162,7 +166,10 @@ export function CreateInstitution() {
       setValue("schoolAdministrativeDistrict", Boolean(zipCode), {
         shouldValidate: true,
       });
+      // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
+      // eslint-disable-next-line
     }, [zipCode]);
+
     const InputProps = {
       startAdornment: (
         <InputAdornment position="start">
@@ -239,7 +246,7 @@ export function CreateInstitution() {
           container
           spacing={2}
           direction="row"
-          alignItems="center"
+          alignItems="flex-end"
           justify="center"
         >
           <Grid item xs={12} md={6} lg={6}>
@@ -311,9 +318,9 @@ export function CreateInstitution() {
                     Schulverwaltungsbezirk?
                   </InputLabel>
                   <Select
+                    className={`${formInput.select} ${formInput.input}`}
                     {...field}
                     value={field.value ? 1 : 0}
-                    className={formInput.input}
                     startAdornment={
                       <InputAdornment position="start">
                         <FontAwesomeIcon
@@ -325,7 +332,7 @@ export function CreateInstitution() {
                     labelId="schoolAdministrativeDistrict"
                   >
                     <MenuItem value={1}>Ja</MenuItem>
-                    <MenuItem value={0}>neeeeeeein</MenuItem>
+                    <MenuItem value={0}>Nein</MenuItem>
                   </Select>
                 </FormControl>
               )}
