@@ -94,6 +94,7 @@ export default function PlacesAutocomplete({
   disabled?: boolean;
 =======
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
+<<<<<<< HEAD
   searchFor?: "school" | "address";
 <<<<<<< HEAD
   value: string;
@@ -102,6 +103,9 @@ export default function PlacesAutocomplete({
 =======
 =======
 >>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
+=======
+  searchFor?: "school" | "address" | "point_of_interest";
+>>>>>>> 670dbe3 (Add input adornments to form items. Responsively change order of form items)
   InputProps: InputProps;
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
 }) {
