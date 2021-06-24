@@ -104,6 +104,9 @@ const useInputStyles = makeStyles({
     marginBottom: 0,
     marginLeft: 0,
   },
+  formControl: {
+    marginTop: 0,
+  },
   clearButton: {
     width: "1em",
     height: "1em",
@@ -258,7 +261,6 @@ export function CreateInstitution() {
               autofocus: true,
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={6}>
             {RenderInput({
               name: "id",
@@ -266,7 +268,6 @@ export function CreateInstitution() {
               required: "INST-Code muss angegeben werden",
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={4}>
             {RenderInput({
               name: "address.street",
@@ -275,7 +276,6 @@ export function CreateInstitution() {
               required: "Straße muss angegeben werden",
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={2}>
             {RenderInput({
               name: "address.streetNumber",
@@ -283,7 +283,6 @@ export function CreateInstitution() {
               required: "Hausnummer muss angegeben werden",
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={6}>
             {RenderInput({
               name: "phoneNumber",
@@ -291,7 +290,6 @@ export function CreateInstitution() {
               required: "Telefonnummer muss angegeben werden",
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={4}>
             {RenderInput({
               name: "address.town",
@@ -299,7 +297,6 @@ export function CreateInstitution() {
               required: "Stadt muss angegeben werden",
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={2}>
             {RenderInput({
               name: "address.zipCode",
@@ -307,13 +304,14 @@ export function CreateInstitution() {
               required: "",
             })}
           </Grid>
-
           <Grid item xs={12} md={6} lg={6}>
             <Controller
               control={control}
               name="schoolAdministrativeDistrict"
               render={({ field }) => (
-                <FormControl className={formInput.input}>
+                <FormControl
+                  className={`${formInput.input} ${formInput.formControl}`}
+                >
                   <InputLabel id="schoolAdministrativeDistrict">
                     Schulverwaltungsbezirk?
                   </InputLabel>
