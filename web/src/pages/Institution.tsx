@@ -19,8 +19,14 @@ import {
 } from "@material-ui/core";
 import {
   IconDefinition,
+  faCheck,
+  faKeyboard,
   faMapMarkerAlt,
+  faPhoneAlt,
+  faQuestion,
   faTimes,
+  faUniversity,
+  faVoicemail,
 } from "@fortawesome/free-solid-svg-icons";
 import Table, {
   Leaves,
@@ -30,7 +36,6 @@ import Table, {
 import {
   faCheckSquare,
   faEdit,
-  faKeyboard,
   faSquare,
 } from "@fortawesome/free-regular-svg-icons";
 
@@ -39,6 +44,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import { Outlet } from "react-router-dom";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
+import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -88,13 +94,18 @@ const useInputStyles = makeStyles({
     margin: "0.5em",
     minWidth: "100%",
     fontSize: "1em",
-    fontFamily: "inherit",
+    // fontFamily: "SegoeUI",
+    fontFamily: "Times New Roman",
     "& .MuiInput-underline:hover:not(.Mui-disabled)::before": {
       borderColor: "var(--border)",
       borderWidth: "1.5px",
     },
     "& .MuiInput-underline:after": {
       transitionDuration: "300ms",
+    },
+    "&::placeholder": {
+      userSelect: "none",
+      color: "red",
     },
   },
   checkbox: {
@@ -120,6 +131,49 @@ const useInputStyles = makeStyles({
   },
 });
 
+const useInputFields = makeStyles((theme: Theme) => ({
+  institutionName: {
+    [theme.breakpoints.up("xs")]: { order: 1 },
+    [theme.breakpoints.up("md")]: { order: 1 },
+    [theme.breakpoints.up("lg")]: { order: 1 },
+  },
+  instCode: {
+    [theme.breakpoints.up("xs")]: { order: 2 },
+    [theme.breakpoints.up("md")]: { order: 2 },
+    [theme.breakpoints.up("lg")]: { order: 2 },
+  },
+  phoneNumber: {
+    [theme.breakpoints.up("xs")]: { order: 3 },
+    [theme.breakpoints.up("md")]: { order: 7 },
+    [theme.breakpoints.up("lg")]: { order: 5 },
+  },
+  street: {
+    [theme.breakpoints.up("xs")]: { order: 4 },
+    [theme.breakpoints.up("md")]: { order: 3 },
+    [theme.breakpoints.up("lg")]: { order: 3 },
+  },
+  streetNumber: {
+    [theme.breakpoints.up("xs")]: { order: 5 },
+    [theme.breakpoints.up("md")]: { order: 4 },
+    [theme.breakpoints.up("lg")]: { order: 4 },
+  },
+  town: {
+    [theme.breakpoints.up("xs")]: { order: 6 },
+    [theme.breakpoints.up("md")]: { order: 5 },
+    [theme.breakpoints.up("lg")]: { order: 6 },
+  },
+  zipCode: {
+    [theme.breakpoints.up("xs")]: { order: 7 },
+    [theme.breakpoints.up("md")]: { order: 6 },
+    [theme.breakpoints.up("lg")]: { order: 7 },
+  },
+  schoolAdministrativeDistrict: {
+    [theme.breakpoints.up("xs")]: { order: 8 },
+    [theme.breakpoints.up("md")]: { order: 8 },
+    [theme.breakpoints.up("lg")]: { order: 8 },
+  },
+}));
+
 export default function Institution() {
   return <Outlet />;
 }
@@ -143,9 +197,11 @@ export function CreateInstitution() {
       address: { street: "", streetNumber: "", town: "", zipCode: "" },
     },
   });
+  const theme = useTheme();
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
-  const theme = useTheme();
+  const inputFields = useInputFields(theme);
+
   const zipCode = watch("address.zipCode");
 
   const RenderInput = ({
@@ -162,7 +218,7 @@ export function CreateInstitution() {
     required?: ValidationRule<boolean> | string;
     type?: string;
     icon?: IconDefinition;
-    autocompletePlaces?: "address" | "school";
+    autocompletePlaces?: "address" | "school" | "point_of_interest";
     autofocus?: boolean;
   }) => {
     useEffect(() => {
@@ -252,59 +308,78 @@ export function CreateInstitution() {
           alignItems="flex-end"
           justify="center"
         >
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={6}
+            className={inputFields.institutionName}
+          >
             {RenderInput({
               name: "name",
               placeholder: "Name",
               autocompletePlaces: "school",
               required: "Institutions-Name muss angegeben werden",
               autofocus: true,
+              icon: faUniversity,
             })}
           </Grid>
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
             {RenderInput({
               name: "id",
               placeholder: "INST-Code",
               required: "INST-Code muss angegeben werden",
+              icon: faKeyboard,
             })}
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12} md={6} lg={6} className={inputFields.phoneNumber}>
+            {RenderInput({
+              name: "phoneNumber",
+              placeholder: "Telefonnummer",
+              required: "Telefonnummer muss angegeben werden",
+              icon: faVoicemail,
+            })}
+          </Grid>
+          <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
             {RenderInput({
               name: "address.street",
               placeholder: "Straße",
               autocompletePlaces: "address",
               required: "Straße muss angegeben werden",
+              icon: faMapMarkerAlt,
             })}
           </Grid>
-          <Grid item xs={12} md={6} lg={2}>
+          <Grid item xs={12} md={6} lg={2} className={inputFields.streetNumber}>
             {RenderInput({
               name: "address.streetNumber",
               placeholder: "Hausnummer",
               required: "Hausnummer muss angegeben werden",
+              icon: faMapMarkerAlt,
             })}
           </Grid>
-          <Grid item xs={12} md={6} lg={6}>
-            {RenderInput({
-              name: "phoneNumber",
-              placeholder: "Telefonnummer",
-              required: "Telefonnummer muss angegeben werden",
-            })}
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12} md={6} lg={4} className={inputFields.town}>
             {RenderInput({
               name: "address.town",
               placeholder: "Stadt",
               required: "Stadt muss angegeben werden",
+              icon: faMapMarkerAlt,
             })}
           </Grid>
-          <Grid item xs={12} md={6} lg={2}>
+          <Grid item xs={12} md={6} lg={2} className={inputFields.zipCode}>
             {RenderInput({
               name: "address.zipCode",
               placeholder: "Postleitzahl",
               required: "",
+              icon: faMapMarkerAlt,
             })}
           </Grid>
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={6}
+            className={inputFields.schoolAdministrativeDistrict}
+          >
             <Controller
               control={control}
               name="schoolAdministrativeDistrict"
@@ -322,7 +397,7 @@ export function CreateInstitution() {
                     startAdornment={
                       <InputAdornment position="start">
                         <FontAwesomeIcon
-                          icon={faMapMarkerAlt}
+                          icon={faQuestion}
                           className="inputIcon"
                         />
                       </InputAdornment>
@@ -340,7 +415,7 @@ export function CreateInstitution() {
 
         <Button
           type="submit"
-          label="Weiter"
+          label="Erstellen"
           buttonStyle={formButton}
           textColor="white"
           backgroundColor={theme.palette.primary.main}

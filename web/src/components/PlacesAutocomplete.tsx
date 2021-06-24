@@ -22,7 +22,7 @@ export default function PlacesAutocomplete({
   setValueInForm: UseFormSetValue<FormInstitutionType>;
   children: JSX.Element;
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
-  searchFor?: "school" | "address";
+  searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
 }) {
   const {
