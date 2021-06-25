@@ -585,7 +585,7 @@ export function CreateInstitution({
                 <FormControl
                   className={`${formInput.input} ${formInput.formControl}`}
                 >
-                  <InputLabel id="schoolAdministrativeDistrict">
+                  <InputLabel id="schoolAdministrativeDistrict" >
                     Schulverwaltungsbezirk?
                   </InputLabel>
                   <Select
