@@ -1,9 +1,9 @@
+import { Autocomplete as AutocompleteType, FormInstitutionType } from "../pages/Institution";
 import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
-import { FormInstitutionType } from "../pages/Institution";
 import { InputProps } from "@material-ui/core";
 
 // const loader = new Loader({
@@ -18,12 +18,14 @@ export default function PlacesAutocomplete({
   params,
   searchFor,
   InputProps,
+  autoComplete,
 }: {
   setValueInForm: UseFormSetValue<FormInstitutionType>;
   children: JSX.Element;
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
   searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
+  autoComplete?: AutocompleteType
 }) {
   const {
     suggestions: { status, data },
@@ -141,7 +143,8 @@ export default function PlacesAutocomplete({
       renderInput={(params) =>
         cloneElement(children, {
           ...params,
-          InputProps: { ...params.InputProps, ...InputProps, className: "" },
+          InputProps: { ...params.InputProps, ...InputProps, className: ""},
+          inputProps: {...params.inputProps, autoComplete}
         })
       }
       getOptionLabel={(option) =>

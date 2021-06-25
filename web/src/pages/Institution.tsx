@@ -77,6 +77,61 @@ export type FormInstitutionType = {
   schoolAdministrativeDistrict: boolean;
 };
 
+export type Autocomplete = "name" |
+"honorific-prefix" |
+"given-name" |
+"additional-name" |
+"family-name" |
+"honorific-suffix" |
+"nickname" |
+"username" |
+"new-password" |
+"current-password" |
+"one-time-code" |
+"organization-title" |
+"organization" |
+"street-address" |
+"address-line1" |
+"address-line2" |
+"address-line3" | 
+"address-level4" |
+"address-level3" |
+"address-level2" |
+"address-level1" |
+"country" |
+"country-name" |
+"postal-code" |
+"cc-name" |
+"cc-given-name" |
+"cc-additional-name" |
+"cc-family-name" |
+"cc-number" |
+"cc-exp" |
+"cc-exp-month" |
+"cc-exp-year" |
+"cc-csc" |
+"cc-type" |
+"transaction-currency" |
+"transaction-amount" |
+"language" |
+"bday" |
+"bday-day" |
+"bday-month" |
+"bday-year" |
+"sex" |
+"url" |
+"photo" |
+"tel" |
+"tel-country-code" |
+"tel-national" |
+"tel-area-code" |
+"tel-local" |
+"tel-local-prefix" |
+"tel-local-suffix" |
+"tel-extension" |
+"email" |
+"impp"
+
 const useButtonStyles = makeStyles({
   button: {
     display: "flex",
@@ -213,6 +268,7 @@ export function CreateInstitution() {
     icon = faEdit,
     autocompletePlaces,
     autofocus,
+    autoComplete
   }: {
     name: Leaves<FormInstitutionType>;
     placeholder: string;
@@ -221,6 +277,7 @@ export function CreateInstitution() {
     icon?: IconDefinition;
     autocompletePlaces?: "address" | "school" | "point_of_interest";
     autofocus?: boolean;
+    autoComplete?: Autocomplete
   }) => {
     useEffect(() => {
       setValue("schoolAdministrativeDistrict", Boolean(zipCode));
@@ -268,6 +325,7 @@ export function CreateInstitution() {
                 }
                 searchFor={autocompletePlaces}
                 InputProps={InputProps}
+                autoComplete={autoComplete}
               >
                 <TextField
                   placeholder={placeholder}
@@ -284,6 +342,7 @@ export function CreateInstitution() {
                 {...field}
                 InputProps={InputProps}
                 autoFocus={autofocus}
+                autoComplete={autoComplete}
               />
             )
           }
@@ -321,6 +380,7 @@ export function CreateInstitution() {
               required: "Institutions-Name muss angegeben werden",
               autofocus: true,
               icon: faUniversity,
+              autoComplete: "organization"
             })}
           </Grid>
           <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
@@ -337,6 +397,7 @@ export function CreateInstitution() {
               placeholder: "Telefonnummer",
               required: "Telefonnummer muss angegeben werden",
               icon: faVoicemail,
+              autoComplete: "tel"
             })}
           </Grid>
           <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
@@ -346,6 +407,7 @@ export function CreateInstitution() {
               autocompletePlaces: "address",
               required: "Straße muss angegeben werden",
               icon: faMapMarkerAlt,
+              autoComplete: "address-line1"
             })}
           </Grid>
           <Grid item xs={12} md={6} lg={2} className={inputFields.streetNumber}>
@@ -354,6 +416,7 @@ export function CreateInstitution() {
               placeholder: "Hausnummer",
               required: "Hausnummer muss angegeben werden",
               icon: faMapMarkerAlt,
+              autoComplete: "address-line2"
             })}
           </Grid>
           <Grid item xs={12} md={6} lg={4} className={inputFields.town}>
@@ -362,6 +425,7 @@ export function CreateInstitution() {
               placeholder: "Stadt",
               required: "Stadt muss angegeben werden",
               icon: faMapMarkerAlt,
+              autoComplete: "address-level2"
             })}
           </Grid>
           <Grid item xs={12} md={6} lg={2} className={inputFields.zipCode}>
@@ -370,6 +434,7 @@ export function CreateInstitution() {
               placeholder: "Postleitzahl",
               required: "Postleitzahl muss angegeben werden",
               icon: faMapMarkerAlt,
+              autoComplete: "postal-code"
             })}
           </Grid>
           <Grid
