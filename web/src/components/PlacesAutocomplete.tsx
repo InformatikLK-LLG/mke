@@ -1,50 +1,19 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import {
   ControllerRenderProps,
   Path,
   PathValue,
   UnpackNestedValue,
   UseFormSetValue,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  UseFormTrigger,
-=======
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-  UseFormWatch,
->>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
 } from "react-hook-form";
-=======
-=======
-import { Autocomplete as AutocompleteType, FormInstitutionType } from "../pages/Institution";
->>>>>>> aaef552 (Improve autofill capabilities in create institution form)
-import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
->>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
 import { FormInstitutionType } from "../pages/Institution";
-<<<<<<< HEAD
-=======
->>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 import { InputProps } from "@material-ui/core";
 import { Loader } from "@googlemaps/js-api-loader";
 import useOnclickOutside from "react-cool-onclickoutside";
-=======
-import InputAdornment from "@material-ui/core/InputAdornment";
-import { InputProps } from "@material-ui/core";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
-import { FormInstitutionType } from "../pages/Institution";
-import { InputProps } from "@material-ui/core";
->>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -52,7 +21,6 @@ import { InputProps } from "@material-ui/core";
 //   libraries: ["places"],
 // });
 
-<<<<<<< HEAD
 export default function PlacesAutocomplete<
   T extends {
     address: {
@@ -65,63 +33,21 @@ export default function PlacesAutocomplete<
     phoneNumber: string;
   }
 >({
-=======
-export default function PlacesAutocomplete({
->>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
   setValueInForm,
   children,
   params,
   searchFor,
-<<<<<<< HEAD
-<<<<<<< HEAD
   InputProps,
   autoComplete,
-<<<<<<< HEAD
   disabled = false,
-=======
-  value,
-<<<<<<< HEAD
->>>>>>> 0f99dfe (Split up search for institution by name and address)
-=======
-=======
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
-  InputProps,
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
->>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 }: {
-<<<<<<< HEAD
   setValueInForm: UseFormSetValue<T>;
-=======
-  setValueInForm: UseFormSetValue<FormInstitutionType>;
->>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
   children: JSX.Element;
-<<<<<<< HEAD
   params: ControllerRenderProps<T>;
   searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
   autoComplete?: AutocompleteType;
   disabled?: boolean;
-=======
-  params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
-<<<<<<< HEAD
-  searchFor?: "school" | "address";
-<<<<<<< HEAD
-  value: string;
-<<<<<<< HEAD
->>>>>>> 0f99dfe (Split up search for institution by name and address)
-=======
-=======
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
-=======
-  searchFor?: "school" | "address" | "point_of_interest";
->>>>>>> 670dbe3 (Add input adornments to form items. Responsively change order of form items)
-  InputProps: InputProps;
-<<<<<<< HEAD
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
-  autoComplete?: AutocompleteType
->>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
@@ -146,20 +72,12 @@ export default function PlacesAutocomplete({
         placeId: place_id,
         fields: ["address_components", "formatted_phone_number", "name"],
       };
-<<<<<<< HEAD
-=======
-
->>>>>>> 0f99dfe (Split up search for institution by name and address)
       try {
         const details = await getDetails(parameter);
         if (typeof details === "string") return;
         if (!details.address_components) return;
         if (searchFor !== "address") {
           details.formatted_phone_number &&
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             setValueInForm(
               "phoneNumber" as Path<T>,
               details.formatted_phone_number as UnpackNestedValue<
@@ -177,35 +95,11 @@ export default function PlacesAutocomplete({
                 shouldValidate: true,
               }
             );
-=======
-            setValueInForm("phoneNumber", details.formatted_phone_number);
-          details.name && setValueInForm("name", details.name);
->>>>>>> 0f99dfe (Split up search for institution by name and address)
-=======
-=======
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
-            setValueInForm("phoneNumber", details.formatted_phone_number, {
-              shouldValidate: true,
-            });
-          details.name &&
-            setValueInForm("name", details.name, { shouldValidate: true });
-<<<<<<< HEAD
->>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
-=======
-            setValueInForm("phoneNumber", details.formatted_phone_number);
-          details.name && setValueInForm("name", details.name);
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
               setValueInForm(
                 "address.streetNumber" as Path<T>,
                 component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
@@ -240,51 +134,6 @@ export default function PlacesAutocomplete({
                   shouldValidate: true,
                 }
               );
-=======
-              setValueInForm("address.streetNumber", component.long_name);
-=======
-              setValueInForm("address.streetNumber", component.long_name, {
-                shouldValidate: true,
-              });
->>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
-=======
-              setValueInForm("address.streetNumber", component.long_name);
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
-              setValueInForm("address.streetNumber", component.long_name, {
-                shouldValidate: true,
-              });
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
-              break;
-            case "route":
-              setValueInForm("address.street", component.long_name, {
-                shouldValidate: true,
-              });
-              break;
-            case "locality":
-              setValueInForm("address.town", component.long_name, {
-                shouldValidate: true,
-              });
-              break;
-            case "postal_code":
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-              setValueInForm("address.zipCode", component.long_name);
->>>>>>> 0f99dfe (Split up search for institution by name and address)
-=======
-              setValueInForm("address.zipCode", component.long_name, {
-                shouldValidate: true,
-              });
->>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
-=======
-              setValueInForm("address.zipCode", component.long_name);
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
-              setValueInForm("address.zipCode", component.long_name, {
-                shouldValidate: true,
-              });
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
               break;
 
             default:
@@ -309,23 +158,9 @@ export default function PlacesAutocomplete({
     });
 
   useEffect(() => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     setValue(params.value as string);
   }, [params.value, setValue]);
 
-=======
-    setValue(value);
-  }, [value, setValue]);
->>>>>>> 0f99dfe (Split up search for institution by name and address)
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-=======
-    setValue(params.value);
-  }, [params.value, setValue]);
->>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
 
   // useEffect(() => {
   //   async function load() {
@@ -341,17 +176,9 @@ export default function PlacesAutocomplete({
       includeInputInList
       filterSelectedOptions
       disableClearable
-<<<<<<< HEAD
-<<<<<<< HEAD
       disabled={disabled}
       style={{ display: "inline" }}
       inputValue={value as string}
-=======
-=======
-      style={{display: "inline"}}
->>>>>>> b15840c (Fix validation message width on AutoComplete components)
-      inputValue={params.value}
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
         if (typeof option !== "string" && option) {
@@ -374,28 +201,8 @@ export default function PlacesAutocomplete({
       renderInput={(params) =>
         cloneElement(children, {
           ...params,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
-=======
-          InputProps: {
-            ...params.InputProps,
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-              </InputAdornment>
-            ),
-          },
->>>>>>> 0f99dfe (Split up search for institution by name and address)
-=======
-          InputProps: { ...params.InputProps, ...InputProps, className: "" },
->>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
-=======
-          InputProps: { ...params.InputProps, ...InputProps, className: ""},
-          inputProps: {...params.inputProps, autoComplete}
->>>>>>> aaef552 (Improve autofill capabilities in create institution form)
         })
       }
     />

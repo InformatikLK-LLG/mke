@@ -41,12 +41,16 @@
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "framer-motion": "^4.1.17",
 =======
     "axios": "^0.21.1",
 >>>>>>> 23ab92b (Add Search Field for querying table)
 =======
 >>>>>>> e474087 (First draft autocomplete)
+=======
+    "framer-motion": "^4.1.17",
+>>>>>>> 24beae5 (Add fadeout effect on validation messages. Cleanup)
     "react": "^17.0.2",
     "react-calendar": "^3.4.0",
     "react-cool-onclickoutside": "^1.6.2",
