@@ -19,10 +19,8 @@ import {
 } from "@material-ui/core";
 import {
   IconDefinition,
-  faCheck,
   faKeyboard,
   faMapMarkerAlt,
-  faPhoneAlt,
   faQuestion,
   faTimes,
   faUniversity,
@@ -94,8 +92,9 @@ const useInputStyles = makeStyles({
     margin: "0.5em",
     minWidth: "100%",
     fontSize: "1em",
-    // fontFamily: "SegoeUI",
-    fontFamily: "Times New Roman",
+    "&>*": {
+      fontFamily: "Segoe UI"
+    },
     "& .MuiInput-underline:hover:not(.Mui-disabled)::before": {
       borderColor: "var(--border)",
       borderWidth: "1.5px",
@@ -114,6 +113,9 @@ const useInputStyles = makeStyles({
   select: {
     marginBottom: 0,
     marginLeft: 0,
+  },
+  menuItem: {
+    fontFamily: "Segoe UI"
   },
   formControl: {
     marginTop: 0,
@@ -180,7 +182,6 @@ export default function Institution() {
 
 export function CreateInstitution() {
   const {
-    register,
     handleSubmit,
     setValue,
     control,
@@ -222,9 +223,7 @@ export function CreateInstitution() {
     autofocus?: boolean;
   }) => {
     useEffect(() => {
-      setValue("schoolAdministrativeDistrict", Boolean(zipCode), {
-        shouldValidate: true,
-      });
+      setValue("schoolAdministrativeDistrict", Boolean(zipCode));
       // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
       // eslint-disable-next-line
     }, [zipCode]);
@@ -387,7 +386,7 @@ export function CreateInstitution() {
                 <FormControl
                   className={`${formInput.input} ${formInput.formControl}`}
                 >
-                  <InputLabel id="schoolAdministrativeDistrict">
+                  <InputLabel id="schoolAdministrativeDistrict" >
                     Schulverwaltungsbezirk?
                   </InputLabel>
                   <Select
@@ -404,8 +403,8 @@ export function CreateInstitution() {
                     }
                     labelId="schoolAdministrativeDistrict"
                   >
-                    <MenuItem value={1}>Ja</MenuItem>
-                    <MenuItem value={0}>Nein</MenuItem>
+                    <MenuItem value={1} className={formInput.menuItem}>Ja</MenuItem>
+                    <MenuItem value={0} className={formInput.menuItem}>Nein</MenuItem>
                   </Select>
                 </FormControl>
               )}
