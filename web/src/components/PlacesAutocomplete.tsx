@@ -328,10 +328,14 @@ export default function PlacesAutocomplete({
       filterSelectedOptions
       disableClearable
 <<<<<<< HEAD
+<<<<<<< HEAD
       disabled={disabled}
       style={{ display: "inline" }}
       inputValue={value as string}
 =======
+=======
+      style={{display: "inline"}}
+>>>>>>> b15840c (Fix validation message width on AutoComplete components)
       inputValue={params.value}
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
       onInputChange={(e, value) => params.onChange(value)}
