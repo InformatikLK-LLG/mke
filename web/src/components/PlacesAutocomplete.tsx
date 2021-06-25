@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import {
   ControllerRenderProps,
   Path,
@@ -15,6 +16,9 @@ import {
 >>>>>>> 33f7c01 (Fix validation not being triggered on autofill)
 } from "react-hook-form";
 =======
+=======
+import { Autocomplete as AutocompleteType, FormInstitutionType } from "../pages/Institution";
+>>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
 >>>>>>> 7564262 (Extract function for rendering input fields. Use Select for schoolAdministrativeDistrict)
 import { cloneElement, useEffect } from "react";
@@ -22,9 +26,12 @@ import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
 import { FormInstitutionType } from "../pages/Institution";
 <<<<<<< HEAD
+=======
+>>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 import { InputProps } from "@material-ui/core";
 import { Loader } from "@googlemaps/js-api-loader";
 import useOnclickOutside from "react-cool-onclickoutside";
@@ -69,6 +76,7 @@ export default function PlacesAutocomplete({
 <<<<<<< HEAD
   InputProps,
   autoComplete,
+<<<<<<< HEAD
   disabled = false,
 =======
   value,
@@ -79,6 +87,8 @@ export default function PlacesAutocomplete({
 >>>>>>> bcd581f (Implicitly fix autocomplete input forms by cleaning shit up)
   InputProps,
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+>>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 }: {
 <<<<<<< HEAD
   setValueInForm: UseFormSetValue<T>;
@@ -107,7 +117,11 @@ export default function PlacesAutocomplete({
   searchFor?: "school" | "address" | "point_of_interest";
 >>>>>>> 670dbe3 (Add input adornments to form items. Responsively change order of form items)
   InputProps: InputProps;
+<<<<<<< HEAD
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+  autoComplete?: AutocompleteType
+>>>>>>> aaef552 (Improve autofill capabilities in create institution form)
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
@@ -362,6 +376,7 @@ export default function PlacesAutocomplete({
           ...params,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
 =======
@@ -377,6 +392,10 @@ export default function PlacesAutocomplete({
 =======
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
 >>>>>>> f7b8c98 (Try styling end adornment (clear button for input field))
+=======
+          InputProps: { ...params.InputProps, ...InputProps, className: ""},
+          inputProps: {...params.inputProps, autoComplete}
+>>>>>>> aaef552 (Improve autofill capabilities in create institution form)
         })
       }
     />
