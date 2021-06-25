@@ -368,7 +368,7 @@ export function CreateInstitution() {
             {RenderInput({
               name: "address.zipCode",
               placeholder: "Postleitzahl",
-              required: "",
+              required: "Postleitzahl muss angegeben werden",
               icon: faMapMarkerAlt,
             })}
           </Grid>

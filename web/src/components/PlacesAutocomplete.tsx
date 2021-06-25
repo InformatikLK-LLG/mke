@@ -117,6 +117,7 @@ export default function PlacesAutocomplete({
       includeInputInList
       filterSelectedOptions
       disableClearable
+      style={{display: "inline"}}
       inputValue={params.value}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
