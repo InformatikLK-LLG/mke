@@ -31,6 +31,7 @@
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
+    "framer-motion": "^4.1.17",
     "react": "^17.0.2",
     "react-calendar": "^3.4.0",
     "react-cool-onclickoutside": "^1.6.2",

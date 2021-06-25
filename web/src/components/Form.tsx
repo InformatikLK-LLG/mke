@@ -1,6 +1,12 @@
 import "../styles/Form.css";
 
-import { FieldError, UseFormRegister, useForm } from "react-hook-form";
+import {
+  FieldError,
+  Path,
+  UseFormClearErrors,
+  UseFormRegister,
+  useForm,
+} from "react-hook-form";
 import {
   InputAdornment,
   TextField,
@@ -15,11 +21,13 @@ import {
   faUser,
 } from "@fortawesome/free-regular-svg-icons";
 
+import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "./FormErrorMessage";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
 
 const useButtonStyles = makeStyles({
   button: {
@@ -59,11 +67,19 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    clearErrors,
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
   const auth = useAuth();
   const theme = useTheme();
+
+  useEffect(() => {
+    if (errors.password) {
+      const timer = setTimeout(() => clearErrors("password"), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors.password]);
 
   return (
     <form
@@ -72,7 +88,11 @@ export function LoginForm() {
         navigate("/");
       })}
     >
-      <EmailInputField register={register} emailErrors={errors.email} />
+      <EmailInputField
+        register={register}
+        emailErrors={errors.email}
+        clearErrors={clearErrors}
+      />
       <TextField
         placeholder="Password"
         type="password"
@@ -107,6 +127,7 @@ export function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
+    clearErrors,
     formState: { errors },
   } = useForm<ForgotPasswordFormInputs>();
   const navigate = useNavigate();
@@ -114,7 +135,11 @@ export function ForgotPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit(({ email }) => navigate("/login"))}>
-      <EmailInputField register={register} emailErrors={errors.email} />
+      <EmailInputField
+        register={register}
+        emailErrors={errors.email}
+        clearErrors={clearErrors}
+      />
       <Button
         type="submit"
         label="Weiter"
@@ -137,11 +162,19 @@ export function RegisterForm1() {
     register,
     handleSubmit,
     setError,
+    clearErrors,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const theme = useTheme();
   const { validateInviteCode } = useAuth();
+
+  useEffect(() => {
+    if (errors.code) {
+      const timer = setTimeout(() => clearErrors("code"), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors.code]);
 
   return (
     <form
@@ -152,7 +185,11 @@ export function RegisterForm1() {
       })}
     >
       <label>
-        {errors.code && <FormErrorMessage message={errors.code.message} />}
+        <AnimatePresence>
+          {errors.code && (
+            <FormErrorMessage name="code" message={errors.code.message} />
+          )}
+        </AnimatePresence>
         <TextField
           placeholder="Code"
           className={formInput.input}
@@ -196,6 +233,7 @@ export function RegisterForm2() {
     register,
     handleSubmit,
     getValues,
+    clearErrors,
     formState: { errors },
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
@@ -204,6 +242,20 @@ export function RegisterForm2() {
   const {
     registerState: { code },
   } = location.state as { registerState: { code: number } };
+
+  useEffect(() => {
+    if (errors.firstName) {
+      const timer = setTimeout(() => clearErrors("firstName"), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors.firstName]);
+
+  useEffect(() => {
+    if (errors.lastName) {
+      const timer = setTimeout(() => clearErrors("lastName"), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors.lastName]);
 
   return (
     <form
@@ -216,9 +268,14 @@ export function RegisterForm2() {
       )}
     >
       <label>
-        {errors.firstName && (
-          <FormErrorMessage message={errors.firstName.message} />
-        )}
+        <AnimatePresence>
+          {errors.firstName && (
+            <FormErrorMessage
+              name="firstName"
+              message={errors.firstName.message}
+            />
+          )}
+        </AnimatePresence>
         <TextField
           placeholder="Vorname"
           className={formInput.input}
@@ -236,9 +293,14 @@ export function RegisterForm2() {
         />
       </label>
       <label>
-        {errors.lastName && (
-          <FormErrorMessage message={errors.lastName.message} />
-        )}
+        <AnimatePresence>
+          {errors.lastName && (
+            <FormErrorMessage
+              name="lastName"
+              message={errors.lastName.message}
+            />
+          )}
+        </AnimatePresence>
         <TextField
           placeholder="Nachname"
           className={formInput.input}
@@ -254,7 +316,11 @@ export function RegisterForm2() {
           }}
         />
       </label>
-      <EmailInputField register={register} emailErrors={errors.email} />
+      <EmailInputField
+        register={register}
+        emailErrors={errors.email}
+        clearErrors={clearErrors}
+      />
       <Button
         textColor="white"
         backgroundColor={theme.palette.primary.main}
@@ -285,6 +351,7 @@ export function RegisterForm3() {
     handleSubmit,
     setError,
     getValues,
+    clearErrors,
     formState: { errors },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const navigate = useNavigate();
@@ -299,6 +366,20 @@ export function RegisterForm3() {
       email: string;
     };
   };
+
+  useEffect(() => {
+    if (errors.password) {
+      const timer = setTimeout(() => clearErrors("password"), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors.password]);
+
+  useEffect(() => {
+    if (errors.passwordRepeated) {
+      const timer = setTimeout(() => clearErrors("passwordRepeated"), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [errors.passwordRepeated]);
 
   return (
     <form
@@ -320,9 +401,14 @@ export function RegisterForm3() {
       })}
     >
       <label>
-        {errors.password && (
-          <FormErrorMessage message={errors.password.message} />
-        )}
+        <AnimatePresence>
+          {errors.password && (
+            <FormErrorMessage
+              name="password"
+              message={errors.password.message}
+            />
+          )}
+        </AnimatePresence>
         <TextField
           placeholder="Passwort"
           type="password"
@@ -346,9 +432,14 @@ export function RegisterForm3() {
         />
       </label>
       <label>
-        {errors.passwordRepeated && (
-          <FormErrorMessage message={errors.passwordRepeated.message} />
-        )}
+        <AnimatePresence>
+          {errors.passwordRepeated && (
+            <FormErrorMessage
+              name="passwordRepeated"
+              message={errors.passwordRepeated.message}
+            />
+          )}
+        </AnimatePresence>
         <TextField
           placeholder="Passwort bestätigen"
           type="password"
@@ -380,18 +471,32 @@ export function RegisterForm3() {
   );
 }
 
-function EmailInputField({
+function EmailInputField<T>({
   register,
   emailErrors,
+  clearErrors,
 }: {
   register: UseFormRegister<any>;
   emailErrors: FieldError | undefined;
+  clearErrors: UseFormClearErrors<T>;
 }) {
   const formInput = useInputStyles();
+
+  useEffect(() => {
+    if (emailErrors) {
+      const timer = setTimeout(() => clearErrors("email" as Path<T>), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [emailErrors]);
+
   return (
     <>
       <label>
-        {emailErrors && <FormErrorMessage message={emailErrors.message} />}
+        <AnimatePresence>
+          {emailErrors && (
+            <FormErrorMessage name="email" message={emailErrors.message} />
+          )}
+        </AnimatePresence>
         <TextField
           placeholder="Email"
           className={formInput.input}

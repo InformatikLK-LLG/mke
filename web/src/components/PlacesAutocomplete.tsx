@@ -1,4 +1,7 @@
-import { Autocomplete as AutocompleteType, FormInstitutionType } from "../pages/Institution";
+import {
+  Autocomplete as AutocompleteType,
+  FormInstitutionType,
+} from "../pages/Institution";
 import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
@@ -25,7 +28,7 @@ export default function PlacesAutocomplete({
   params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
   searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
-  autoComplete?: AutocompleteType
+  autoComplete?: AutocompleteType;
 }) {
   const {
     suggestions: { status, data },
@@ -119,7 +122,7 @@ export default function PlacesAutocomplete({
       includeInputInList
       filterSelectedOptions
       disableClearable
-      style={{display: "inline"}}
+      style={{ display: "inline" }}
       inputValue={params.value}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
@@ -143,8 +146,8 @@ export default function PlacesAutocomplete({
       renderInput={(params) =>
         cloneElement(children, {
           ...params,
-          InputProps: { ...params.InputProps, ...InputProps, className: ""},
-          inputProps: {...params.inputProps, autoComplete}
+          InputProps: { ...params.InputProps, ...InputProps, className: "" },
+          inputProps: { ...params.inputProps, autoComplete },
         })
       }
       getOptionLabel={(option) =>
