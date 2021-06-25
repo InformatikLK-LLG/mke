@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 import { motion } from "framer-motion";
 
 export default function FormErrorMessage({
+=======
+import { FormInstitutionType } from "../pages/Institution";
+import { motion } from "framer-motion";
+
+export default function FormErrorMessage<T>({
+>>>>>>> 24beae5 (Add fadeout effect on validation messages. Cleanup)
   message,
   name,
 }: {
