@@ -79,7 +79,7 @@ export function LoginForm() {
       const timer = setTimeout(() => clearErrors("password"), 5000);
       return () => clearTimeout(timer);
     }
-  }, [errors.password]);
+  }, [errors.password, clearErrors]);
 
   return (
     <form
@@ -174,7 +174,7 @@ export function RegisterForm1() {
       const timer = setTimeout(() => clearErrors("code"), 5000);
       return () => clearTimeout(timer);
     }
-  }, [errors.code]);
+  }, [errors.code, clearErrors]);
 
   return (
     <form
@@ -248,14 +248,14 @@ export function RegisterForm2() {
       const timer = setTimeout(() => clearErrors("firstName"), 5000);
       return () => clearTimeout(timer);
     }
-  }, [errors.firstName]);
+  }, [errors.firstName, clearErrors]);
 
   useEffect(() => {
     if (errors.lastName) {
       const timer = setTimeout(() => clearErrors("lastName"), 5000);
       return () => clearTimeout(timer);
     }
-  }, [errors.lastName]);
+  }, [errors.lastName, clearErrors]);
 
   return (
     <form
@@ -372,14 +372,14 @@ export function RegisterForm3() {
       const timer = setTimeout(() => clearErrors("password"), 5000);
       return () => clearTimeout(timer);
     }
-  }, [errors.password]);
+  }, [errors.password, clearErrors]);
 
   useEffect(() => {
     if (errors.passwordRepeated) {
       const timer = setTimeout(() => clearErrors("passwordRepeated"), 5000);
       return () => clearTimeout(timer);
     }
-  }, [errors.passwordRepeated]);
+  }, [errors.passwordRepeated, clearErrors]);
 
   return (
     <form
@@ -487,7 +487,7 @@ function EmailInputField<T>({
       const timer = setTimeout(() => clearErrors("email" as Path<T>), 5000);
       return () => clearTimeout(timer);
     }
-  }, [emailErrors]);
+  }, [emailErrors, clearErrors]);
 
   return (
     <>

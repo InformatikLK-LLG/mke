@@ -30,12 +30,17 @@ export default function PlacesAutocomplete({
   InputProps: InputProps;
   autoComplete?: AutocompleteType;
 }) {
+  const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
     suggestions: { status, data },
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
     debounce: 300,
+    requestOptions: {
+      componentRestrictions: { country: "de" },
+      types,
+    },
   });
 
   const handleSelect =

@@ -287,15 +287,15 @@ export function CreateInstitution() {
       // eslint-disable-next-line
     }, [zipCode]);
 
+    const error = accessNestedValues(name, errors);
     useEffect(() => {
-      const error = accessNestedValues(name, errors);
       if (error) {
         const timer = setTimeout(() => {
           clearErrors(name);
         }, 5000);
         return () => clearTimeout(timer);
       }
-    }, [accessNestedValues(name, errors)]);
+    }, [error, name]);
 
     const InputProps = {
       startAdornment: (
@@ -678,7 +678,7 @@ export function InstitutionOverlay() {
   useEffect(() => {
     if (isButtonPressed) {
       const timer = setTimeout(() => {
-        setIsVisible(!isVisible);
+        setIsVisible((visible) => !visible);
         setIsButtonPressed(false);
       }, 2000);
       return () => clearTimeout(timer);
