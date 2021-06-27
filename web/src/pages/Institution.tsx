@@ -183,8 +183,7 @@ const useInputStyles = makeStyles({
     margin: 0,
     padding: 0,
     "&:hover": {
-      color: "red",
-      boxShadow: "0 0 0 2pt red",
+      cursor: "pointer",
     },
   },
 });
