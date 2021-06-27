@@ -22,6 +22,7 @@ export default function PlacesAutocomplete({
   searchFor,
   InputProps,
   autoComplete,
+  disabled = false
 }: {
   setValueInForm: UseFormSetValue<FormInstitutionType>;
   children: JSX.Element;
@@ -29,6 +30,7 @@ export default function PlacesAutocomplete({
   searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
   autoComplete?: AutocompleteType;
+  disabled?: boolean
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
@@ -153,6 +155,7 @@ export default function PlacesAutocomplete({
           ...params,
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
+          disabled
         })
       }
       getOptionLabel={(option) =>

@@ -2,8 +2,14 @@ import "../styles/Table.css";
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Control,
   Controller,
   ControllerRenderProps,
+  DeepMap,
+  FieldError,
+  UseFormClearErrors,
+  UseFormGetValues,
+  UseFormSetValue,
   ValidationRule,
   useForm,
 } from "react-hook-form";
@@ -40,8 +46,10 @@ import {
 import { useEffect, useState } from "react";
 
 import Button from "../components/Button";
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
+import { InstitutionOverlay } from "../components/InstitutionOverlay";
 import { Outlet } from "react-router-dom";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
@@ -76,6 +84,16 @@ export type FormInstitutionType = {
   phoneNumber: string;
   schoolAdministrativeDistrict: boolean;
 };
+
+type FormState = {
+    setValue: UseFormSetValue<FormInstitutionType>;
+    control: Control<FormInstitutionType>;
+    zipCode: string;
+    errors: DeepMap<FormInstitutionType, FieldError>;
+    clearErrors: UseFormClearErrors<FormInstitutionType>;
+    getValues: UseFormGetValues<FormInstitutionType>;
+    formInput: ClassNameMap<"input" | "checkbox" | "select" | "menuItem" | "formControl" | "clearButton">;
+  }
 
 export type Autocomplete =
   | "name"
@@ -231,11 +249,126 @@ const useInputFields = makeStyles((theme: Theme) => ({
   },
 }));
 
+const RenderInput = ({
+  name,
+  placeholder,
+  required,
+  type = "text",
+  icon = faEdit,
+  autocompletePlaces,
+  autofocus,
+  autoComplete,
+  disabled,
+  formState,
+}: {
+  name: Leaves<FormInstitutionType>;
+  placeholder: string;
+  required?: ValidationRule<boolean> | string;
+  type?: string;
+  icon?: IconDefinition;
+  autocompletePlaces?: "address" | "school" | "point_of_interest";
+  autofocus?: boolean;
+  autoComplete?: Autocomplete;
+  disabled?: boolean;
+  formState: FormState;
+}) => {
+  const { setValue, control, zipCode, errors, clearErrors, getValues,  formInput } = formState;
+  useEffect(() => {
+    setValue("schoolAdministrativeDistrict", Boolean(zipCode));
+    // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
+    // eslint-disable-next-line
+  }, [zipCode]);
+
+  const error = accessNestedValues(name, errors);
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        clearErrors(name);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, name]);
+
+  const InputProps = {
+    startAdornment: (
+      <InputAdornment position="start">
+        <FontAwesomeIcon className="inputIcon" icon={icon} />
+      </InputAdornment>
+    ),
+    endAdornment: getValues(name) && (
+      <InputAdornment position="end" className={formInput.clearButton}>
+        <FontAwesomeIcon
+          className={`inputIcon`}
+          icon={faTimes}
+          onClick={() => setValue(name, "", { shouldValidate: true })}
+        />
+      </InputAdornment>
+    ),
+  };
+
+  return (
+    <label>
+      <AnimatePresence>
+        {accessNestedValues(name, errors) && (
+          <FormErrorMessage
+            message={accessNestedValues(name, errors).message}
+            name={name}
+          />
+        )}
+      </AnimatePresence>
+      <Controller
+        control={control}
+        name={name}
+        rules={required ? { required } : undefined}
+        render={({ field }) =>
+          autocompletePlaces ? (
+            <PlacesAutocomplete
+              setValueInForm={setValue}
+              params={
+                field as ControllerRenderProps<
+                  FormInstitutionType,
+                  "name" | "address.street"
+                >
+              }
+              searchFor={autocompletePlaces}
+              InputProps={InputProps}
+              autoComplete={autoComplete}
+              disabled={disabled}
+            >
+              <TextField
+                placeholder={placeholder}
+                type="text"
+                className={formInput.input}
+                autoFocus={autofocus}
+              />
+            </PlacesAutocomplete>
+          ) : (
+            <TextField
+              placeholder={placeholder}
+              type={type}
+              className={formInput.input}
+              {...field}
+              InputProps={InputProps}
+              autoFocus={autofocus}
+              autoComplete={autoComplete}
+              disabled={disabled}
+            />
+          )
+        }
+      />
+    </label>
+  );
+};
+
 export default function Institution() {
   return <Outlet />;
 }
 
-export function CreateInstitution() {
+export function CreateInstitution({
+  disabled = false,
+}: {
+  disabled?: boolean;
+}) {
   const {
     handleSubmit,
     setValue,
@@ -260,110 +393,7 @@ export function CreateInstitution() {
   const inputFields = useInputFields(theme);
 
   const zipCode = watch("address.zipCode");
-
-  const RenderInput = ({
-    name,
-    placeholder,
-    required,
-    type = "text",
-    icon = faEdit,
-    autocompletePlaces,
-    autofocus,
-    autoComplete,
-  }: {
-    name: Leaves<FormInstitutionType>;
-    placeholder: string;
-    required?: ValidationRule<boolean> | string;
-    type?: string;
-    icon?: IconDefinition;
-    autocompletePlaces?: "address" | "school" | "point_of_interest";
-    autofocus?: boolean;
-    autoComplete?: Autocomplete;
-  }) => {
-    useEffect(() => {
-      setValue("schoolAdministrativeDistrict", Boolean(zipCode));
-      // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
-      // eslint-disable-next-line
-    }, [zipCode]);
-
-    const error = accessNestedValues(name, errors);
-    useEffect(() => {
-      if (error) {
-        const timer = setTimeout(() => {
-          clearErrors(name);
-        }, 5000);
-        return () => clearTimeout(timer);
-      }
-    }, [error, name]);
-
-    const InputProps = {
-      startAdornment: (
-        <InputAdornment position="start">
-          <FontAwesomeIcon className="inputIcon" icon={icon} />
-        </InputAdornment>
-      ),
-      endAdornment: getValues(name) && (
-        <InputAdornment position="end" className={formInput.clearButton}>
-          <FontAwesomeIcon
-            className={`inputIcon`}
-            icon={faTimes}
-            onClick={() => setValue(name, "", { shouldValidate: true })}
-          />
-        </InputAdornment>
-      ),
-    };
-
-    return (
-      <label>
-        <AnimatePresence>
-          {accessNestedValues(name, errors) && (
-            <FormErrorMessage
-              message={accessNestedValues(name, errors).message}
-              name={name}
-            />
-          )}
-        </AnimatePresence>
-        <Controller
-          control={control}
-          name={name}
-          rules={required ? { required } : undefined}
-          render={({ field }) =>
-            autocompletePlaces ? (
-              <PlacesAutocomplete
-                setValueInForm={setValue}
-                params={
-                  field as ControllerRenderProps<
-                    FormInstitutionType,
-                    "name" | "address.street"
-                  >
-                }
-                searchFor={autocompletePlaces}
-                InputProps={InputProps}
-                autoComplete={autoComplete}
-              >
-                <TextField
-                  placeholder={placeholder}
-                  type="text"
-                  className={formInput.input}
-                  autoFocus={autofocus}
-                />
-              </PlacesAutocomplete>
-            ) : (
-              <TextField
-                placeholder={placeholder}
-                type={type}
-                className={formInput.input}
-                {...field}
-                InputProps={InputProps}
-                autoFocus={autofocus}
-                autoComplete={autoComplete}
-              />
-            )
-          }
-        />
-      </label>
-    );
-  };
+  const formState: FormState = {clearErrors, control, errors, formInput, getValues, setValue, zipCode};
 
   return (
     <div className="container">
@@ -395,16 +425,20 @@ export function CreateInstitution() {
               autofocus: true,
               icon: faUniversity,
               autoComplete: "organization",
+              formState
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
             {RenderInput({
               name: "id",
               placeholder: "INST-Code",
               required: "INST-Code muss angegeben werden",
               icon: faKeyboard,
+              formState
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={6} className={inputFields.phoneNumber}>
             {RenderInput({
               name: "phoneNumber",
@@ -412,8 +446,10 @@ export function CreateInstitution() {
               required: "Telefonnummer muss angegeben werden",
               icon: faVoicemail,
               autoComplete: "tel",
+              formState
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
             {RenderInput({
               name: "address.street",
@@ -422,8 +458,10 @@ export function CreateInstitution() {
               required: "Straße muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "address-line1",
+              formState
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={2} className={inputFields.streetNumber}>
             {RenderInput({
               name: "address.streetNumber",
@@ -431,8 +469,10 @@ export function CreateInstitution() {
               required: "Hausnummer muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "address-line2",
+              formState
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={4} className={inputFields.town}>
             {RenderInput({
               name: "address.town",
@@ -440,8 +480,10 @@ export function CreateInstitution() {
               required: "Stadt muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "address-level2",
+              formState
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={2} className={inputFields.zipCode}>
             {RenderInput({
               name: "address.zipCode",
@@ -449,8 +491,10 @@ export function CreateInstitution() {
               required: "Postleitzahl muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "postal-code",
+              formState
             })}
           </Grid>
+
           <Grid
             item
             xs={12}
@@ -664,35 +708,5 @@ export function ViewDetails() {
     <div>
       <InstitutionOverlay />
     </div>
-  );
-}
-
-const MyComponent = ({ isVisible }: { isVisible: boolean }) => (
-  <motion.div animate={{ opacity: isVisible ? 1 : 0 }}>blub</motion.div>
-);
-
-export function InstitutionOverlay() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isButtonPressed, setIsButtonPressed] = useState(false);
-  useEffect(() => {
-    if (isButtonPressed) {
-      const timer = setTimeout(() => {
-        setIsVisible((visible) => !visible);
-        setIsButtonPressed(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isButtonPressed]);
-
-  return (
-    <>
-      <MyComponent isVisible={isVisible} />
-      <button
-        onClick={() => setIsButtonPressed(true)}
-        disabled={isButtonPressed}
-      >
-        click me
-      </button>
-    </>
   );
 }
