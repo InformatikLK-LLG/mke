@@ -7,6 +7,9 @@ import {
   ControllerRenderProps,
   DeepMap,
   FieldError,
+  Path,
+  PathValue,
+  UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetValues,
   UseFormSetValue,
@@ -85,13 +88,13 @@ export type FormInstitutionType = {
   schoolAdministrativeDistrict: boolean;
 };
 
-type FormState = {
-    setValue: UseFormSetValue<FormInstitutionType>;
-    control: Control<FormInstitutionType>;
+type FormState<T> = {
+    setValue: UseFormSetValue<T>;
+    control: Control<T>;
     zipCode: string;
-    errors: DeepMap<FormInstitutionType, FieldError>;
-    clearErrors: UseFormClearErrors<FormInstitutionType>;
-    getValues: UseFormGetValues<FormInstitutionType>;
+    errors: DeepMap<T, FieldError>;
+    clearErrors: UseFormClearErrors<T>;
+    getValues: UseFormGetValues<T>;
     formInput: ClassNameMap<"input" | "checkbox" | "select" | "menuItem" | "formControl" | "clearButton">;
   }
 
@@ -249,7 +252,7 @@ const useInputFields = makeStyles((theme: Theme) => ({
   },
 }));
 
-const RenderInput = ({
+const RenderInput = <T, >({
   name,
   placeholder,
   required,
@@ -261,7 +264,7 @@ const RenderInput = ({
   disabled,
   formState,
 }: {
-  name: Leaves<FormInstitutionType>;
+  name: Path<T>;
   placeholder: string;
   required?: ValidationRule<boolean> | string;
   type?: string;
@@ -270,14 +273,9 @@ const RenderInput = ({
   autofocus?: boolean;
   autoComplete?: Autocomplete;
   disabled?: boolean;
-  formState: FormState;
+  formState: FormState<T>;
 }) => {
   const { setValue, control, zipCode, errors, clearErrors, getValues,  formInput } = formState;
-  useEffect(() => {
-    setValue("schoolAdministrativeDistrict", Boolean(zipCode));
-    // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
-    // eslint-disable-next-line
-  }, [zipCode]);
 
   const error = accessNestedValues(name, errors);
   useEffect(() => {
@@ -300,7 +298,7 @@ const RenderInput = ({
         <FontAwesomeIcon
           className={`inputIcon`}
           icon={faTimes}
-          onClick={() => setValue(name, "", { shouldValidate: true })}
+          onClick={() => setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, { shouldValidate: true })}
         />
       </InputAdornment>
     ),
@@ -323,7 +321,7 @@ const RenderInput = ({
         render={({ field }) =>
           autocompletePlaces ? (
             <PlacesAutocomplete
-              setValueInForm={setValue}
+              setValueInForm={(setValue as unknown) as UseFormSetValue<FormInstitutionType>}
               params={
                 field as ControllerRenderProps<
                   FormInstitutionType,
@@ -393,7 +391,13 @@ export function CreateInstitution({
   const inputFields = useInputFields(theme);
 
   const zipCode = watch("address.zipCode");
-  const formState: FormState = {clearErrors, control, errors, formInput, getValues, setValue, zipCode};
+  const formState: FormState<FormInstitutionType> = {clearErrors, control, errors, formInput, getValues, setValue, zipCode};
+
+  useEffect(() => {
+    setValue("schoolAdministrativeDistrict", Boolean(zipCode));
+    // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
+    // eslint-disable-next-line
+  }, [zipCode]);
 
   return (
     <div className="container">
