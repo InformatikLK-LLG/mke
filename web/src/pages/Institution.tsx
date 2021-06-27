@@ -1,6 +1,5 @@
 import "../styles/Table.css";
 
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Control,
   Controller,
@@ -48,6 +47,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { useEffect, useState } from "react";
 
+import { AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -89,14 +89,16 @@ export type FormInstitutionType = {
 };
 
 type FormState<T> = {
-    setValue: UseFormSetValue<T>;
-    control: Control<T>;
-    zipCode: string;
-    errors: DeepMap<T, FieldError>;
-    clearErrors: UseFormClearErrors<T>;
-    getValues: UseFormGetValues<T>;
-    formInput: ClassNameMap<"input" | "checkbox" | "select" | "menuItem" | "formControl" | "clearButton">;
-  }
+  setValue: UseFormSetValue<T>;
+  control: Control<T>;
+  zipCode: string;
+  errors: DeepMap<T, FieldError>;
+  clearErrors: UseFormClearErrors<T>;
+  getValues: UseFormGetValues<T>;
+  formInput: ClassNameMap<
+    "input" | "checkbox" | "select" | "menuItem" | "formControl" | "clearButton"
+  >;
+};
 
 export type Autocomplete =
   | "name"
@@ -252,7 +254,7 @@ const useInputFields = makeStyles((theme: Theme) => ({
   },
 }));
 
-const RenderInput = <T, >({
+export const RenderInput = <T,>({
   name,
   placeholder,
   required,
@@ -275,7 +277,15 @@ const RenderInput = <T, >({
   disabled?: boolean;
   formState: FormState<T>;
 }) => {
-  const { setValue, control, zipCode, errors, clearErrors, getValues,  formInput } = formState;
+  const {
+    setValue,
+    control,
+    zipCode,
+    errors,
+    clearErrors,
+    getValues,
+    formInput,
+  } = formState;
 
   const error = accessNestedValues(name, errors);
   useEffect(() => {
@@ -285,7 +295,7 @@ const RenderInput = <T, >({
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [error, name]);
+  }, [error, name, clearErrors]);
 
   const InputProps = {
     startAdornment: (
@@ -298,7 +308,11 @@ const RenderInput = <T, >({
         <FontAwesomeIcon
           className={`inputIcon`}
           icon={faTimes}
-          onClick={() => setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, { shouldValidate: true })}
+          onClick={() =>
+            setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, {
+              shouldValidate: true,
+            })
+          }
         />
       </InputAdornment>
     ),
@@ -321,7 +335,9 @@ const RenderInput = <T, >({
         render={({ field }) =>
           autocompletePlaces ? (
             <PlacesAutocomplete
-              setValueInForm={(setValue as unknown) as UseFormSetValue<FormInstitutionType>}
+              setValueInForm={
+                setValue as unknown as UseFormSetValue<FormInstitutionType>
+              }
               params={
                 field as ControllerRenderProps<
                   FormInstitutionType,
@@ -391,7 +407,15 @@ export function CreateInstitution({
   const inputFields = useInputFields(theme);
 
   const zipCode = watch("address.zipCode");
-  const formState: FormState<FormInstitutionType> = {clearErrors, control, errors, formInput, getValues, setValue, zipCode};
+  const formState: FormState<FormInstitutionType> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+    zipCode,
+  };
 
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
@@ -429,7 +453,7 @@ export function CreateInstitution({
               autofocus: true,
               icon: faUniversity,
               autoComplete: "organization",
-              formState
+              formState,
             })}
           </Grid>
 
@@ -439,7 +463,7 @@ export function CreateInstitution({
               placeholder: "INST-Code",
               required: "INST-Code muss angegeben werden",
               icon: faKeyboard,
-              formState
+              formState,
             })}
           </Grid>
 
@@ -450,7 +474,7 @@ export function CreateInstitution({
               required: "Telefonnummer muss angegeben werden",
               icon: faVoicemail,
               autoComplete: "tel",
-              formState
+              formState,
             })}
           </Grid>
 
@@ -462,7 +486,7 @@ export function CreateInstitution({
               required: "Straße muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "address-line1",
-              formState
+              formState,
             })}
           </Grid>
 
@@ -473,7 +497,7 @@ export function CreateInstitution({
               required: "Hausnummer muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "address-line2",
-              formState
+              formState,
             })}
           </Grid>
 
@@ -484,7 +508,7 @@ export function CreateInstitution({
               required: "Stadt muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "address-level2",
-              formState
+              formState,
             })}
           </Grid>
 
@@ -495,7 +519,7 @@ export function CreateInstitution({
               required: "Postleitzahl muss angegeben werden",
               icon: faMapMarkerAlt,
               autoComplete: "postal-code",
-              formState
+              formState,
             })}
           </Grid>
 

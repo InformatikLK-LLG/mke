@@ -1,12 +1,15 @@
 import {
-  Autocomplete as AutocompleteType,
-  FormInstitutionType,
-} from "../pages/Institution";
-import { ControllerRenderProps, UseFormSetValue } from "react-hook-form";
+  ControllerRenderProps,
+  Path,
+  PathValue,
+  UnpackNestedValue,
+  UseFormSetValue,
+} from "react-hook-form";
 import { cloneElement, useEffect } from "react";
 import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
+import { Autocomplete as AutocompleteType } from "../pages/Institution";
 import { InputProps } from "@material-ui/core";
 
 // const loader = new Loader({
@@ -15,22 +18,33 @@ import { InputProps } from "@material-ui/core";
 //   libraries: ["places"],
 // });
 
-export default function PlacesAutocomplete({
+export default function PlacesAutocomplete<
+  T extends {
+    address: {
+      street: string;
+      streetNumber: string;
+      town: string;
+      zipCode: string;
+    };
+    name: string;
+    phoneNumber: string;
+  }
+>({
   setValueInForm,
   children,
   params,
   searchFor,
   InputProps,
   autoComplete,
-  disabled = false
+  disabled = false,
 }: {
-  setValueInForm: UseFormSetValue<FormInstitutionType>;
+  setValueInForm: UseFormSetValue<T>;
   children: JSX.Element;
-  params: ControllerRenderProps<FormInstitutionType, "address.street" | "name">;
+  params: ControllerRenderProps<T>;
   searchFor?: "school" | "address" | "point_of_interest";
   InputProps: InputProps;
   autoComplete?: AutocompleteType;
-  disabled?: boolean
+  disabled?: boolean;
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
@@ -54,41 +68,68 @@ export default function PlacesAutocomplete({
         placeId: place_id,
         fields: ["address_components", "formatted_phone_number", "name"],
       };
-
       try {
         const details = await getDetails(parameter);
         if (typeof details === "string") return;
         if (!details.address_components) return;
         if (searchFor !== "address") {
           details.formatted_phone_number &&
-            setValueInForm("phoneNumber", details.formatted_phone_number, {
-              shouldValidate: true,
-            });
+            setValueInForm(
+              "phoneNumber" as Path<T>,
+              details.formatted_phone_number as UnpackNestedValue<
+                PathValue<T, Path<T>>
+              >,
+              {
+                shouldValidate: true,
+              }
+            );
           details.name &&
-            setValueInForm("name", details.name, { shouldValidate: true });
+            setValueInForm(
+              "name" as Path<T>,
+              details.name as UnpackNestedValue<PathValue<T, Path<T>>>,
+              {
+                shouldValidate: true,
+              }
+            );
         }
 
         details.address_components.forEach((component: any) => {
           switch (component.types[0]) {
             case "street_number":
-              setValueInForm("address.streetNumber", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm(
+                "address.streetNumber" as Path<T>,
+                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
+                {
+                  shouldValidate: true,
+                }
+              );
               break;
             case "route":
-              setValueInForm("address.street", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm(
+                "address.street" as Path<T>,
+                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
+                {
+                  shouldValidate: true,
+                }
+              );
               break;
             case "locality":
-              setValueInForm("address.town", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm(
+                "address.town" as Path<T>,
+                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
+                {
+                  shouldValidate: true,
+                }
+              );
               break;
             case "postal_code":
-              setValueInForm("address.zipCode", component.long_name, {
-                shouldValidate: true,
-              });
+              setValueInForm(
+                "address.zipCode" as Path<T>,
+                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
+                {
+                  shouldValidate: true,
+                }
+              );
               break;
 
             default:
@@ -112,7 +153,7 @@ export default function PlacesAutocomplete({
     });
 
   useEffect(() => {
-    setValue(params.value);
+    setValue(params.value as string);
   }, [params.value, setValue]);
 
   // useEffect(() => {
@@ -130,7 +171,7 @@ export default function PlacesAutocomplete({
       filterSelectedOptions
       disableClearable
       style={{ display: "inline" }}
-      inputValue={params.value}
+      inputValue={params.value as string}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
         if (typeof option !== "string" && option) {
@@ -155,7 +196,7 @@ export default function PlacesAutocomplete({
           ...params,
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
-          disabled
+          disabled,
         })
       }
       getOptionLabel={(option) =>
