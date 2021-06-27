@@ -35,11 +35,8 @@ import {
   faUniversity,
   faVoicemail,
 } from "@fortawesome/free-solid-svg-icons";
-import Table, {
-  Leaves,
-  TableHeaders,
-  accessNestedValues,
-} from "../components/Table";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+import Table, { TableHeaders, accessNestedValues } from "../components/Table";
 import {
   faCheckSquare,
   faEdit,
@@ -53,7 +50,6 @@ import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import { InstitutionOverlay } from "../components/InstitutionOverlay";
-import { Outlet } from "react-router-dom";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
@@ -88,7 +84,7 @@ export type FormInstitutionType = {
   schoolAdministrativeDistrict: boolean;
 };
 
-type FormState<T> = {
+export type FormState<T> = {
   setValue: UseFormSetValue<T>;
   control: Control<T>;
   zipCode: string;
@@ -156,7 +152,7 @@ export type Autocomplete =
   | "email"
   | "impp";
 
-const useButtonStyles = makeStyles({
+export const useButtonStyles = makeStyles({
   button: {
     display: "flex",
     justifyContent: "center",
@@ -166,7 +162,7 @@ const useButtonStyles = makeStyles({
   },
 });
 
-const useInputStyles = makeStyles({
+export const useInputStyles = makeStyles({
   input: {
     margin: "0.5em",
     minWidth: "100%",
@@ -211,7 +207,7 @@ const useInputStyles = makeStyles({
   },
 });
 
-const useInputFields = makeStyles((theme: Theme) => ({
+export const useInputFields = makeStyles((theme: Theme) => ({
   institutionName: {
     [theme.breakpoints.up("xs")]: { order: 1 },
     [theme.breakpoints.up("md")]: { order: 1 },
@@ -303,7 +299,7 @@ export const RenderInput = <T,>({
         <FontAwesomeIcon className="inputIcon" icon={icon} />
       </InputAdornment>
     ),
-    endAdornment: getValues(name) && (
+    endAdornment: getValues(name) && !disabled && (
       <InputAdornment position="end" className={formInput.clearButton}>
         <FontAwesomeIcon
           className={`inputIcon`}
@@ -417,6 +413,8 @@ export function CreateInstitution({
     zipCode,
   };
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
     // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
@@ -426,8 +424,17 @@ export function CreateInstitution({
   return (
     <div className="container">
       <form
-        onSubmit={handleSubmit((data) => {
-          console.log(data, "bin hier");
+        onSubmit={handleSubmit(async (data) => {
+          try {
+            // const response = await axios.post<FormInstitutionType>(
+            //   "http://localhost:8080/institution",
+            //   data
+            // );
+            console.log(data);
+            navigate("../");
+          } catch (error) {
+            console.log(error);
+          }
         })}
         style={{ width: "80%" }}
       >
@@ -698,11 +705,15 @@ export function Institutions() {
 
   useEffect(() => {
     async function foo() {
-      // const response = await axios.get<Array<InstitutionType>>(
-      //   "http://localhost:8080/institution"
-      // );
-      // setInstitutions(response.data);
-      setInstitutions(dummyInstitutions);
+      // try {
+      //   const response = await axios.get<Array<InstitutionType>>(
+      //     "http://localhost:8080/institution"
+      //   );
+      //   setInstitutions(response.data);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+      console.log("help");
     }
     foo();
   }, []);
@@ -730,11 +741,7 @@ export function Institutions() {
 }
 
 export function ViewDetails() {
-  // let { instCode } = useParams();
+  let { instCode } = useParams();
   // GET and stuff
-  return (
-    <div>
-      <InstitutionOverlay />
-    </div>
-  );
+  return <InstitutionOverlay instCode={instCode} />;
 }

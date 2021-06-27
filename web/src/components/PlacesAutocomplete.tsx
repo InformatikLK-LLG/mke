@@ -170,6 +170,7 @@ export default function PlacesAutocomplete<
       includeInputInList
       filterSelectedOptions
       disableClearable
+      disabled={disabled}
       style={{ display: "inline" }}
       inputValue={params.value as string}
       onInputChange={(e, value) => params.onChange(value)}
@@ -196,7 +197,6 @@ export default function PlacesAutocomplete<
           ...params,
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
-          disabled,
         })
       }
       getOptionLabel={(option) =>

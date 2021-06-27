@@ -32,6 +32,7 @@ export default function Button({
   onClick,
   buttonStyle,
   isCapitalized = false,
+  disabled = false,
 }: {
   type: "button" | "submit" | "reset" | undefined;
   textColor?: "primary" | "secondary" | string;
@@ -40,6 +41,7 @@ export default function Button({
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   buttonStyle?: ClassNameMap<"button">;
   isCapitalized?: boolean;
+  disabled?: boolean;
 }): JSX.Element {
   const classes = useStyles({
     textColor: textColor,
@@ -56,6 +58,7 @@ export default function Button({
       style={{ textTransform: isCapitalized ? "uppercase" : "none" }}
       disableRipple
       disableElevation
+      disabled={disabled}
     >
       {label}
     </BetterButton>
