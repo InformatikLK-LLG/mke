@@ -203,7 +203,7 @@ export default function PlacesAutocomplete<
           ...params,
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
-          disabled
+          disabled,
         })
       }
     />
