@@ -87,6 +87,18 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
+<<<<<<< HEAD
+=======
+const useInstitutionStyles = makeStyles({
+  toggleLabel: {
+    "& > span::selection": {
+      backgroundColor: "transparent",
+    },
+  },
+});
+
+export function InstitutionOverlay({ instCode }: { instCode: string }) {
+>>>>>>> ee423a2 (Make label not selectable)
   const {
     handleSubmit,
     setValue,
@@ -170,6 +182,7 @@ export function InstitutionOverlay({
           })}
           style={{ width: "80%" }}
         >
+<<<<<<< HEAD
           <Grid container spacing={2} direction="row" alignItems="flex-end">
             <Grid item container xs={12} justify="flex-end">
               <FormControlLabel
@@ -208,6 +221,45 @@ export function InstitutionOverlay({
                 disabled,
               })}
             </Grid>
+=======
+          <Grid item container xs={12} justify="flex-end">
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={!disabled}
+                  onChange={() => {
+                    if (!disabled) updateData();
+                    setDisabled((value) => !value);
+                  }}
+                  name="toggleDisabled"
+                  color="primary"
+                />
+              }
+              label="Bearbeiten"
+              labelPlacement="start"
+              className={institutionStyles.toggleLabel}
+            />
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={6}
+            className={inputFields.institutionName}
+          >
+            {RenderInput({
+              name: "name",
+              placeholder: "Name",
+              autocompletePlaces: "school",
+              required: "Institutions-Name muss angegeben werden",
+              autofocus: true,
+              icon: faUniversity,
+              autoComplete: "organization",
+              formState,
+              disabled,
+            })}
+          </Grid>
+>>>>>>> ee423a2 (Make label not selectable)
 
             <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
               {RenderInput({
