@@ -36,11 +36,14 @@ export default function Dropdown({
         {isActive && (
           <div className="dropdown-items">
             <ul>
-              {subroutes?.map((subroute, i) => (
-                <li key={i}>
-                  <NavLink to={subroute.path}>{subroute.name}</NavLink>
-                </li>
-              ))}
+              {subroutes?.map(
+                (subroute, i) =>
+                  subroute.name && (
+                    <li key={i}>
+                      <NavLink to={subroute.path}>{subroute.name}</NavLink>
+                    </li>
+                  )
+              )}
             </ul>
           </div>
         )}

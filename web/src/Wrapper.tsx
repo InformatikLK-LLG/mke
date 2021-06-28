@@ -33,14 +33,8 @@ export default function Wrapper() {
           heading: "Institution erstellen",
         },
         {
-          path: "/institutions/create",
-          name: "Erstellen",
-          heading: "Institution erstellen",
-        },
-        {
-          path: "/institutions/create",
-          name: "Erstellen",
-          heading: "Institution erstellen",
+          path: "/institutions/:instCode",
+          heading: "Ändern",
         },
       ],
     },
@@ -52,15 +46,32 @@ export default function Wrapper() {
     },
   ];
 
-  let currentRoute = routes.find((obj) => obj.path === location.pathname);
+  const isCurrentRoute = (route: RouteItem) => {
+    const startOfParameter = route.path.indexOf(":");
+    if (startOfParameter === -1) return route.path === location.pathname;
+
+    const endOfParameter = route.path.indexOf("/", startOfParameter);
+
+    const newPath = route.path.replace(
+      route.path.slice(
+        startOfParameter,
+        endOfParameter === -1 ? route.path.length : endOfParameter
+      ),
+      location.pathname.slice(
+        startOfParameter,
+        endOfParameter === -1 ? route.path.length : endOfParameter
+      )
+    );
+    return newPath === location.pathname;
+  };
+
+  let currentRoute = routes.find((route) => isCurrentRoute(route));
 
   if (!currentRoute) {
     routes.forEach(
       (route) =>
         (currentRoute = !currentRoute
-          ? route.subroutes?.find(
-              (subroute) => subroute.path === location.pathname
-            )
+          ? route.subroutes?.find((subroute) => isCurrentRoute(subroute))
           : currentRoute)
     );
   }
