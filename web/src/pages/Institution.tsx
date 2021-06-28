@@ -426,10 +426,10 @@ export function CreateInstitution({
       <form
         onSubmit={handleSubmit(async (data) => {
           try {
-            // const response = await axios.post<FormInstitutionType>(
-            //   "http://localhost:8080/institution",
-            //   data
-            // );
+            const response = await axios.post<FormInstitutionType>(
+              "http://localhost:8080/institution",
+              data
+            );
             console.log(data);
             navigate("../");
           } catch (error) {
@@ -705,15 +705,15 @@ export function Institutions() {
 
   useEffect(() => {
     async function foo() {
-      // try {
-      //   const response = await axios.get<Array<InstitutionType>>(
-      //     "http://localhost:8080/institution"
-      //   );
-      //   setInstitutions(response.data);
-      // } catch (error) {
-      //   console.log(error);
-      // }
-      setInstitutions(dummyInstitutions)
+      try {
+        const response = await axios.get<Array<InstitutionType>>(
+          "http://localhost:8080/institution"
+        );
+        setInstitutions(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+      // setInstitutions(dummyInstitutions);
       console.log("help");
     }
     foo();

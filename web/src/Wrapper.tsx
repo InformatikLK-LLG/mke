@@ -1,9 +1,15 @@
 import NavBar, { NavBarItem } from "./components/NavBar";
 import { Outlet, useLocation } from "react-router-dom";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
+
+type HeaderType = {
+  header: string;
+  setHeader: (header: string) => void;
+};
 
 interface RouteItem extends NavBarItem {
   heading?: string;
@@ -12,9 +18,33 @@ interface RouteItem extends NavBarItem {
 
 interface RouteType extends Array<RouteItem> {}
 
+const defaultHeader: HeaderType = {
+  header: "",
+  setHeader: () => {},
+};
+
+const headerContext = createContext<HeaderType>(defaultHeader);
+
+export const useHeader = () => useContext(headerContext);
+
+function useProvideHeader(): HeaderType {
+  const headerArray = useState(defaultHeader.header);
+
+  const setHeader = (header: string) => {
+    headerArray[1](header);
+  };
+
+  useEffect(() => {
+    setHeader("");
+  }, []);
+
+  return { header: headerArray[0], setHeader };
+}
+
 export default function Wrapper() {
   const location = useLocation();
   const auth = useAuth();
+  const header = useProvideHeader();
 
   const routes: RouteType = [
     {
@@ -34,7 +64,7 @@ export default function Wrapper() {
         },
         {
           path: "/institutions/:instCode",
-          heading: "Ändern",
+          heading: "",
         },
       ],
     },
@@ -80,11 +110,13 @@ export default function Wrapper() {
     <div className={`wrapper ${currentRoute ? "hasNavBar" : ""}`}>
       {currentRoute && (
         <div className="header">
-          <h1>{currentRoute.heading}</h1>
+          <h1>{header.header ? header.header : currentRoute.heading}</h1>
           <NavBar routes={routes} />
         </div>
       )}
-      <Outlet />
+      <headerContext.Provider value={header}>
+        <Outlet />
+      </headerContext.Provider>
     </div>
   );
 }

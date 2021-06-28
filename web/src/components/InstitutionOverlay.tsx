@@ -31,6 +31,7 @@ import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
+import { useHeader } from "../Wrapper";
 import { useNavigate } from "react-router-dom";
 
 const useInstitutionStyles = makeStyles({
@@ -62,6 +63,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
     },
   });
   const navigate = useNavigate();
+  const header = useHeader();
 
   const [disabled, setDisabled] = useState(true);
 
@@ -72,6 +74,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   const institutionStyles = useInstitutionStyles();
 
   const zipCode = watch("address.zipCode");
+  const name = watch("name");
 
   const formState: FormState<FormInstitutionType> = {
     clearErrors,
@@ -85,30 +88,34 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
 
   useEffect(() => {
     async function fetchData() {
-      // try {
-      //   const response = await axios.get<FormInstitutionType>(
-      //     "http://localhost:8080/institution",
-      //     { params: { instCode } }
-      //   );
-      //   reset(response.data);
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      try {
+        const response = await axios.get<FormInstitutionType>(
+          "http://localhost:8080/institution",
+          { params: { instCode } }
+        );
+        reset(response.data);
+      } catch (error) {
+        console.log(error);
+      }
       console.log("ja hier halt daten");
     }
     fetchData();
   }, []);
 
+  useEffect(() => {
+    header.setHeader(name);
+  }, [name]);
+
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
-    // try {
-    //   const response = await axios.put<FormInstitutionType>(
-    //     "http://localhost:8080/institution",
-    //     values
-    //   );
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.put<FormInstitutionType>(
+        "http://localhost:8080/institution",
+        values
+      );
+    } catch (error) {
+      console.log(error);
+    }
     console.log("hello, it's me");
   };
 
