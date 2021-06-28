@@ -9,9 +9,15 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
   /* font-size: 20px; */
   font-display: optional;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+span.MuiTypography-root {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
 }
 
 h1,
@@ -58,7 +64,6 @@ h2 {
     --input: #f0f0f0;
   }
 }
-
 .flexrow {
   display: flex;
   flex-flow: row nowrap;

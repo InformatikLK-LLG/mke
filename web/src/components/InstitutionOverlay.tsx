@@ -104,20 +104,6 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
 
   return (
     <div className="container">
-      <FormControlLabel
-        control={
-          <Switch
-            checked={!disabled}
-            onChange={() => {
-              if (!disabled) updateData();
-              setDisabled((value) => !value);
-            }}
-            name="toggleDisabled"
-            color="primary"
-          />
-        }
-        label="editieren und so"
-      />
       <form
         onSubmit={handleSubmit((data) => {
           updateData(data);
@@ -132,6 +118,23 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
           alignItems="flex-end"
           justify="center"
         >
+          <Grid item container xs={12} justify="flex-end">
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={!disabled}
+                  onChange={() => {
+                    if (!disabled) updateData();
+                    setDisabled((value) => !value);
+                  }}
+                  name="toggleDisabled"
+                  color="primary"
+                />
+              }
+              label="Bearbeiten"
+              labelPlacement="start"
+            />
+          </Grid>
           <Grid
             item
             xs={12}

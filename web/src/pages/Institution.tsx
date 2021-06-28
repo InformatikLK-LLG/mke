@@ -713,6 +713,7 @@ export function Institutions() {
       // } catch (error) {
       //   console.log(error);
       // }
+      setInstitutions(dummyInstitutions)
       console.log("help");
     }
     foo();

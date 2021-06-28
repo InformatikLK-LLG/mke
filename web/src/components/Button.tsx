@@ -12,6 +12,8 @@ const useStyles: (props: { backgroundColor: string; textColor: string }) => {
     fontSize: "1em",
     padding: "0.5em 2em",
     borderRadius: "30px",
+    fontFamily:
+      '"Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif',
     "&:hover": {
       boxShadow: "0 0 5px #444444",
       filter: "brightness(1.05)",
