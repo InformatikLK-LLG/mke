@@ -34,8 +34,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
 import Table from "./Table";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
+<<<<<<< HEAD
 import useCustomers from "../hooks/useCustomers";
 import useEventListener from "@use-it/event-listener";
+=======
+>>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
 import { useHeader } from "../Wrapper";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
@@ -138,6 +141,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   };
 
   useEffect(() => {
+<<<<<<< HEAD
     header.setHeader(name);
   }, [name, header]);
 
@@ -145,6 +149,26 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   const { data: customers, isLoading: customersIsLoading } = useCustomers(
     getValues("id")
   );
+=======
+    async function fetchData() {
+      try {
+        const response = await axios.get<FormInstitutionType>(
+          "http://localhost:8080/institution",
+          { params: { instCode } }
+        );
+        reset(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+      console.log("ja hier halt daten");
+    }
+    fetchData();
+  }, []);
+>>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
+
+  useEffect(() => {
+    header.setHeader(name);
+  }, [name]);
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -153,10 +177,17 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
         "http://localhost:8080/institution",
         values
       );
+<<<<<<< HEAD
       queryClient.invalidateQueries("institutions");
     } catch (error) {
       console.log(error);
     }
+=======
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("hello, it's me");
+>>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
