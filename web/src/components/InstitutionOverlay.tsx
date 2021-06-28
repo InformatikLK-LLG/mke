@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   Switch,
+  makeStyles,
   useTheme,
 } from "@material-ui/core";
 import {
@@ -31,6 +32,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import { useNavigate } from "react-router-dom";
+
+const useInstitutionStyles = makeStyles({
+  toggleLabel: {
+    "& > span::selection": {
+      backgroundColor: "transparent",
+    },
+  },
+});
 
 export function InstitutionOverlay({ instCode }: { instCode: string }) {
   const {
@@ -60,6 +69,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   const inputFields = useInputFields(theme);
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
+  const institutionStyles = useInstitutionStyles();
 
   const zipCode = watch("address.zipCode");
 
@@ -133,6 +143,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
               }
               label="Bearbeiten"
               labelPlacement="start"
+              className={institutionStyles.toggleLabel}
             />
           </Grid>
           <Grid
