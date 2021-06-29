@@ -29,9 +29,9 @@ import org.springframework.stereotype.Repository;
         Iterable<Customer> findAllByAttributes(@Param("email") String email, @Param("firstName") String firstName,
                                                @Param("lastName") String lastName);
 
-        @Query(value = "SELECT * FROM customer WHERE customer.mobile_Phone LIKE %:mobile_Phone%", nativeQuery = true)
+        @Query(value = "SELECT * FROM customer WHERE customer.mobile_phone LIKE %:mobilePhone%", nativeQuery = true)
         Iterable<Customer> findAllByMobilePhone(@Param("mobilePhone") String mobilePhone);
 
-        @Query(value = "SELECT * FROM customer WHERE customer.business_Phone LIKE %:business_Phone%", nativeQuery = true)
+        @Query(value = "SELECT * FROM customer WHERE customer.business_phone LIKE %:businessPhone%", nativeQuery = true)
         Iterable<Customer> findAllByBusinessPhone(@Param("businessPhone") String businessPhone);
 }
