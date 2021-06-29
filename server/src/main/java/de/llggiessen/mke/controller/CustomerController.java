@@ -5,6 +5,7 @@ import de.llggiessen.mke.schema.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping(path = "/customer")
 public class CustomerController {
@@ -18,6 +19,6 @@ public class CustomerController {
                                            @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName,
                                            @RequestParam(value = "mobilePhone", required = false, defaultValue = "") String mobilePhone,
                                            @RequestParam(value = "businessPhone", required = false, defaultValue = "") String businessPhone) {
-        return repository.findAllByAttributes(email, firstName, lastName, mobilePhone, businessPhone);
+        return repository.findAllByAttributes(email, firstName, lastName);
     }
 }
