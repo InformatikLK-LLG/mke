@@ -12,13 +12,10 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface InstitutionRepository extends CrudRepository<Institution, String> {
 
-    @Query(value = "SELECT * FROM institution WHERE institution.inst_code = :instCode", nativeQuery = true)
-    Institution findInstitutionByID(@Param("instCode") String instCode);
-
     @Query(value = "SELECT * FROM institution WHERE institution.svb = :svb", nativeQuery = true)
     Iterable<Institution> findInstitutionsBySvb(@Param("svb") boolean svb);
 
     @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name% AND institution.street LIKE %:street%", nativeQuery = true)
-    Iterable<Institution> findInstitutions(@Param("name")String name,@Param("street") String street);
+    Iterable<Institution> findInstitutions(@Param("name")String name);
 
 }

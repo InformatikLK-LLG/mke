@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class Institution {
 
     @Id
-    private String instCode;
+    private String id;
     private String name;
     private String schoolType;
     private boolean svb;
