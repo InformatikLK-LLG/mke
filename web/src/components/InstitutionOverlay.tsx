@@ -163,12 +163,16 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
       console.log("ja hier halt daten");
     }
     fetchData();
+<<<<<<< HEAD
   }, []);
 >>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
+=======
+  }, [instCode, reset]);
+>>>>>>> f3bbb78 (Update heading on redirect)
 
   useEffect(() => {
     header.setHeader(name);
-  }, [name]);
+  }, [name, header]);
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -204,6 +208,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   useEventListener("keydown", onKeyDown);
 
   return (
+<<<<<<< HEAD
     <div className={institutionStyles.enclosure}>
       <div className={institutionStyles.section}>
         <form
@@ -212,6 +217,22 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
             navigate("/institutions");
           })}
           style={{ width: "80%" }}
+=======
+    <div className="container">
+      <form
+        onSubmit={handleSubmit((data) => {
+          updateData(data);
+          navigate("/institutions");
+        })}
+        style={{ width: "80%" }}
+      >
+        <Grid
+          container
+          spacing={3}
+          direction="row"
+          alignItems="flex-end"
+          justify="center"
+>>>>>>> f3bbb78 (Update heading on redirect)
         >
 <<<<<<< HEAD
           <Grid container spacing={2} direction="row" alignItems="flex-end">
