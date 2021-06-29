@@ -25,6 +25,7 @@ export default function NavBar({ routes }: NavBarProps) {
               subroutes={route.subroutes}
             />
           );
+        return undefined;
       })}
     </nav>
   );

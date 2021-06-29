@@ -100,11 +100,11 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
       console.log("ja hier halt daten");
     }
     fetchData();
-  }, []);
+  }, [instCode, reset]);
 
   useEffect(() => {
     header.setHeader(name);
-  }, [name]);
+  }, [name, header]);
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -124,7 +124,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
       <form
         onSubmit={handleSubmit((data) => {
           updateData(data);
-          navigate("../");
+          navigate("/institutions");
         })}
         style={{ width: "80%" }}
       >

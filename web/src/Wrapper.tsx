@@ -34,10 +34,6 @@ function useProvideHeader(): HeaderType {
     headerArray[1](header);
   };
 
-  useEffect(() => {
-    setHeader("");
-  }, []);
-
   return { header: headerArray[0], setHeader };
 }
 
@@ -105,6 +101,10 @@ export default function Wrapper() {
           : currentRoute)
     );
   }
+
+  useEffect(() => {
+    header.setHeader("");
+  }, [location.pathname, header]);
 
   return (
     <div className={`wrapper ${currentRoute ? "hasNavBar" : ""}`}>
