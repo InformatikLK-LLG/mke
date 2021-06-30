@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -34,15 +33,25 @@ public class BookingController {
     public Iterable<Booking> getBookingsByYear(@RequestParam(value = "year", required = false, defaultValue = "") String year) {
         return repository.findAllByYear(year);
     }
-    @GetMapping(value = "", params = {"retrieval_date"})
-    public Iterable<Booking> getBookingsByRetrievalDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrieval_date){
+
+    @GetMapping(value = "", params = {"retrievalDate"})
+    public Iterable<Booking> getBookingsByRetrievalDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrievalDate){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrieval_date));
+        return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrievalDate));
     }
-    @GetMapping(value = "", params = {"return_date"})
-    public Iterable<Booking> getBookingsByReturnDate(@RequestParam Date return_date){
-        return repository.findAllByReturnBoatDate(return_date);
+
+    @GetMapping(value = "", params = {"returnDate"})
+    public Iterable<Booking> getBookingsByReturnDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date returnDate){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return repository.findAllByReturnBoatDate(simpleDateFormat.format(returnDate));
     }
+
+    @GetMapping(value = "", params = {"retrievalDate", "returnDate"})
+    public Iterable<Booking> getBookingsInRange(@RequestParam("retrievalDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrievalDate, @RequestParam("returnDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date returnDate){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return  repository.findAllInRange(simpleDateFormat.format(retrievalDate), simpleDateFormat.format(returnDate));
+    }
+
     @GetMapping(value = "", params = {"status"})
     public Iterable<Booking> getBookingsByStatus(@RequestParam char status){
         return repository.findAllByStatus(status);

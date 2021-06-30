@@ -46,4 +46,3 @@ public class Booking {
         private Time returnTime;
     }
 }
-
