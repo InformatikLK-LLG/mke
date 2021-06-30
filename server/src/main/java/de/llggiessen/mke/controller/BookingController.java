@@ -3,11 +3,13 @@ package de.llggiessen.mke.controller;
 import de.llggiessen.mke.repository.BookingRepository;
 import de.llggiessen.mke.schema.Booking;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -33,8 +35,9 @@ public class BookingController {
         return repository.findAllByYear(year);
     }
     @GetMapping(value = "", params = {"retrieval_date"})
-    public Iterable<Booking> getBookingsByRetrievalDate(@RequestParam Date retrieval_date){
-        return repository.findAllByRetrievalBoatDate(retrieval_date);
+    public Iterable<Booking> getBookingsByRetrievalDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrieval_date){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrieval_date));
     }
     @GetMapping(value = "", params = {"return_date"})
     public Iterable<Booking> getBookingsByReturnDate(@RequestParam Date return_date){
