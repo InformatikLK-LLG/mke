@@ -17,7 +17,7 @@ public class Booking {
 
     @Id
     @GeneratedValue
-    private long bookingNo;
+    private long id;
     private int numberOfParticipants;
     @Embedded
     private RetrievalBoat retrievalBoat;
