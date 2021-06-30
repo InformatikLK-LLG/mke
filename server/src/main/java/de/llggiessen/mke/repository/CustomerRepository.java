@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
     @RepositoryRestResource(exported = false)
     public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
-
         @Query(value = "SELECT * FROM customer WHERE customer.email LIKE %:email%", nativeQuery = true)
         Iterable<Customer> findAllByEmail(@Param("email") String email);
 
