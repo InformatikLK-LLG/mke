@@ -32,7 +32,10 @@ import { useEffect, useState } from "react";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
+<<<<<<< HEAD
 import Table from "./Table";
+=======
+>>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 <<<<<<< HEAD
 import useCustomers from "../hooks/useCustomers";
@@ -40,6 +43,7 @@ import useEventListener from "@use-it/event-listener";
 =======
 >>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
 import { useHeader } from "../Wrapper";
+import useInstitution from "../hooks/useInstitution";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 
@@ -100,8 +104,28 @@ const useInstitutionStyles = makeStyles({
   },
 });
 
+<<<<<<< HEAD
 export function InstitutionOverlay({ instCode }: { instCode: string }) {
 >>>>>>> ee423a2 (Make label not selectable)
+=======
+export function InstitutionOverlay({
+  instCode,
+  data,
+}: {
+  instCode: string;
+  data?: AxiosResponse<FormInstitutionType>;
+}) {
+  const defaultValues = data
+    ? data.data
+    : {
+        id: "",
+        name: "",
+        phoneNumber: "",
+        schoolAdministrativeDistrict: false,
+        address: { street: "", streetNumber: "", town: "", zipCode: "" },
+      };
+
+>>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
   const {
     handleSubmit,
     setValue,
@@ -129,6 +153,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
 
   const zipCode = watch("address.zipCode");
   const name = watch("name");
+  const [controlPressed, setControlPressed] = useState(false);
 
   const formState: FormState<FormInstitutionType> = {
     clearErrors,
@@ -141,6 +166,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   };
 
   useEffect(() => {
+<<<<<<< HEAD
 <<<<<<< HEAD
     header.setHeader(name);
   }, [name, header]);
@@ -171,8 +197,12 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
 >>>>>>> f3bbb78 (Update heading on redirect)
 
   useEffect(() => {
+=======
+>>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
     header.setHeader(name);
   }, [name, header]);
+
+  const queryClient = useQueryClient();
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -182,11 +212,15 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
         values
       );
 <<<<<<< HEAD
+<<<<<<< HEAD
       queryClient.invalidateQueries("institutions");
     } catch (error) {
       console.log(error);
     }
 =======
+=======
+      queryClient.invalidateQueries("institutions");
+>>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
     } catch (error) {
       console.log(error);
     }
@@ -225,6 +259,17 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
           navigate("/institutions");
         })}
         style={{ width: "80%" }}
+        onKeyDown={(event) => {
+          if (event.code === "KeyS" && controlPressed) {
+            event.preventDefault();
+            updateData();
+            navigate("/institutions");
+          }
+          event.key === "Control" && setControlPressed(true);
+        }}
+        onKeyUp={(event) => {
+          event.key === "Control" && setControlPressed(false);
+        }}
       >
         <Grid
           container
