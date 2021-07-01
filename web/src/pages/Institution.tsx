@@ -389,8 +389,9 @@ export function CreateInstitution({
     control,
     watch,
     getValues,
-    formState: { errors },
+    formState: { errors, isValid },
     clearErrors,
+    trigger,
   } = useForm<FormInstitutionType>({
     mode: "onChange",
     defaultValues: {
@@ -418,6 +419,7 @@ export function CreateInstitution({
   };
 
   const navigate = useNavigate();
+  const [controlPressed, setControlPressed] = useState(false);
 
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
@@ -435,11 +437,32 @@ export function CreateInstitution({
               data
             );
             console.log(data);
-            navigate("../");
+            navigate("/institutions");
           } catch (error) {
             console.log(error);
           }
         })}
+        onKeyDown={async (event) => {
+          if (event.code === "KeyS" && controlPressed) {
+            event.preventDefault();
+            trigger();
+            if (isValid) {
+              try {
+                await axios.post<FormInstitutionType>(
+                  "http://localhost:8080/institution",
+                  getValues()
+                );
+                navigate("/institutions");
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          }
+          event.key === "Control" && setControlPressed(true);
+        }}
+        onKeyUp={(event) => {
+          event.key === "Control" && setControlPressed(false);
+        }}
         style={{ width: "80%" }}
       >
         <Grid
@@ -584,6 +607,7 @@ export function CreateInstitution({
           buttonStyle={formButton}
           textColor="white"
           backgroundColor={theme.palette.primary.main}
+          disabled={!isValid}
         />
       </form>
     </div>

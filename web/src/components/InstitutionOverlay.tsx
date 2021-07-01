@@ -68,9 +68,10 @@ export function InstitutionOverlay({
     control,
     watch,
     getValues,
-    formState: { errors },
+    formState: { errors, isValid },
     clearErrors,
     reset,
+    trigger,
   } = useForm<FormInstitutionType>({
     mode: "onChange",
     defaultValues,
@@ -117,6 +118,7 @@ export function InstitutionOverlay({
     } catch (error) {
       console.log(error);
     }
+
     console.log("hello, it's me");
   };
 
@@ -131,8 +133,11 @@ export function InstitutionOverlay({
         onKeyDown={(event) => {
           if (event.code === "KeyS" && controlPressed) {
             event.preventDefault();
-            updateData();
-            navigate("/institutions");
+            trigger();
+            if (isValid) {
+              updateData();
+              navigate("/institutions");
+            }
           }
           event.key === "Control" && setControlPressed(true);
         }}
@@ -308,7 +313,7 @@ export function InstitutionOverlay({
           buttonStyle={formButton}
           textColor="white"
           backgroundColor={theme.palette.primary.main}
-          disabled={disabled}
+          disabled={disabled || !isValid}
         />
       </form>
     </div>
