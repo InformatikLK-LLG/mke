@@ -433,6 +433,7 @@ export function CreateInstitution({
   };
 
   const navigate = useNavigate();
+  const [controlPressed, setControlPressed] = useState(false);
 
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
@@ -477,6 +478,27 @@ export function CreateInstitution({
             console.log(error);
           }
         })}
+        onKeyDown={async (event) => {
+          if (event.code === "KeyS" && controlPressed) {
+            event.preventDefault();
+            trigger();
+            if (isValid) {
+              try {
+                await axios.post<FormInstitutionType>(
+                  "http://localhost:8080/institution",
+                  getValues()
+                );
+                navigate("/institutions");
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          }
+          event.key === "Control" && setControlPressed(true);
+        }}
+        onKeyUp={(event) => {
+          event.key === "Control" && setControlPressed(false);
+        }}
         style={{ width: "80%" }}
       >
         <Grid

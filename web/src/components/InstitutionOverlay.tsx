@@ -32,16 +32,10 @@ import { useEffect, useState } from "react";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
-<<<<<<< HEAD
 import Table from "./Table";
-=======
->>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
-<<<<<<< HEAD
 import useCustomers from "../hooks/useCustomers";
 import useEventListener from "@use-it/event-listener";
-=======
->>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
 import { useHeader } from "../Wrapper";
 import useInstitution from "../hooks/useInstitution";
 import { useNavigate } from "react-router-dom";
@@ -94,8 +88,6 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
-<<<<<<< HEAD
-=======
 const useInstitutionStyles = makeStyles({
   toggleLabel: {
     "& > span::selection": {
@@ -104,10 +96,6 @@ const useInstitutionStyles = makeStyles({
   },
 });
 
-<<<<<<< HEAD
-export function InstitutionOverlay({ instCode }: { instCode: string }) {
->>>>>>> ee423a2 (Make label not selectable)
-=======
 export function InstitutionOverlay({
   instCode,
   data,
@@ -125,7 +113,6 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
->>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
   const {
     handleSubmit,
     setValue,
@@ -166,8 +153,6 @@ export function InstitutionOverlay({
   };
 
   useEffect(() => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     header.setHeader(name);
   }, [name, header]);
 
@@ -175,34 +160,6 @@ export function InstitutionOverlay({
   const { data: customers, isLoading: customersIsLoading } = useCustomers(
     getValues("id")
   );
-=======
-    async function fetchData() {
-      try {
-        const response = await axios.get<FormInstitutionType>(
-          "http://localhost:8080/institution",
-          { params: { instCode } }
-        );
-        reset(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-      console.log("ja hier halt daten");
-    }
-    fetchData();
-<<<<<<< HEAD
-  }, []);
->>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
-=======
-  }, [instCode, reset]);
->>>>>>> f3bbb78 (Update heading on redirect)
-
-  useEffect(() => {
-=======
->>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
-    header.setHeader(name);
-  }, [name, header]);
-
-  const queryClient = useQueryClient();
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -211,22 +168,10 @@ export function InstitutionOverlay({
         "http://localhost:8080/institution",
         values
       );
-<<<<<<< HEAD
-<<<<<<< HEAD
       queryClient.invalidateQueries("institutions");
     } catch (error) {
       console.log(error);
     }
-=======
-=======
-      queryClient.invalidateQueries("institutions");
->>>>>>> fa12095 (Fetch data using react-query. Add ctrl-s as a shortcut for saving institution forms.)
-    } catch (error) {
-      console.log(error);
-    }
-    console.log("hello, it's me");
->>>>>>> a562a8f (Implement useHeader using context to let pages set their own header dynamically)
-  };
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === "s" && event.altKey && !disabled) {
@@ -242,7 +187,6 @@ export function InstitutionOverlay({
   useEventListener("keydown", onKeyDown);
 
   return (
-<<<<<<< HEAD
     <div className={institutionStyles.enclosure}>
       <div className={institutionStyles.section}>
         <form
@@ -251,35 +195,7 @@ export function InstitutionOverlay({
             navigate("/institutions");
           })}
           style={{ width: "80%" }}
-=======
-    <div className="container">
-      <form
-        onSubmit={handleSubmit((data) => {
-          updateData(data);
-          navigate("/institutions");
-        })}
-        style={{ width: "80%" }}
-        onKeyDown={(event) => {
-          if (event.code === "KeyS" && controlPressed) {
-            event.preventDefault();
-            updateData();
-            navigate("/institutions");
-          }
-          event.key === "Control" && setControlPressed(true);
-        }}
-        onKeyUp={(event) => {
-          event.key === "Control" && setControlPressed(false);
-        }}
-      >
-        <Grid
-          container
-          spacing={3}
-          direction="row"
-          alignItems="flex-end"
-          justify="center"
->>>>>>> f3bbb78 (Update heading on redirect)
         >
-<<<<<<< HEAD
           <Grid container spacing={2} direction="row" alignItems="flex-end">
             <Grid item container xs={12} justify="flex-end">
               <FormControlLabel
@@ -318,45 +234,6 @@ export function InstitutionOverlay({
                 disabled,
               })}
             </Grid>
-=======
-          <Grid item container xs={12} justify="flex-end">
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={!disabled}
-                  onChange={() => {
-                    if (!disabled) updateData();
-                    setDisabled((value) => !value);
-                  }}
-                  name="toggleDisabled"
-                  color="primary"
-                />
-              }
-              label="Bearbeiten"
-              labelPlacement="start"
-              className={institutionStyles.toggleLabel}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={6}
-            className={inputFields.institutionName}
-          >
-            {RenderInput({
-              name: "name",
-              placeholder: "Name",
-              autocompletePlaces: "school",
-              required: "Institutions-Name muss angegeben werden",
-              autofocus: true,
-              icon: faUniversity,
-              autoComplete: "organization",
-              formState,
-              disabled,
-            })}
-          </Grid>
->>>>>>> ee423a2 (Make label not selectable)
 
             <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
               {RenderInput({
