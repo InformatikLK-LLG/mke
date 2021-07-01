@@ -50,9 +50,13 @@ import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import { InstitutionOverlay } from "../components/InstitutionOverlay";
+import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
+import useInstitution from "../hooks/useInstitution";
+import useInstitutions from "../hooks/useInstitutions";
+import { useQueryClient } from "react-query";
 
 type Address = {
   street: string;
@@ -702,22 +706,23 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
+  const { data, isLoading } = useInstitutions();
 
-  useEffect(() => {
-    async function foo() {
-      try {
-        const response = await axios.get<Array<InstitutionType>>(
-          "http://localhost:8080/institution"
-        );
-        setInstitutions(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-      // setInstitutions(dummyInstitutions);
-      console.log("help");
-    }
-    foo();
-  }, []);
+  // useEffect(() => {
+  //   async function foo() {
+  //     try {
+  //       const response = await axios.get<Array<InstitutionType>>(
+  //         "http://localhost:8080/institution"
+  //       );
+  //       setInstitutions(response.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //     // setInstitutions(dummyInstitutions);
+  //     console.log("help");
+  //   }
+  //   foo();
+  // }, []);
 
   async function search(query: string) {
     const response = await axios.get<Array<InstitutionType>>(
@@ -731,18 +736,30 @@ export function Institutions() {
 
   return (
     <div className="container">
-      <Table
-        tableHeaders={tableHeaders}
-        rows={institutions}
-        sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
-        // search={search}
-      />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Table
+          tableHeaders={tableHeaders}
+          rows={data ? data.data : []}
+          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
+          // search={search}
+        />
+      )}
     </div>
   );
 }
 
 export function ViewDetails() {
-  let { instCode } = useParams();
+  const { instCode } = useParams();
+  const { data, isLoading } = useInstitution(instCode);
   // GET and stuff
-  return <InstitutionOverlay instCode={instCode} />;
+  // useEffect(() => {
+  //   console.log(data);
+  // }, [data]);
+  return isLoading ? (
+    <Loading />
+  ) : (
+    <InstitutionOverlay instCode={instCode} data={data} />
+  );
 }

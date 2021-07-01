@@ -1,5 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Institution, { CreateInstitution, Institutions, ViewDetails } from "./pages/Institution";
+import Institution, {
+  CreateInstitution,
+  Institutions,
+  ViewDetails,
+} from "./pages/Institution";
+import { QueryClient, QueryClientProvider } from "react-query";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
 
 import { ForgotPassword } from "./pages/ForgotPassword";
@@ -15,6 +20,7 @@ import Wrapper from "./Wrapper";
 import { createMuiTheme } from "@material-ui/core";
 
 function App() {
+  const queryClient = new QueryClient();
   return (
     <ProvideAuth>
       <ThemeProvider
@@ -25,29 +31,34 @@ function App() {
           },
         })}
       >
-        <div className="App">
-          <BrowserRouter>
-            <Routes>
-              <Route element={<Wrapper />}>
-                <PrivateRoute path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/forgotpassword" element={<ForgotPassword />} />
-                <Route path="/register" element={<Register />}>
-                  <Route path="/" element={<Register1 />} />
-                  <NoTrespassing path="1" element={<Register2 />} />
-                  <NoTrespassing path="2" element={<Register3 />} />
+        <QueryClientProvider client={queryClient}>
+          <div className="App">
+            <BrowserRouter>
+              <Routes>
+                <Route element={<Wrapper />}>
+                  <PrivateRoute path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/forgotpassword" element={<ForgotPassword />} />
+                  <Route path="/register" element={<Register />}>
+                    <Route path="/" element={<Register1 />} />
+                    <NoTrespassing path="1" element={<Register2 />} />
+                    <NoTrespassing path="2" element={<Register3 />} />
+                  </Route>
+                  <PrivateRoute path="/logout" element={<Logout />} />
+                  <PrivateRoute path="/institutions" element={<Institution />}>
+                    <PrivateRoute path="/" element={<Institutions />} />
+                    <PrivateRoute
+                      path="/create"
+                      element={<CreateInstitution />}
+                    />
+                    <PrivateRoute path="/:instCode" element={<ViewDetails />} />
+                  </PrivateRoute>
                 </Route>
-                <PrivateRoute path="/logout" element={<Logout />} />
-                <PrivateRoute path="/institutions" element={<Institution />}>
-                  <PrivateRoute path="/" element={<Institutions />} />
-                  <PrivateRoute path="/create" element={<CreateInstitution />} />
-                  <PrivateRoute path="/:instCode" element={<ViewDetails />} />
-                </PrivateRoute>
-              </Route>
-              <Route path="/*" element={<PageNotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </div>
+                <Route path="/*" element={<PageNotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </div>
+        </QueryClientProvider>
       </ThemeProvider>
     </ProvideAuth>
   );

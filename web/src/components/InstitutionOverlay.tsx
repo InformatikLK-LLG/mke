@@ -19,6 +19,7 @@ import {
   useInputFields,
   useInputStyles,
 } from "../pages/Institution";
+import axios, { AxiosResponse } from "axios";
 import {
   faMapMarkerAlt,
   faQuestion,
@@ -29,10 +30,12 @@ import { useEffect, useState } from "react";
 
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
+import Loading from "./Loading";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import { useHeader } from "../Wrapper";
+import useInstitution from "../hooks/useInstitution";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "react-query";
 
 const useInstitutionStyles = makeStyles({
   toggleLabel: {
@@ -42,7 +45,23 @@ const useInstitutionStyles = makeStyles({
   },
 });
 
-export function InstitutionOverlay({ instCode }: { instCode: string }) {
+export function InstitutionOverlay({
+  instCode,
+  data,
+}: {
+  instCode: string;
+  data?: AxiosResponse<FormInstitutionType>;
+}) {
+  const defaultValues = data
+    ? data.data
+    : {
+        id: "",
+        name: "",
+        phoneNumber: "",
+        schoolAdministrativeDistrict: false,
+        address: { street: "", streetNumber: "", town: "", zipCode: "" },
+      };
+
   const {
     handleSubmit,
     setValue,
@@ -54,13 +73,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
     reset,
   } = useForm<FormInstitutionType>({
     mode: "onChange",
-    defaultValues: {
-      id: "",
-      name: "",
-      phoneNumber: "",
-      schoolAdministrativeDistrict: false,
-      address: { street: "", streetNumber: "", town: "", zipCode: "" },
-    },
+    defaultValues,
   });
   const navigate = useNavigate();
   const header = useHeader();
@@ -75,6 +88,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
 
   const zipCode = watch("address.zipCode");
   const name = watch("name");
+  const [controlPressed, setControlPressed] = useState(false);
 
   const formState: FormState<FormInstitutionType> = {
     clearErrors,
@@ -87,24 +101,10 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
   };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get<FormInstitutionType>(
-          "http://localhost:8080/institution",
-          { params: { instCode } }
-        );
-        reset(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-      console.log("ja hier halt daten");
-    }
-    fetchData();
-  }, [instCode, reset]);
-
-  useEffect(() => {
     header.setHeader(name);
   }, [name, header]);
+
+  const queryClient = useQueryClient();
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -113,6 +113,7 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
         "http://localhost:8080/institution",
         values
       );
+      queryClient.invalidateQueries("institutions");
     } catch (error) {
       console.log(error);
     }
@@ -127,6 +128,17 @@ export function InstitutionOverlay({ instCode }: { instCode: string }) {
           navigate("/institutions");
         })}
         style={{ width: "80%" }}
+        onKeyDown={(event) => {
+          if (event.code === "KeyS" && controlPressed) {
+            event.preventDefault();
+            updateData();
+            navigate("/institutions");
+          }
+          event.key === "Control" && setControlPressed(true);
+        }}
+        onKeyUp={(event) => {
+          event.key === "Control" && setControlPressed(false);
+        }}
       >
         <Grid
           container

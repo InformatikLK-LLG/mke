@@ -49,6 +49,7 @@ export default function PlacesAutocomplete<
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
     suggestions: { status, data },
+    value,
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
@@ -172,7 +173,7 @@ export default function PlacesAutocomplete<
       disableClearable
       disabled={disabled}
       style={{ display: "inline" }}
-      inputValue={params.value as string}
+      inputValue={value as string}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
         if (typeof option !== "string" && option) {

@@ -103,8 +103,8 @@ export default function Wrapper() {
   }
 
   useEffect(() => {
-    header.setHeader("");
-  }, [location.pathname, header]);
+    currentRoute?.heading && header.setHeader(currentRoute.heading);
+  }, [currentRoute]);
 
   return (
     <div className={`wrapper ${currentRoute ? "hasNavBar" : ""}`}>
