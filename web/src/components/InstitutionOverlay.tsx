@@ -88,31 +88,6 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
-const useInstitutionStyles = makeStyles({
-  toggleLabel: {
-    "& > span::selection": {
-      backgroundColor: "transparent",
-    },
-  },
-});
-
-export function InstitutionOverlay({
-  instCode,
-  data,
-}: {
-  instCode: string;
-  data?: AxiosResponse<FormInstitutionType>;
-}) {
-  const defaultValues = data
-    ? data.data
-    : {
-        id: "",
-        name: "",
-        phoneNumber: "",
-        schoolAdministrativeDistrict: false,
-        address: { street: "", streetNumber: "", town: "", zipCode: "" },
-      };
-
   const {
     handleSubmit,
     setValue,
@@ -172,6 +147,7 @@ export function InstitutionOverlay({
     } catch (error) {
       console.log(error);
     }
+  };
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === "s" && event.altKey && !disabled) {
@@ -186,7 +162,9 @@ export function InstitutionOverlay({
 
   useEventListener("keydown", onKeyDown);
 
-  return (
+  return 
+  (
+
     <div className={institutionStyles.enclosure}>
       <div className={institutionStyles.section}>
         <form
