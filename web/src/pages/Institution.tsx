@@ -433,7 +433,6 @@ export function CreateInstitution({
   };
 
   const navigate = useNavigate();
-  const [controlPressed, setControlPressed] = useState(false);
 
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
@@ -478,27 +477,6 @@ export function CreateInstitution({
             console.log(error);
           }
         })}
-        onKeyDown={async (event) => {
-          if (event.code === "KeyS" && controlPressed) {
-            event.preventDefault();
-            trigger();
-            if (isValid) {
-              try {
-                await axios.post<FormInstitutionType>(
-                  "http://localhost:8080/institution",
-                  getValues()
-                );
-                navigate("/institutions");
-              } catch (error) {
-                console.log(error);
-              }
-            }
-          }
-          event.key === "Control" && setControlPressed(true);
-        }}
-        onKeyUp={(event) => {
-          event.key === "Control" && setControlPressed(false);
-        }}
         style={{ width: "80%" }}
       >
         <Grid
@@ -676,11 +654,32 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
+<<<<<<< HEAD
   const { data, isLoading, setSearchParams } = useInstitutions();
   const navigate = useNavigate();
   const formInput = useInputStyles();
   const queryClient = useQueryClient();
+=======
+  const { data, isLoading } = useInstitutions();
+  const navigate = useNavigate();
+>>>>>>> d105fb8 (Improve keyboard shortcuts using @use-it/event-listener)
 
+  const onKeyDown = async (event: KeyboardEvent) => {
+    if (event.key === "n" && event.altKey) {
+      event.preventDefault();
+      navigate("./create");
+    }
+  };
+
+<<<<<<< HEAD
+  useEventListener("keydown", onKeyDown);
+
+  async function search(
+    parameter: keyof InstitutionsSearchParams,
+    query: string
+  ) {
+    setSearchParams({ [parameter]: query });
+=======
   const onKeyDown = async (event: KeyboardEvent) => {
     if (event.key === "n" && event.altKey) {
       event.preventDefault();
@@ -690,11 +689,15 @@ export function Institutions() {
 
   useEventListener("keydown", onKeyDown);
 
-  async function search(
-    parameter: keyof InstitutionsSearchParams,
-    query: string
-  ) {
-    setSearchParams({ [parameter]: query });
+  async function search(query: string) {
+    const response = await axios.get<Array<InstitutionType>>(
+      "http://localhost:8080/institution",
+      {
+        params: { id: query },
+      }
+    );
+    setInstitutions(response.data);
+>>>>>>> d105fb8 (Improve keyboard shortcuts using @use-it/event-listener)
   }
 
   return (
