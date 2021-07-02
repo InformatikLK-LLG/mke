@@ -54,6 +54,7 @@ import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
+import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import useInstitutions from "../hooks/useInstitutions";
 import { useQueryClient } from "react-query";
@@ -419,13 +420,34 @@ export function CreateInstitution({
   };
 
   const navigate = useNavigate();
-  const [controlPressed, setControlPressed] = useState(false);
 
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
     // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
     // eslint-disable-next-line
   }, [zipCode]);
+
+  // }, []);
+
+  const onKeyDown = async (event: KeyboardEvent) => {
+    if (event.key === "s" && event.altKey) {
+      event.preventDefault();
+      trigger();
+      if (isValid) {
+        try {
+          await axios.post<FormInstitutionType>(
+            "http://localhost:8080/institution",
+            getValues()
+          );
+          navigate("/institutions");
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  };
+
+  useEventListener("keydown", onKeyDown);
 
   return (
     <div className="container">
@@ -442,27 +464,6 @@ export function CreateInstitution({
             console.log(error);
           }
         })}
-        onKeyDown={async (event) => {
-          if (event.code === "KeyS" && controlPressed) {
-            event.preventDefault();
-            trigger();
-            if (isValid) {
-              try {
-                await axios.post<FormInstitutionType>(
-                  "http://localhost:8080/institution",
-                  getValues()
-                );
-                navigate("/institutions");
-              } catch (error) {
-                console.log(error);
-              }
-            }
-          }
-          event.key === "Control" && setControlPressed(true);
-        }}
-        onKeyUp={(event) => {
-          event.key === "Control" && setControlPressed(false);
-        }}
         style={{ width: "80%" }}
       >
         <Grid
@@ -731,6 +732,7 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
   const { data, isLoading } = useInstitutions();
+  const navigate = useNavigate();
 
   // useEffect(() => {
   //   async function foo() {
@@ -747,6 +749,15 @@ export function Institutions() {
   //   }
   //   foo();
   // }, []);
+
+  const onKeyDown = async (event: KeyboardEvent) => {
+    if (event.key === "n" && event.altKey) {
+      event.preventDefault();
+      navigate("./create");
+    }
+  };
+
+  useEventListener("keydown", onKeyDown);
 
   async function search(query: string) {
     const response = await axios.get<Array<InstitutionType>>(

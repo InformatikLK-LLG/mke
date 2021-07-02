@@ -32,6 +32,7 @@ import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
+import useEventListener from "@use-it/event-listener";
 import { useHeader } from "../Wrapper";
 import useInstitution from "../hooks/useInstitution";
 import { useNavigate } from "react-router-dom";
@@ -89,7 +90,6 @@ export function InstitutionOverlay({
 
   const zipCode = watch("address.zipCode");
   const name = watch("name");
-  const [controlPressed, setControlPressed] = useState(false);
 
   const formState: FormState<FormInstitutionType> = {
     clearErrors,
@@ -118,9 +118,20 @@ export function InstitutionOverlay({
     } catch (error) {
       console.log(error);
     }
-
-    console.log("hello, it's me");
   };
+
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "s" && event.altKey && !disabled) {
+      event.preventDefault();
+      trigger();
+      if (isValid) {
+        updateData();
+        navigate("/institutions");
+      }
+    }
+  };
+
+  useEventListener("keydown", onKeyDown);
 
   return (
     <div className="container">
@@ -130,24 +141,10 @@ export function InstitutionOverlay({
           navigate("/institutions");
         })}
         style={{ width: "80%" }}
-        onKeyDown={(event) => {
-          if (event.code === "KeyS" && controlPressed) {
-            event.preventDefault();
-            trigger();
-            if (isValid) {
-              updateData();
-              navigate("/institutions");
-            }
-          }
-          event.key === "Control" && setControlPressed(true);
-        }}
-        onKeyUp={(event) => {
-          event.key === "Control" && setControlPressed(false);
-        }}
       >
         <Grid
           container
-          spacing={3}
+          spacing={2}
           direction="row"
           alignItems="flex-end"
           justify="center"
