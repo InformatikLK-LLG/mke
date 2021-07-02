@@ -115,7 +115,6 @@ export function InstitutionOverlay({
 
   const zipCode = watch("address.zipCode");
   const name = watch("name");
-  const [controlPressed, setControlPressed] = useState(false);
 
   const formState: FormState<FormInstitutionType> = {
     clearErrors,
@@ -162,9 +161,7 @@ export function InstitutionOverlay({
 
   useEventListener("keydown", onKeyDown);
 
-  return 
-  (
-
+  return (
     <div className={institutionStyles.enclosure}>
       <div className={institutionStyles.section}>
         <form
