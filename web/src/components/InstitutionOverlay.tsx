@@ -284,6 +284,11 @@ export function InstitutionOverlay({
                     {...field}
                     value={field.value ? 1 : 0}
                     disabled={disabled}
+                    MenuProps={{
+                      anchorOrigin: { vertical: "bottom", horizontal: "left" },
+                      transformOrigin: { vertical: "top", horizontal: "left" },
+                      getContentAnchorEl: null,
+                    }}
                     startAdornment={
                       <InputAdornment position="start">
                         <FontAwesomeIcon
