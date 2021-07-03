@@ -92,7 +92,7 @@ export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
   ? never
   : T extends object
   ? {
-      [K in keyof T]: K extends string ? AllTableHeaders<T[K]> : never;
+      [K in keyof T]?: K extends string ? AllTableHeaders<T[K]> : never;
     }
   : Header;
 
