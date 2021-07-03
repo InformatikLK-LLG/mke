@@ -159,8 +159,6 @@ export type Autocomplete =
 
 export const useButtonStyles = makeStyles({
   button: {
-    display: "flex",
-    justifyContent: "center",
     marginTop: "2em",
     padding: "0.5em max(10%, 3em)",
     maxWidth: "1em",
@@ -209,6 +207,10 @@ export const useInputStyles = makeStyles({
     "&:hover": {
       cursor: "pointer",
     },
+  },
+  tableContainer: {
+    width: "100%",
+    height: "30%",
   },
 });
 
@@ -733,6 +735,7 @@ export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
   const { data, isLoading } = useInstitutions();
   const navigate = useNavigate();
+  const formInput = useInputStyles();
 
   // useEffect(() => {
   //   async function foo() {
@@ -774,12 +777,21 @@ export function Institutions() {
       {isLoading ? (
         <Loading />
       ) : (
-        <Table
-          tableHeaders={tableHeaders}
-          rows={data ? data.data : []}
-          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
-          // search={search}
-        />
+        <div className={formInput.tableContainer}>
+          <Table
+            tableHeaders={tableHeaders}
+            rows={data ? data.data : []}
+            sort={[
+              "Name",
+              "INST-Code",
+              "Straße",
+              "Ort",
+              "PLZ",
+              "Telefonnummer",
+            ]}
+            // search={search}
+          />
+        </div>
       )}
     </div>
   );

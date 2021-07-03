@@ -2,15 +2,18 @@ import {
   Table as BetterTable,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
   TextField,
   makeStyles,
+  useTheme,
 } from "@material-ui/core";
 import React, { Fragment, useState } from "react";
 import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
+import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,14 +41,19 @@ const useStyles = makeStyles({
     },
   },
   table: {},
+  tableHeader: {
+    position: "sticky",
+    top: 0,
+    backgroundColor: "white",
+  },
   tableContainer: {
-    display: "flex",
-    justifyContent: "center",
-    flexGrow: 1,
-    maxHeight: "60%",
-    maxWidth: "70%",
+    maxHeight: "100%",
+    maxWidth: "100%",
+    overflowX: "auto",
+    overflowY: "auto",
     "&::-webkit-scrollbar": {
       width: "0.5em",
+      height: "0.5em",
       backgroundColor: "var(--input)",
       borderRadius: "1em",
     },
@@ -307,9 +315,17 @@ export default function Table<T extends SimplestItem>({
       </Fragment>
     );
   }
+  const useButtonStyles = makeStyles({
+    button: {
+      marginTop: "2em",
+      // padding: "0.5em max(10%, 3em)",
+    },
+  });
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const theme = useTheme();
+  const formButton = useButtonStyles();
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -323,36 +339,47 @@ export default function Table<T extends SimplestItem>({
   };
 
   return (
-    <div className={classes.table}>
-      {search && (
-        <TextField
-          id="searchbox"
-          label="Suche"
-          variant="outlined"
-          onChange={(e) => search(e.target.value)}
+    <>
+      <TableContainer className={classes.tableContainer}>
+        {search && (
+          <TextField
+            id="searchbox"
+            label="Suche"
+            variant="outlined"
+            onChange={(e) => search(e.target.value)}
+          />
+        )}
+        <BetterTable className={classes.table}>
+          <TableHead className={classes.tableHeader}>
+            <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(rows, getComparator(direction, sortBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => {
+                return RenderRow(row);
+              })}
+          </TableBody>
+        </BetterTable>
+      </TableContainer>
+      {rows.length === 0 ? (
+        <Button
+          label="zeugs"
+          type="button"
+          buttonStyle={formButton}
+          backgroundColor={theme.palette.primary.main}
+        />
+      ) : (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       )}
-      <BetterTable>
-        <TableHead>
-          <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
-        </TableHead>
-        <TableBody>
-          {stableSort(rows, getComparator(direction, sortBy))
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row) => {
-              return RenderRow(row);
-            })}
-        </TableBody>
-      </BetterTable>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </div>
+    </>
   );
 }
