@@ -654,15 +654,10 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
-<<<<<<< HEAD
   const { data, isLoading, setSearchParams } = useInstitutions();
   const navigate = useNavigate();
   const formInput = useInputStyles();
   const queryClient = useQueryClient();
-=======
-  const { data, isLoading } = useInstitutions();
-  const navigate = useNavigate();
->>>>>>> d105fb8 (Improve keyboard shortcuts using @use-it/event-listener)
 
   const onKeyDown = async (event: KeyboardEvent) => {
     if (event.key === "n" && event.altKey) {
@@ -671,7 +666,6 @@ export function Institutions() {
     }
   };
 
-<<<<<<< HEAD
   useEventListener("keydown", onKeyDown);
 
   async function search(
@@ -679,25 +673,6 @@ export function Institutions() {
     query: string
   ) {
     setSearchParams({ [parameter]: query });
-=======
-  const onKeyDown = async (event: KeyboardEvent) => {
-    if (event.key === "n" && event.altKey) {
-      event.preventDefault();
-      navigate("./create");
-    }
-  };
-
-  useEventListener("keydown", onKeyDown);
-
-  async function search(query: string) {
-    const response = await axios.get<Array<InstitutionType>>(
-      "http://localhost:8080/institution",
-      {
-        params: { id: query },
-      }
-    );
-    setInstitutions(response.data);
->>>>>>> d105fb8 (Improve keyboard shortcuts using @use-it/event-listener)
   }
 
   return (
@@ -705,12 +680,21 @@ export function Institutions() {
       {isLoading ? (
         <Loading />
       ) : (
-        <Table
-          tableHeaders={tableHeaders}
-          rows={data ? data.data : []}
-          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
-          // search={search}
-        />
+        <div className={formInput.tableContainer}>
+          <Table
+            tableHeaders={tableHeaders}
+            rows={data ? data.data : []}
+            sort={[
+              "Name",
+              "INST-Code",
+              "Straße",
+              "Ort",
+              "PLZ",
+              "Telefonnummer",
+            ]}
+            // search={search}
+          />
+        </div>
       )}
     </div>
   );
