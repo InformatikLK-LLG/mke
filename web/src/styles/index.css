@@ -91,6 +91,23 @@ h2 {
   flex-grow: 1;
   height: 70%;
   padding: 2em 0;
+<<<<<<< HEAD
+=======
+}
+
+.blub {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+}
+
+.foo {
+  display: flex;
+  flex-flow: column nowrap;
+  /* justify-content: center; */
+  align-items: center;
+  gap: 3em;
+>>>>>>> af8b7d9 (Modify container styling and change layout of institution overlay)
 }
 
 .container > h1 {

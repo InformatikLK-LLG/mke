@@ -221,7 +221,11 @@ export const useInputStyles = makeStyles({
   },
   tableContainer: {
     width: "100%",
+<<<<<<< HEAD
     height: "50%",
+=======
+    height: "80%",
+>>>>>>> af8b7d9 (Modify container styling and change layout of institution overlay)
   },
 });
 
