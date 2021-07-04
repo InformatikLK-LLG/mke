@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
+import Table from "./Table";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import useEventListener from "@use-it/event-listener";
 import { useHeader } from "../Wrapper";
@@ -45,6 +46,15 @@ const useInstitutionStyles = makeStyles({
     },
   },
 });
+
+type Customer = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobilePhone: string;
+  businessPhone: string;
+};
 
 export function InstitutionOverlay({
   instCode,
@@ -62,6 +72,25 @@ export function InstitutionOverlay({
         schoolAdministrativeDistrict: false,
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
+
+  const customers: Array<Customer> = [
+    {
+      id: 4,
+      firstName: "foo",
+      lastName: "bar",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 5,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+  ];
 
   const {
     handleSubmit,
@@ -318,6 +347,18 @@ export function InstitutionOverlay({
           disabled={disabled || !isValid}
         />
       </form>
+      <h3>Kunden der Organisation</h3>
+      <Table
+        tableHeaders={{
+          firstName: { label: "Vorname" },
+          lastName: { label: "Nachname" },
+          email: { label: "Email" },
+          mobilePhone: { label: "Handynummer" },
+          businessPhone: { label: "Telefonnummer dienstlich" },
+        }}
+        rows={customers}
+        sort={["Vorname", "Nachname", "Email"]}
+      />
     </div>
   );
 }
