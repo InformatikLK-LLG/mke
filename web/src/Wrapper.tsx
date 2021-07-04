@@ -104,6 +104,8 @@ export default function Wrapper() {
 
   useEffect(() => {
     currentRoute?.heading && header.setHeader(currentRoute.heading);
+    if (currentRoute?.name && typeof currentRoute.name === "string")
+      document.title = currentRoute.name;
   }, [currentRoute]);
 
   return (
