@@ -84,20 +84,6 @@ h2 {
   padding: 2em 0;
 }
 
-.section {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
-}
-
-.foo {
-  display: flex;
-  flex-flow: column nowrap;
-  /* justify-content: center; */
-  align-items: center;
-  gap: 3em;
-}
-
 .container > h1 {
   color: var(--highlighting);
 }

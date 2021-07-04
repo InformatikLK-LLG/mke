@@ -47,6 +47,18 @@ const useInstitutionStyles = makeStyles({
     },
   },
   divider: { backgroundColor: "var(--border)" },
+  section: {
+    display: "flex",
+    flexFlow: "column nowrap",
+    alignItems: "center",
+    "&:last-child": { marginBottom: "3em" },
+  },
+  enclosure: {
+    display: "flex",
+    flexFlow: "column nowrap",
+    alignItems: "center",
+    gap: "3em",
+  },
 });
 
 type Customer = {
@@ -118,7 +130,9 @@ export function InstitutionOverlay({
   }, [name, header]);
 
   const queryClient = useQueryClient();
-  const { data: customers } = useCustomers(getValues("id"));
+  const { data: customers, isLoading: customersIsLoading } = useCustomers(
+    getValues("id")
+  );
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -147,8 +161,8 @@ export function InstitutionOverlay({
   useEventListener("keydown", onKeyDown);
 
   return (
-    <div className="foo">
-      <div className="section">
+    <div className={institutionStyles.enclosure}>
+      <div className={institutionStyles.section}>
         <form
           onSubmit={handleSubmit((data) => {
             updateData(data);
@@ -349,20 +363,24 @@ export function InstitutionOverlay({
         style={{ width: "70%" }}
         classes={{ root: institutionStyles.divider }}
       />
-      <div className="section">
+      <div className={institutionStyles.section}>
         <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
-        <Table
-          tableHeaders={{
-            id: { label: "INST-Code" },
-            firstName: { label: "Vorname" },
-            lastName: { label: "Nachname" },
-            email: { label: "Email" },
-            mobilePhone: { label: "Handynummer" },
-            businessPhone: { label: "Telefonnummer dienstlich" },
-          }}
-          rows={customers?.data || []}
-          sort={["Vorname", "Nachname", "Email"]}
-        />
+        {customersIsLoading ? (
+          <Loading />
+        ) : (
+          <Table
+            tableHeaders={{
+              id: { label: "INST-Code" },
+              firstName: { label: "Vorname" },
+              lastName: { label: "Nachname" },
+              email: { label: "Email" },
+              mobilePhone: { label: "Handynummer" },
+              businessPhone: { label: "Telefonnummer dienstlich" },
+            }}
+            rows={customers?.data || []}
+            sort={["Vorname", "Nachname", "Email"]}
+          />
+        )}
       </div>
     </div>
   );
