@@ -57,7 +57,11 @@ import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
+<<<<<<< HEAD
 import { useQueryClient } from "react-query";
+=======
+import useInstitutions from "../hooks/useInstitutions";
+>>>>>>> 026a210 (Change heading of institution overlay customers, clean up)
 
 type Address = {
   street: string;

@@ -37,7 +37,6 @@ import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import useCustomers from "../hooks/useCustomers";
 import useEventListener from "@use-it/event-listener";
 import { useHeader } from "../Wrapper";
-import useInstitution from "../hooks/useInstitution";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 
