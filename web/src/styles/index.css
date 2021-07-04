@@ -95,10 +95,10 @@ h2 {
 =======
 }
 
-.blub {
+.section {
   display: flex;
   flex-flow: column nowrap;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .foo {
