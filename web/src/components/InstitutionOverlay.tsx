@@ -34,6 +34,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
 import Table from "./Table";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
+import useCustomers from "../hooks/useCustomers";
 import useEventListener from "@use-it/event-listener";
 import { useHeader } from "../Wrapper";
 import { useNavigate } from "react-router-dom";
@@ -73,8 +74,6 @@ export function InstitutionOverlay({
         schoolAdministrativeDistrict: false,
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
-
-  const customers: Array<Customer> = [];
 
   const {
     handleSubmit,
@@ -119,6 +118,7 @@ export function InstitutionOverlay({
   }, [name, header]);
 
   const queryClient = useQueryClient();
+  const { data: customers } = useCustomers(getValues("id"));
 
   const updateData = async (data?: FormInstitutionType) => {
     const values = data ? data : getValues();
@@ -353,13 +353,14 @@ export function InstitutionOverlay({
         <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
         <Table
           tableHeaders={{
+            id: { label: "INST-Code" },
             firstName: { label: "Vorname" },
             lastName: { label: "Nachname" },
             email: { label: "Email" },
             mobilePhone: { label: "Handynummer" },
             businessPhone: { label: "Telefonnummer dienstlich" },
           }}
-          rows={customers || []}
+          rows={customers?.data || []}
           sort={["Vorname", "Nachname", "Email"]}
         />
       </div>

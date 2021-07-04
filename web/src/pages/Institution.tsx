@@ -66,7 +66,7 @@ type Address = {
   town: string;
 };
 
-type Customer = {
+export type Customer = {
   id: number;
   firstName: string;
   lastName: string;
