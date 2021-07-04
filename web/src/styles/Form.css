@@ -4,6 +4,7 @@ form {
   align-items: center;
   margin-top: 1em;
   width: fit-content;
+  align-self: center;
 }
 .halfstuff {
   display: flex;

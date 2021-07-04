@@ -1,5 +1,6 @@
 import { Controller, useForm } from "react-hook-form";
 import {
+  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -45,6 +46,7 @@ const useInstitutionStyles = makeStyles({
       backgroundColor: "transparent",
     },
   },
+  blub: { backgroundColor: "var(--border)" },
 });
 
 type Customer = {
@@ -84,6 +86,70 @@ export function InstitutionOverlay({
     },
     {
       id: 5,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 6,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 7,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 8,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 9,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 10,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 11,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 12,
+      firstName: "baz",
+      lastName: "blub",
+      mobilePhone: "asdf",
+      businessPhone: "blub",
+      email: "mail@mail.com",
+    },
+    {
+      id: 13,
       firstName: "baz",
       lastName: "blub",
       mobilePhone: "asdf",
@@ -163,202 +229,228 @@ export function InstitutionOverlay({
   useEventListener("keydown", onKeyDown);
 
   return (
-    <div className="container">
-      <form
-        onSubmit={handleSubmit((data) => {
-          updateData(data);
-          navigate("/institutions");
-        })}
-        style={{ width: "80%" }}
-      >
-        <Grid
-          container
-          spacing={2}
-          direction="row"
-          alignItems="flex-end"
-          justify="center"
+    <div className="foo">
+      <div className="blub">
+        <form
+          onSubmit={handleSubmit((data) => {
+            updateData(data);
+            navigate("/institutions");
+          })}
+          style={{ width: "80%" }}
         >
-          <Grid item container xs={12} justify="flex-end">
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={!disabled}
-                  onChange={() => {
-                    if (!disabled) updateData();
-                    setDisabled((value) => !value);
-                  }}
-                  name="toggleDisabled"
-                  color="primary"
-                />
-              }
-              label="Bearbeiten"
-              labelPlacement="start"
-              className={institutionStyles.toggleLabel}
-            />
-          </Grid>
           <Grid
-            item
-            xs={12}
-            md={6}
-            lg={6}
-            className={inputFields.institutionName}
+            container
+            spacing={2}
+            direction="row"
+            alignItems="flex-end"
+            justify="center"
           >
-            {RenderInput({
-              name: "name",
-              placeholder: "Name",
-              autocompletePlaces: "school",
-              required: "Institutions-Name muss angegeben werden",
-              autofocus: true,
-              icon: faUniversity,
-              autoComplete: "organization",
-              formState,
-              disabled,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
-            {RenderInput({
-              name: "id",
-              placeholder: "INST-Code",
-              required: "INST-Code muss angegeben werden",
-              icon: faKeyboard,
-              formState,
-              disabled: true,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6} className={inputFields.phoneNumber}>
-            {RenderInput({
-              name: "phoneNumber",
-              placeholder: "Telefonnummer",
-              required: "Telefonnummer muss angegeben werden",
-              icon: faVoicemail,
-              autoComplete: "tel",
-              formState,
-              disabled,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
-            {RenderInput({
-              name: "address.street",
-              placeholder: "Straße",
-              autocompletePlaces: "address",
-              required: "Straße muss angegeben werden",
-              icon: faMapMarkerAlt,
-              autoComplete: "address-line1",
-              formState,
-              disabled,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={2} className={inputFields.streetNumber}>
-            {RenderInput({
-              name: "address.streetNumber",
-              placeholder: "Hausnummer",
-              required: "Hausnummer muss angegeben werden",
-              icon: faMapMarkerAlt,
-              autoComplete: "address-line2",
-              formState,
-              disabled,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4} className={inputFields.town}>
-            {RenderInput({
-              name: "address.town",
-              placeholder: "Stadt",
-              required: "Stadt muss angegeben werden",
-              icon: faMapMarkerAlt,
-              autoComplete: "address-level2",
-              formState,
-              disabled,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={2} className={inputFields.zipCode}>
-            {RenderInput({
-              name: "address.zipCode",
-              placeholder: "Postleitzahl",
-              required: "Postleitzahl muss angegeben werden",
-              icon: faMapMarkerAlt,
-              autoComplete: "postal-code",
-              formState,
-              disabled,
-            })}
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={6}
-            className={inputFields.schoolAdministrativeDistrict}
-          >
-            <Controller
-              control={control}
-              name="schoolAdministrativeDistrict"
-              render={({ field }) => (
-                <FormControl
-                  className={`${formInput.input} ${formInput.formControl}`}
-                >
-                  <InputLabel id="schoolAdministrativeDistrict">
-                    Schulverwaltungsbezirk?
-                  </InputLabel>
-                  <Select
-                    className={`${formInput.select} ${formInput.input}`}
-                    {...field}
-                    value={field.value ? 1 : 0}
-                    disabled={disabled}
-                    MenuProps={{
-                      anchorOrigin: { vertical: "bottom", horizontal: "left" },
-                      transformOrigin: { vertical: "top", horizontal: "left" },
-                      getContentAnchorEl: null,
+            <Grid item container xs={12} justify="flex-end">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={!disabled}
+                    onChange={() => {
+                      if (!disabled) updateData();
+                      setDisabled((value) => !value);
                     }}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <FontAwesomeIcon
-                          icon={faQuestion}
-                          className="inputIcon"
-                        />
-                      </InputAdornment>
-                    }
-                    labelId="schoolAdministrativeDistrict"
-                  >
-                    <MenuItem value={1} className={formInput.menuItem}>
-                      Ja
-                    </MenuItem>
-                    <MenuItem value={0} className={formInput.menuItem}>
-                      Nein
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              )}
-            />
-          </Grid>
-        </Grid>
+                    name="toggleDisabled"
+                    color="primary"
+                  />
+                }
+                label="Bearbeiten"
+                labelPlacement="start"
+                className={institutionStyles.toggleLabel}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={6}
+              className={inputFields.institutionName}
+            >
+              {RenderInput({
+                name: "name",
+                placeholder: "Name",
+                autocompletePlaces: "school",
+                required: "Institutions-Name muss angegeben werden",
+                autofocus: true,
+                icon: faUniversity,
+                autoComplete: "organization",
+                formState,
+                disabled,
+              })}
+            </Grid>
 
-        <Button
-          type="submit"
-          label="Speichern"
-          buttonStyle={formButton}
-          textColor="white"
-          backgroundColor={theme.palette.primary.main}
-          disabled={disabled || !isValid}
-        />
-      </form>
-      <h3>Kunden der Organisation</h3>
-      <Table
-        tableHeaders={{
-          firstName: { label: "Vorname" },
-          lastName: { label: "Nachname" },
-          email: { label: "Email" },
-          mobilePhone: { label: "Handynummer" },
-          businessPhone: { label: "Telefonnummer dienstlich" },
-        }}
-        rows={customers}
-        sort={["Vorname", "Nachname", "Email"]}
+            <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
+              {RenderInput({
+                name: "id",
+                placeholder: "INST-Code",
+                required: "INST-Code muss angegeben werden",
+                icon: faKeyboard,
+                formState,
+                disabled: true,
+              })}
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={6}
+              className={inputFields.phoneNumber}
+            >
+              {RenderInput({
+                name: "phoneNumber",
+                placeholder: "Telefonnummer",
+                required: "Telefonnummer muss angegeben werden",
+                icon: faVoicemail,
+                autoComplete: "tel",
+                formState,
+                disabled,
+              })}
+            </Grid>
+
+            <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
+              {RenderInput({
+                name: "address.street",
+                placeholder: "Straße",
+                autocompletePlaces: "address",
+                required: "Straße muss angegeben werden",
+                icon: faMapMarkerAlt,
+                autoComplete: "address-line1",
+                formState,
+                disabled,
+              })}
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={2}
+              className={inputFields.streetNumber}
+            >
+              {RenderInput({
+                name: "address.streetNumber",
+                placeholder: "Hausnummer",
+                required: "Hausnummer muss angegeben werden",
+                icon: faMapMarkerAlt,
+                autoComplete: "address-line2",
+                formState,
+                disabled,
+              })}
+            </Grid>
+
+            <Grid item xs={12} md={6} lg={4} className={inputFields.town}>
+              {RenderInput({
+                name: "address.town",
+                placeholder: "Stadt",
+                required: "Stadt muss angegeben werden",
+                icon: faMapMarkerAlt,
+                autoComplete: "address-level2",
+                formState,
+                disabled,
+              })}
+            </Grid>
+
+            <Grid item xs={12} md={6} lg={2} className={inputFields.zipCode}>
+              {RenderInput({
+                name: "address.zipCode",
+                placeholder: "Postleitzahl",
+                required: "Postleitzahl muss angegeben werden",
+                icon: faMapMarkerAlt,
+                autoComplete: "postal-code",
+                formState,
+                disabled,
+              })}
+            </Grid>
+
+            <Grid
+              item
+              xs={12}
+              md={6}
+              lg={6}
+              className={inputFields.schoolAdministrativeDistrict}
+            >
+              <Controller
+                control={control}
+                name="schoolAdministrativeDistrict"
+                render={({ field }) => (
+                  <FormControl
+                    className={`${formInput.input} ${formInput.formControl}`}
+                  >
+                    <InputLabel id="schoolAdministrativeDistrict">
+                      Schulverwaltungsbezirk?
+                    </InputLabel>
+                    <Select
+                      className={`${formInput.select} ${formInput.input}`}
+                      {...field}
+                      value={field.value ? 1 : 0}
+                      disabled={disabled}
+                      MenuProps={{
+                        anchorOrigin: {
+                          vertical: "bottom",
+                          horizontal: "left",
+                        },
+                        transformOrigin: {
+                          vertical: "top",
+                          horizontal: "left",
+                        },
+                        getContentAnchorEl: null,
+                      }}
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            icon={faQuestion}
+                            className="inputIcon"
+                          />
+                        </InputAdornment>
+                      }
+                      labelId="schoolAdministrativeDistrict"
+                    >
+                      <MenuItem value={1} className={formInput.menuItem}>
+                        Ja
+                      </MenuItem>
+                      <MenuItem value={0} className={formInput.menuItem}>
+                        Nein
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
+              />
+            </Grid>
+          </Grid>
+
+          <Button
+            type="submit"
+            label="Speichern"
+            buttonStyle={formButton}
+            textColor="white"
+            backgroundColor={theme.palette.primary.main}
+            disabled={disabled || !isValid}
+          />
+        </form>
+      </div>
+      <Divider
+        style={{ width: "70%" }}
+        classes={{ root: institutionStyles.blub }}
       />
+      <div className="blub">
+        <h3>Kunden der Organisation</h3>
+        <Table
+          tableHeaders={{
+            firstName: { label: "Vorname" },
+            lastName: { label: "Nachname" },
+            email: { label: "Email" },
+            mobilePhone: { label: "Handynummer" },
+            businessPhone: { label: "Telefonnummer dienstlich" },
+          }}
+          rows={customers}
+          sort={["Vorname", "Nachname", "Email"]}
+        />
+      </div>
     </div>
   );
 }

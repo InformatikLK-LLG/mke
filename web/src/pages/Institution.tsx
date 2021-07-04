@@ -210,7 +210,7 @@ export const useInputStyles = makeStyles({
   },
   tableContainer: {
     width: "100%",
-    height: "30%",
+    height: "80%",
   },
 });
 

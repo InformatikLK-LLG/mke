@@ -393,6 +393,7 @@ export default function Table<T extends SimplestItem>({
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
+          style={{ alignSelf: "flex-end" }}
         />
       )}
     </>

@@ -80,6 +80,22 @@ h2 {
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  height: 70%;
+  padding: 2em 0;
+}
+
+.blub {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+}
+
+.foo {
+  display: flex;
+  flex-flow: column nowrap;
+  /* justify-content: center; */
+  align-items: center;
+  gap: 3em;
 }
 
 .container > h1 {
@@ -88,7 +104,7 @@ h2 {
 
 .wrapper {
   height: 100vh;
-  width: 100vw;
+  /* width: 100vw;*/
   box-sizing: border-box;
   display: flex;
   flex-flow: column nowrap;
