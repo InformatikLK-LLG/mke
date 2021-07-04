@@ -10,8 +10,12 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
+import {
+  IconDefinition,
+  faSortDown,
+  faSortUp,
+} from "@fortawesome/free-solid-svg-icons";
 import React, { Fragment, useState } from "react";
-import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,6 +23,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
+  headerIcon: {
+    color: "var(--border)",
+    marginRight: "0.2em",
+  },
   sortIcon: {
     position: "absolute",
     marginTop: "0.4em",
@@ -82,6 +90,7 @@ interface SimplestItem {
 
 interface Header {
   label: string;
+  icon?: IconDefinition;
   minWidth?: number;
   align?: "right" | "left" | "center";
   format?: (value: any) => JSX.Element;
@@ -281,6 +290,12 @@ export default function Table<T extends SimplestItem>({
             key={`${orderBy}.label`}
             className={classes.sortLabel}
           >
+            {header.icon && (
+              <FontAwesomeIcon
+                className={classes.headerIcon}
+                icon={header.icon}
+              />
+            )}
             <span key={`${orderBy}.span`}>{header.label}</span>
             <FontAwesomeIcon
               className={`${classes.sortIcon} ${isAscendingAndActive}`}
