@@ -36,7 +36,6 @@ import Table from "./Table";
 import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import useEventListener from "@use-it/event-listener";
 import { useHeader } from "../Wrapper";
-import useInstitution from "../hooks/useInstitution";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 
@@ -46,7 +45,7 @@ const useInstitutionStyles = makeStyles({
       backgroundColor: "transparent",
     },
   },
-  blub: { backgroundColor: "var(--border)" },
+  section: { backgroundColor: "var(--border)" },
 });
 
 type Customer = {
@@ -230,7 +229,7 @@ export function InstitutionOverlay({
 
   return (
     <div className="foo">
-      <div className="blub">
+      <div className="section">
         <form
           onSubmit={handleSubmit((data) => {
             updateData(data);
@@ -435,10 +434,10 @@ export function InstitutionOverlay({
       </div>
       <Divider
         style={{ width: "70%" }}
-        classes={{ root: institutionStyles.blub }}
+        classes={{ root: institutionStyles.section }}
       />
-      <div className="blub">
-        <h3>Kunden der Organisation</h3>
+      <div className="section">
+        <h3>{`Kundinnen — ${name}`}</h3>
         <Table
           tableHeaders={{
             firstName: { label: "Vorname" },

@@ -57,7 +57,6 @@ import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import useInstitutions from "../hooks/useInstitutions";
-import { useQueryClient } from "react-query";
 
 type Address = {
   street: string;
