@@ -45,7 +45,7 @@ const useInstitutionStyles = makeStyles({
       backgroundColor: "transparent",
     },
   },
-  section: { backgroundColor: "var(--border)" },
+  divider: { backgroundColor: "var(--border)" },
 });
 
 type Customer = {
@@ -74,88 +74,7 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
-  const customers: Array<Customer> = [
-    {
-      id: 4,
-      firstName: "foo",
-      lastName: "bar",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 5,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 6,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 7,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 8,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 9,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 10,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 11,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 12,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-    {
-      id: 13,
-      firstName: "baz",
-      lastName: "blub",
-      mobilePhone: "asdf",
-      businessPhone: "blub",
-      email: "mail@mail.com",
-    },
-  ];
+  const customers: Array<Customer> = [];
 
   const {
     handleSubmit,
@@ -237,13 +156,7 @@ export function InstitutionOverlay({
           })}
           style={{ width: "80%" }}
         >
-          <Grid
-            container
-            spacing={2}
-            direction="row"
-            alignItems="flex-end"
-            justify="center"
-          >
+          <Grid container spacing={2} direction="row" alignItems="flex-end">
             <Grid item container xs={12} justify="flex-end">
               <FormControlLabel
                 control={
@@ -434,10 +347,10 @@ export function InstitutionOverlay({
       </div>
       <Divider
         style={{ width: "70%" }}
-        classes={{ root: institutionStyles.section }}
+        classes={{ root: institutionStyles.divider }}
       />
       <div className="section">
-        <h3>{`Kundinnen — ${name}`}</h3>
+        <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
         <Table
           tableHeaders={{
             firstName: { label: "Vorname" },
@@ -446,7 +359,7 @@ export function InstitutionOverlay({
             mobilePhone: { label: "Handynummer" },
             businessPhone: { label: "Telefonnummer dienstlich" },
           }}
-          rows={customers}
+          rows={customers || []}
           sort={["Vorname", "Nachname", "Email"]}
         />
       </div>

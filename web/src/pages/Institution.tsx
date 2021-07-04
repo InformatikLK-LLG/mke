@@ -57,6 +57,7 @@ import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import useInstitutions from "../hooks/useInstitutions";
+import { useQueryClient } from "react-query";
 
 type Address = {
   street: string;
@@ -65,12 +66,22 @@ type Address = {
   town: string;
 };
 
+type Customer = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobilePhone: string;
+  businessPhone: string;
+};
+
 type InstitutionType = {
   id: number | string;
   name: string;
   address: Address;
   phoneNumber: number;
   schoolAdministrativeDistrict: boolean;
+  customers?: Array<Customer>;
 };
 
 type FormAddress = {
@@ -86,6 +97,7 @@ export type FormInstitutionType = {
   address: FormAddress;
   phoneNumber: string;
   schoolAdministrativeDistrict: boolean;
+  customers?: Array<Customer>;
 };
 
 export type FormState<T> = {
@@ -209,7 +221,7 @@ export const useInputStyles = makeStyles({
   },
   tableContainer: {
     width: "100%",
-    height: "80%",
+    height: "50%",
   },
 });
 
