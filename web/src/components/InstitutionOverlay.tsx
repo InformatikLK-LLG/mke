@@ -47,6 +47,7 @@ const useInstitutionStyles = makeStyles({
     },
   },
   divider: { backgroundColor: "var(--border)" },
+<<<<<<< HEAD
   section: {
     display: "flex",
     flexFlow: "column nowrap",
@@ -59,6 +60,8 @@ const useInstitutionStyles = makeStyles({
     alignItems: "center",
     gap: "3em",
   },
+=======
+>>>>>>> 8e386f0 (Add customer type to institution, clean up styling)
 });
 
 type Customer = {
@@ -87,6 +90,11 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
+<<<<<<< HEAD
+=======
+  const customers: Array<Customer> = [];
+
+>>>>>>> 8e386f0 (Add customer type to institution, clean up styling)
   const {
     handleSubmit,
     setValue,
@@ -363,7 +371,11 @@ export function InstitutionOverlay({
         style={{ width: "70%" }}
         classes={{ root: institutionStyles.divider }}
       />
+<<<<<<< HEAD
       <div className={institutionStyles.section}>
+=======
+      <div className="section">
+>>>>>>> 8e386f0 (Add customer type to institution, clean up styling)
         <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
         <Table
           tableHeaders={{
@@ -373,7 +385,11 @@ export function InstitutionOverlay({
             mobilePhone: { label: "Handynummer" },
             businessPhone: { label: "Telefonnummer dienstlich" },
           }}
+<<<<<<< HEAD
           rows={customers?.data || []}
+=======
+          rows={customers || []}
+>>>>>>> 8e386f0 (Add customer type to institution, clean up styling)
           sort={["Vorname", "Nachname", "Email"]}
           onRowClick={(row) => navigate(`/customers/${row.id}`)}
           isLoading={customersIsLoading}
