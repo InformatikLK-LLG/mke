@@ -95,6 +95,7 @@ h2 {
 =======
 }
 
+<<<<<<< HEAD
 .section {
   display: flex;
   flex-flow: column nowrap;
@@ -110,6 +111,8 @@ h2 {
 >>>>>>> af8b7d9 (Modify container styling and change layout of institution overlay)
 }
 
+=======
+>>>>>>> b392050 (Display loading animation in customer table, clean up styles)
 .container > h1 {
   color: var(--highlighting);
 }
