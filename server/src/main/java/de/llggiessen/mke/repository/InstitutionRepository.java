@@ -18,4 +18,7 @@ public interface InstitutionRepository extends CrudRepository<Institution, Strin
     @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name%", nativeQuery = true)
     Iterable<Institution> findInstitutions(@Param("name")String name);
 
+    @Query(value = "DELETE FROM institution WHERE institution.id = :id", nativeQuery = true)
+    Institution deleteInstitutionByID(@Param("id") String id);
+
 }
