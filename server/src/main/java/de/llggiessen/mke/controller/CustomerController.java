@@ -25,4 +25,9 @@ public class CustomerController {
     public Customer getCustomerByID(@RequestParam Long id) {
         return repository.findById(id).orElseThrow(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST);});
     }
+
+    @DeleteMapping("")
+    public Customer deleteByEmail(@RequestParam(value = "email") String email) {
+        return repository.deleteByEmail(email);
+    }
 }
