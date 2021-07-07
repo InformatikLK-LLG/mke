@@ -56,10 +56,10 @@ public class BookingController {
     }
 
     @GetMapping(value = "", params = {"retrievalDate", "returnDate"})
-    public Iterable<Booking> getBookingsInRange(@RequestParam("retrievalDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrievalDate, @RequestParam("returnDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date returnDate){
+    public Iterable<Booking> getBookingsInRange(@RequestParam("retrievalDate") String retrievalDate, @RequestParam("returnDate") String returnDate){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            return  repository.findAllInRange(simpleDateFormat.format(retrievalDate), simpleDateFormat.format(returnDate));
+            return  repository.findAllInRange(simpleDateFormat.parse(retrievalDate), simpleDateFormat.parse(returnDate));
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Try using this timeformat: yyyy-MM-dd");
         }
@@ -69,5 +69,6 @@ public class BookingController {
     public Iterable<Booking> getBookingsByStatus(@RequestParam char status){
         return repository.findAllByStatus(status);
     }
+
 }
 
