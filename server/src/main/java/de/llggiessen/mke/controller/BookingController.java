@@ -3,6 +3,7 @@ package de.llggiessen.mke.controller;
 import de.llggiessen.mke.repository.BookingRepository;
 import de.llggiessen.mke.schema.Booking;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -68,9 +69,5 @@ public class BookingController {
     public Iterable<Booking> getBookingsByStatus(@RequestParam char status){
         return repository.findAllByStatus(status);
     }
-
-    /*@DeleteMapping(value = "", params = {"id"})
-    public Booking */
-
 }
 
