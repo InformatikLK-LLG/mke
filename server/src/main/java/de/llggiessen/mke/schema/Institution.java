@@ -21,7 +21,4 @@ public class Institution {
     private boolean svb;
     @Embedded
     private Address address;
-
-
-
 }

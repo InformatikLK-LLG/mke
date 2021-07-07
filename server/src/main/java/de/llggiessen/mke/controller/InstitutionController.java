@@ -34,9 +34,17 @@ public class InstitutionController {
         return repository.findInstitutions(name);
     }
 
-    @DeleteMapping(value = "",params ={"id"})
+    @DeleteMapping(value = "", params = {"id"})
     public Institution deleteInstitutionByID(@RequestParam String id) {
         return repository.deleteInstitutionByID(id);
     }
 
+    @PostMapping(value= "")
+    public Institution newInstitution(@RequestBody Institution newInstitution) {
+        try {
+            return repository.save(newInstitution);
+        } catch(Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
