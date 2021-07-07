@@ -379,6 +379,7 @@ export function InstitutionOverlay({
             }}
             rows={customers?.data || []}
             sort={["Vorname", "Nachname", "Email"]}
+            onRowClick={(row) => navigate(`/customers/${row.id}`)}
           />
         )}
       </div>

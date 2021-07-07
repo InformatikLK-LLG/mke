@@ -43,10 +43,12 @@ const useStyles = makeStyles({
     },
   },
   row: {
-    cursor: "pointer",
     "&:hover": {
       backgroundColor: "var(--input)",
     },
+  },
+  clickable: {
+    cursor: "pointer",
   },
   table: {},
   tableHeader: {
@@ -110,6 +112,7 @@ interface TableProps<T extends SimplestItem> {
   rows: T[];
   sort?: Array<string>;
   search?: (query: string) => void;
+  onRowClick?: (row: T) => void;
 }
 
 type Prev = [
@@ -188,6 +191,7 @@ export default function Table<T extends SimplestItem>({
   rows,
   sort,
   search,
+  onRowClick,
 }: TableProps<T>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
@@ -247,8 +251,8 @@ export default function Table<T extends SimplestItem>({
       <TableRow
         // hover
         key={`row.${row.id}`}
-        onClick={() => navigate(`./${row.id}`)}
-        className={classes.row}
+        onClick={() => onRowClick && onRowClick(row)}
+        className={`${classes.row} ${onRowClick && classes.clickable}`}
       >
         {accessKeys.map((nestedKey) => {
           return RenderValue(row, nestedKey);
