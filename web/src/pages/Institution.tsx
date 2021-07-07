@@ -677,26 +677,17 @@ export function Institutions() {
 
   return (
     <div className="container">
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <div className={formInput.tableContainer}>
-          <Table
-            tableHeaders={tableHeaders}
-            rows={data ? data.data : []}
-            sort={[
-              "Name",
-              "INST-Code",
-              "Straße",
-              "Ort",
-              "PLZ",
-              "Telefonnummer",
-            ]}
-            onRowClick={(row) => navigate(`./${row.id}`)}
-            // search={search}
-          />
-        </div>
-      )}
+      <div className={formInput.tableContainer}>
+        <Table
+          tableHeaders={tableHeaders}
+          rows={data?.data || []}
+          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
+          onRowClick={(row) => navigate(`./${row.id}`)}
+          search={search}
+          searchParams={["name"]}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }
