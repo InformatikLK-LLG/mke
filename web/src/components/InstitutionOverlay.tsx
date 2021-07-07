@@ -122,12 +122,17 @@ export function InstitutionOverlay({
     formInput,
     getValues,
     setValue,
-    zipCode,
   };
 
   useEffect(() => {
     header.setHeader(name);
   }, [name, header]);
+
+  useEffect(() => {
+    setValue("schoolAdministrativeDistrict", Boolean(zipCode));
+    // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
+    // eslint-disable-next-line
+  }, [zipCode]);
 
   const queryClient = useQueryClient();
   const { data: customers, isLoading: customersIsLoading } = useCustomers(

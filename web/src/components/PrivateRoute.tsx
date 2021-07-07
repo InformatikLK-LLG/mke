@@ -7,7 +7,7 @@ type privateRouteProps = {
   path: string;
   element: JSX.Element;
   rest?: RouteProps;
-  children?: JSX.Element[];
+  children?: JSX.Element | JSX.Element[];
 };
 
 export default function PrivateRoute({

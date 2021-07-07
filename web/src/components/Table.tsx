@@ -387,7 +387,6 @@ export default function Table<T extends SimplestItem>({
             {isLoading ? (
               <tr>
                 <td colSpan={accessKeys.length}>
-                  {/*nicht schoen, bitte aendern */}
                   <Delayed delay={750}>
                     <Loading />
                   </Delayed>

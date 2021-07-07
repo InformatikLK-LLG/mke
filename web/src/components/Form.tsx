@@ -471,7 +471,7 @@ export function RegisterForm3() {
   );
 }
 
-function EmailInputField<T>({
+export function EmailInputField<T>({
   register,
   emailErrors,
   clearErrors,
