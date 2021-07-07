@@ -5,6 +5,7 @@ import de.llggiessen.mke.schema.Institution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +38,7 @@ public class InstitutionController {
         return repository.findInstitutions(name);
     }
 
-    @DeleteMapping(value = "",params ={"id"})
+    @DeleteMapping(value = "", params = {"id"})
     public Institution deleteInstitutionByID(@RequestParam String id) {
         return repository.deleteInstitutionByID(id);
     }
