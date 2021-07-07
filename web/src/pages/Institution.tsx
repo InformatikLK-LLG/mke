@@ -692,6 +692,7 @@ export function Institutions() {
               "PLZ",
               "Telefonnummer",
             ]}
+            onRowClick={(row) => navigate(`./${row.id}`)}
             // search={search}
           />
         </div>
