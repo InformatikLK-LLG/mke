@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Customer, { CreateCustomer, Customers } from "./pages/Customer";
 import Institution, {
   CreateInstitution,
   Institutions,
@@ -53,7 +54,10 @@ function App() {
                     />
                     <PrivateRoute path="/:instCode" element={<ViewDetails />} />
                   </PrivateRoute>
-                  <Route path="/*" element={<PageNotFound />} />
+                  <PrivateRoute path="/customers" element={<Customer />}>
+                    <PrivateRoute path="/" element={<Customers />} />
+                    <PrivateRoute path="/create" element={<CreateCustomer />} />
+                  </PrivateRoute>
                 </Route>
               </Routes>
             </BrowserRouter>

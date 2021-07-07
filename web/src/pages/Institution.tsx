@@ -103,7 +103,6 @@ export type FormInstitutionType = {
 export type FormState<T> = {
   setValue: UseFormSetValue<T>;
   control: Control<T>;
-  zipCode: string;
   errors: DeepMap<T, FieldError>;
   clearErrors: UseFormClearErrors<T>;
   getValues: UseFormGetValues<T>;
@@ -291,15 +290,8 @@ export const RenderInput = <T,>({
   disabled?: boolean;
   formState: FormState<T>;
 }) => {
-  const {
-    setValue,
-    control,
-    zipCode,
-    errors,
-    clearErrors,
-    getValues,
-    formInput,
-  } = formState;
+  const { setValue, control, errors, clearErrors, getValues, formInput } =
+    formState;
 
   const error = accessNestedValues(name, errors);
   useEffect(() => {
@@ -429,7 +421,6 @@ export function CreateInstitution({
     formInput,
     getValues,
     setValue,
-    zipCode,
   };
 
   const navigate = useNavigate();
@@ -439,8 +430,6 @@ export function CreateInstitution({
     // zipCode is changing over runtime, though, eslint does not see it because watch returns a string
     // eslint-disable-next-line
   }, [zipCode]);
-
-  // }, []);
 
   const onKeyDown = async (event: KeyboardEvent) => {
     if (event.key === "s" && event.altKey) {

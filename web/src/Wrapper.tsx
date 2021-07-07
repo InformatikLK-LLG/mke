@@ -65,6 +65,18 @@ export default function Wrapper() {
       ],
     },
     {
+      path: "/customers",
+      name: "Kundinnnen",
+      heading: "Kundinnen",
+      subroutes: [
+        {
+          path: "/customers/create",
+          name: "Erstellen",
+          heading: "Kundin erstellen",
+        },
+      ],
+    },
+    {
       path: "/profile",
       name: <FontAwesomeIcon icon={faUser} />,
       heading: `Hallo ${auth.user?.email}`,
