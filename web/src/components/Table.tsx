@@ -18,7 +18,10 @@ import {
 import React, { Fragment, useState } from "react";
 
 import Button from "./Button";
+import Delayed from "./Delayed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { InstitutionsSearchParams } from "../hooks/useInstitutions";
+import Loading from "./Loading";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -111,8 +114,10 @@ interface TableProps<T extends SimplestItem> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
   sort?: Array<string>;
-  search?: (query: string) => void;
+  search?: (parameter: keyof InstitutionsSearchParams, query: string) => void;
+  searchParams?: Array<keyof InstitutionsSearchParams>;
   onRowClick?: (row: T) => void;
+  isLoading?: boolean;
 }
 
 type Prev = [
@@ -191,7 +196,9 @@ export default function Table<T extends SimplestItem>({
   rows,
   sort,
   search,
+  searchParams = [],
   onRowClick,
+  isLoading,
 }: TableProps<T>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
@@ -360,28 +367,43 @@ export default function Table<T extends SimplestItem>({
   return (
     <>
       <TableContainer className={classes.tableContainer}>
-        {search && (
-          <TextField
-            id="searchbox"
-            label="Suche"
-            variant="outlined"
-            onChange={(e) => search(e.target.value)}
-          />
+        {searchParams.map(
+          (searchParam) =>
+            search && (
+              <TextField
+                key={searchParam}
+                id={searchParam}
+                label="Suche"
+                variant="outlined"
+                onChange={(e) => search(searchParam, e.target.value)}
+              />
+            )
         )}
         <BetterTable className={classes.table}>
           <TableHead className={classes.tableHeader}>
             <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(rows, getComparator(direction, sortBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return RenderRow(row);
-              })}
+            {isLoading ? (
+              <tr>
+                <td colSpan={accessKeys.length}>
+                  {/*nicht schoen, bitte aendern */}
+                  <Delayed delay={750}>
+                    <Loading />
+                  </Delayed>
+                </td>
+              </tr>
+            ) : (
+              stableSort(rows, getComparator(direction, sortBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  return RenderRow(row);
+                })
+            )}
           </TableBody>
         </BetterTable>
       </TableContainer>
-      {rows.length === 0 ? (
+      {rows.length === 0 && !isLoading ? (
         <Button
           label="zeugs"
           type="button"

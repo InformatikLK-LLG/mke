@@ -43,6 +43,9 @@ import {
   faSquare,
 } from "@fortawesome/free-regular-svg-icons";
 import { useEffect, useState } from "react";
+import useInstitutions, {
+  InstitutionsSearchParams,
+} from "../hooks/useInstitutions";
 
 import { AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
@@ -56,7 +59,6 @@ import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
-import useInstitutions from "../hooks/useInstitutions";
 import { useQueryClient } from "react-query";
 
 type Address = {
@@ -744,9 +746,10 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
-  const { data, isLoading } = useInstitutions();
+  const { data, isLoading, setSearchParams } = useInstitutions();
   const navigate = useNavigate();
   const formInput = useInputStyles();
+  const queryClient = useQueryClient();
 
   // useEffect(() => {
   //   async function foo() {
@@ -773,38 +776,26 @@ export function Institutions() {
 
   useEventListener("keydown", onKeyDown);
 
-  async function search(query: string) {
-    const response = await axios.get<Array<InstitutionType>>(
-      "http://localhost:8080/institution",
-      {
-        params: { id: query },
-      }
-    );
-    setInstitutions(response.data);
+  async function search(
+    parameter: keyof InstitutionsSearchParams,
+    query: string
+  ) {
+    setSearchParams({ [parameter]: query });
   }
 
   return (
     <div className="container">
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <div className={formInput.tableContainer}>
-          <Table
-            tableHeaders={tableHeaders}
-            rows={data ? data.data : []}
-            sort={[
-              "Name",
-              "INST-Code",
-              "Straße",
-              "Ort",
-              "PLZ",
-              "Telefonnummer",
-            ]}
-            onRowClick={(row) => navigate(`./${row.id}`)}
-            // search={search}
-          />
-        </div>
-      )}
+      <div className={formInput.tableContainer}>
+        <Table
+          tableHeaders={tableHeaders}
+          rows={data?.data || []}
+          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
+          onRowClick={(row) => navigate(`./${row.id}`)}
+          search={search}
+          searchParams={["name"]}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }

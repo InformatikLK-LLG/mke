@@ -365,23 +365,20 @@ export function InstitutionOverlay({
       />
       <div className={institutionStyles.section}>
         <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
-        {customersIsLoading ? (
-          <Loading />
-        ) : (
-          <Table
-            tableHeaders={{
-              id: { label: "INST-Code" },
-              firstName: { label: "Vorname" },
-              lastName: { label: "Nachname" },
-              email: { label: "Email" },
-              mobilePhone: { label: "Handynummer" },
-              businessPhone: { label: "Telefonnummer dienstlich" },
-            }}
-            rows={customers?.data || []}
-            sort={["Vorname", "Nachname", "Email"]}
-            onRowClick={(row) => navigate(`/customers/${row.id}`)}
-          />
-        )}
+        <Table
+          tableHeaders={{
+            id: { label: "INST-Code" },
+            firstName: { label: "Vorname" },
+            lastName: { label: "Nachname" },
+            email: { label: "Email" },
+            mobilePhone: { label: "Handynummer" },
+            businessPhone: { label: "Telefonnummer dienstlich" },
+          }}
+          rows={customers?.data || []}
+          sort={["Vorname", "Nachname", "Email"]}
+          onRowClick={(row) => navigate(`/customers/${row.id}`)}
+          isLoading={customersIsLoading}
+        />
       </div>
     </div>
   );
