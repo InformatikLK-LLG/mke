@@ -4,11 +4,7 @@ import de.llggiessen.mke.repository.InstitutionRepository;
 import de.llggiessen.mke.schema.Institution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -19,7 +15,7 @@ public class InstitutionController {
     InstitutionRepository repository;
 
     @GetMapping("")
-    public Iterable<Institution> getInsttitutions(){
+    public Iterable<Institution> getInstitutions(){
         return repository.findAll();
     }
 
@@ -40,10 +36,14 @@ public class InstitutionController {
 
     @DeleteMapping(value = "", params = {"id"})
     public Institution deleteInstitutionByID(@RequestParam String id) {
-        return repository.deleteInstitutionByID(id);
+       try {
+           return repository.deleteInstitutionByID(id);
+       } catch(Exception e) {
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+       }
     }
 
-    @PostMapping(value= "")
+    @PostMapping(value = "")
     public Institution newInstitution(@RequestBody Institution newInstitution) {
         try {
             return repository.save(newInstitution);
