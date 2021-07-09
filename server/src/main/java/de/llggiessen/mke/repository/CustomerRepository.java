@@ -19,7 +19,6 @@ import org.springframework.stereotype.Repository;
         @Query(value = "DELETE FROM customer WHERE customer.email = :email", nativeQuery = true)
         Customer deleteByEmail(@Param("email") String email);
 
-
         @Query(value = "SELECT * FROM customer WHERE customer.email LIKE %:email% AND customer.first_name LIKE %:firstName% AND customer.last_name LIKE %:lastName%", nativeQuery = true)
         Iterable<Customer> findAllByAttributes(@Param("email") String email, @Param("firstName") String firstName,
                                                @Param("lastName") String lastName);
