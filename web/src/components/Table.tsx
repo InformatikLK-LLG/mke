@@ -22,6 +22,7 @@ import Delayed from "./Delayed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InstitutionsSearchParams } from "../hooks/useInstitutions";
 import Loading from "./Loading";
+import flower from "../resources/blume.jpg";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -58,6 +59,7 @@ const useStyles = makeStyles({
     position: "sticky",
     top: 0,
     backgroundColor: "white",
+    zIndex: 1,
   },
   tableContainer: {
     maxHeight: "100%",
@@ -76,6 +78,23 @@ const useStyles = makeStyles({
     },
     "&::-webkit-scrollbar-thumb:hover": {
       backgroundColor: "var(--highlighting)",
+    },
+  },
+  pagination: {
+    alignSelf: "flex-end",
+    overflow: "visible",
+  },
+  searchParams: {
+    alignSelf: "flex-start",
+  },
+  flowerBody: {
+    backgroundImage: `url(${flower})`,
+    backgroundSize: "100%",
+  },
+  flowerRow: {
+    "&:hover": {
+      backgroundColor: "transparent",
+      backdropFilter: "brightness(120%)",
     },
   },
 });
@@ -259,7 +278,9 @@ export default function Table<T extends SimplestItem>({
         // hover
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
-        className={`${classes.row} ${onRowClick && classes.clickable}`}
+        className={`${classes.row} ${onRowClick && classes.clickable} ${
+          isBlume && classes.flowerRow
+        }`}
       >
         {accessKeys.map((nestedKey) => {
           return RenderValue(row, nestedKey);
@@ -364,26 +385,34 @@ export default function Table<T extends SimplestItem>({
     setPage(0);
   };
 
+  const [isBlume, setIsBlume] = useState(false);
+
   return (
     <>
-      <TableContainer className={classes.tableContainer}>
+      <div className={classes.searchParams}>
         {searchParams.map(
           (searchParam) =>
             search && (
               <TextField
+                size="small"
                 key={searchParam}
                 id={searchParam}
                 label="Suche"
                 variant="outlined"
-                onChange={(e) => search(searchParam, e.target.value)}
+                onChange={(e) => {
+                  search(searchParam, e.target.value);
+                  e.target.value === "blume" && setIsBlume(true);
+                }}
               />
             )
         )}
+      </div>
+      <TableContainer className={classes.tableContainer}>
         <BetterTable className={classes.table}>
           <TableHead className={classes.tableHeader}>
             <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody classes={{ root: isBlume ? classes.flowerBody : "" }}>
             {isLoading ? (
               <tr>
                 <td colSpan={accessKeys.length}>
@@ -395,9 +424,7 @@ export default function Table<T extends SimplestItem>({
             ) : (
               stableSort(rows, getComparator(direction, sortBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return RenderRow(row);
-                })
+                .map((row) => RenderRow(row))
             )}
           </TableBody>
         </BetterTable>
@@ -418,7 +445,7 @@ export default function Table<T extends SimplestItem>({
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-          style={{ alignSelf: "flex-end" }}
+          className={classes.pagination}
         />
       )}
     </>
