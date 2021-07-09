@@ -666,17 +666,17 @@ export function Institutions() {
 
   return (
     <div className="container">
-      <div className={formInput.tableContainer}>
-        <Table
-          tableHeaders={tableHeaders}
-          rows={data?.data || []}
-          sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
-          onRowClick={(row) => navigate(`./${row.id}`)}
-          search={search}
-          searchParams={["name"]}
-          isLoading={isLoading}
-        />
-      </div>
+      {/* <div className={formInput.tableContainer}> */}
+      <Table
+        tableHeaders={tableHeaders}
+        rows={data?.data || []}
+        sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
+        onRowClick={(row) => navigate(`./${row.id}`)}
+        search={search}
+        searchParams={["name"]}
+        isLoading={isLoading}
+      />
+      {/* </div> */}
     </div>
   );
 }
