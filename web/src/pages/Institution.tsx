@@ -625,19 +625,20 @@ const format = (value: boolean) => (
 );
 
 const tableHeaders: TableHeaders<InstitutionType> = {
-  id: { label: "INST-Code" },
-  name: { label: "Name" },
+  id: { label: "INST-Code", width: 1 },
+  name: { label: "Name", width: 2 },
   address: {
-    street: { label: "Straße" },
-    streetNumber: { label: "Hausnummer" },
-    town: { label: "Ort" },
-    zipCode: { label: "PLZ" },
+    street: { label: "Straße", width: 2 },
+    streetNumber: { label: "Hausnummer", width: 1 },
+    town: { label: "Ort", width: 1 },
+    zipCode: { label: "PLZ", width: 1 },
   },
-  phoneNumber: { label: "Telefonnummer" },
+  phoneNumber: { label: "Telefonnummer", width: 2 },
   schoolAdministrativeDistrict: {
     label: "SVB?",
     format,
     align: "right",
+    width: 0.5,
   },
 };
 

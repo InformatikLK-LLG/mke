@@ -54,7 +54,7 @@ const useStyles = makeStyles({
   clickable: {
     cursor: "pointer",
   },
-  table: {},
+  table: { tableLayout: "fixed" },
   tableHeader: {
     position: "sticky",
     top: 0,
@@ -62,7 +62,7 @@ const useStyles = makeStyles({
     zIndex: 1,
   },
   tableContainer: {
-    maxHeight: "100%",
+    height: "100%",
     maxWidth: "100%",
     overflowX: "auto",
     overflowY: "auto",
@@ -118,6 +118,7 @@ interface Header {
   minWidth?: number;
   align?: "right" | "left" | "center";
   format?: (value: any) => JSX.Element;
+  width: number;
 }
 
 export type TableHeaders<T extends SimplestItem> = AllTableHeaders<T>;
@@ -387,6 +388,12 @@ export default function Table<T extends SimplestItem>({
 
   const [isBlume, setIsBlume] = useState(false);
 
+  const columnWidths = accessKeys.map((key) => {
+    const header = accessNestedValues(key, tableHeaders) as Header;
+    return header.width;
+  });
+  const relativeWidth = columnWidths.reduce((prev, curr) => prev + curr, 0);
+
   return (
     <>
       <div className={classes.searchParams}>
@@ -402,6 +409,7 @@ export default function Table<T extends SimplestItem>({
                 onChange={(e) => {
                   search(searchParam, e.target.value);
                   e.target.value === "blume" && setIsBlume(true);
+                  e.target.value === "wtf" && setIsBlume(false);
                 }}
               />
             )
@@ -409,6 +417,15 @@ export default function Table<T extends SimplestItem>({
       </div>
       <TableContainer className={classes.tableContainer}>
         <BetterTable className={classes.table}>
+          <colgroup>
+            {columnWidths.map((width, index) => {
+              console.log(
+                width / relativeWidth,
+                accessNestedValues(accessKeys[index], tableHeaders).label
+              );
+              return <col width={width / relativeWidth} key={index} />;
+            })}
+          </colgroup>
           <TableHead className={classes.tableHeader}>
             <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>

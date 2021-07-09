@@ -55,11 +55,11 @@ export function Customers() {
 
 export function CustomerTable({ instCode }: { instCode?: string }) {
   const tableHeaders: TableHeaders<CustomerType> = {
-    firstName: { label: "Vorname" },
-    lastName: { label: "Nachname" },
-    email: { label: "Email" },
-    mobilePhone: { label: "Handynummer" },
-    businessPhone: { label: "Telefonnummer dienstlich" },
+    firstName: { label: "Vorname", width: 1 },
+    lastName: { label: "Nachname", width: 1 },
+    email: { label: "Email", width: 1 },
+    mobilePhone: { label: "Handynummer", width: 1 },
+    businessPhone: { label: "Telefonnummer dienstlich", width: 1 },
   };
   const { data, isLoading } = useCustomers(instCode);
   const navigate = useNavigate();

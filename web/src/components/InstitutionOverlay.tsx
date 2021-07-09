@@ -372,12 +372,12 @@ export function InstitutionOverlay({
         <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
         <Table
           tableHeaders={{
-            id: { label: "INST-Code" },
-            firstName: { label: "Vorname" },
-            lastName: { label: "Nachname" },
-            email: { label: "Email" },
-            mobilePhone: { label: "Handynummer" },
-            businessPhone: { label: "Telefonnummer dienstlich" },
+            id: { label: "INST-Code", width: 1 },
+            firstName: { label: "Vorname", width: 1 },
+            lastName: { label: "Nachname", width: 1 },
+            email: { label: "Email", width: 1 },
+            mobilePhone: { label: "Handynummer", width: 1 },
+            businessPhone: { label: "Telefonnummer dienstlich", width: 1 },
           }}
           rows={customers?.data || []}
           sort={["Vorname", "Nachname", "Email"]}
