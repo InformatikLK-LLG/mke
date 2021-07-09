@@ -73,5 +73,14 @@ public class BookingController {
     public void deleteById(@RequestParam long id){
         repository.deleteById(id);
     }
+
+    @PostMapping("")
+    public Booking createBooking(@RequestBody Booking booking){
+        try {
+            return repository.save(booking);
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
 
