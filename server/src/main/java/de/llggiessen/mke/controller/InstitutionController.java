@@ -15,13 +15,15 @@ public class InstitutionController {
     InstitutionRepository repository;
 
     @GetMapping("")
-    public Iterable<Institution> getInstitutions(){
+    public Iterable<Institution> getInstitutions() {
         return repository.findAll();
     }
 
     @GetMapping(value = "", params = {"id"})
     public Institution getInstitutionByID(@RequestParam String id) {
-        return repository.findById(id).orElseThrow(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST);});
+        return repository.findById(id).orElseThrow(() -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Could not find Institution");
+        });
     }
 
     @GetMapping(value = "", params = {"svb"})
@@ -36,19 +38,23 @@ public class InstitutionController {
 
     @DeleteMapping(value = "", params = {"id"})
     public Institution deleteInstitutionByID(@RequestParam String id) {
-       try {
-           return repository.deleteInstitutionByID(id);
-       } catch(Exception e) {
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-       }
+        try {
+            return repository.deleteInstitutionByID(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Institution could not be deleted");
+        }
     }
 
     @PostMapping(value = "")
     public Institution newInstitution(@RequestBody Institution newInstitution) {
-        try {
-            return repository.save(newInstitution);
-        } catch(Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (repository.existsById(newInstitution.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID already exist");
+        } else {
+            try {
+                return repository.save(newInstitution);
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not create new Institution");
+            }
         }
     }
 }
