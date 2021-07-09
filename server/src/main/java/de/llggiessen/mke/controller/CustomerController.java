@@ -28,12 +28,12 @@ public class CustomerController {
     }
 
     @DeleteMapping(value = "", params = {"email"})
-    public void deleteByEmail(@RequestParam(value = "email") String email) {
+    public void deleteByEmail(@RequestParam String email) {
         repository.deleteByEmail(email);
     }
 
     @DeleteMapping(value = "", params = {"id"})
-    public void deleteById(@RequestParam(value = "id") Long Id) {
+    public void deleteById(@RequestParam Long Id) {
         repository.deleteById(Id);
     }
 }
