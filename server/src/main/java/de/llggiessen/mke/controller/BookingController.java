@@ -3,6 +3,7 @@ package de.llggiessen.mke.controller;
 import de.llggiessen.mke.repository.BookingRepository;
 import de.llggiessen.mke.schema.Booking;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class BookingController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrievalDate));
-        }catch(Exception e){
+        } catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Try using this timeformat: yyyy-MM-dd");
         }
     }
@@ -82,5 +83,6 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
+
 }
 
