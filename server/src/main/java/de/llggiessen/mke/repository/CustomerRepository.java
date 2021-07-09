@@ -2,7 +2,6 @@ package de.llggiessen.mke.repository;
 
 
 import de.llggiessen.mke.schema.Customer;
-import de.llggiessen.mke.schema.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,9 +14,11 @@ import org.springframework.stereotype.Repository;
     @RepositoryRestResource(exported = false)
     public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
-        @Modifying
         @Query(value = "DELETE FROM customer WHERE customer.email = :email", nativeQuery = true)
-        Customer deleteByEmail(@Param("email") String email);
+        void deleteByEmail(@Param("email") String email);
+
+        @Query(value = "DELETE FROM customer WHERE customer.id = :id", nativeQuery = true)
+        void deleteById(@Param("id") Long id);
 
         @Query(value = "SELECT * FROM customer WHERE customer.email LIKE %:email% AND customer.first_name LIKE %:firstName% AND customer.last_name LIKE %:lastName%", nativeQuery = true)
         Iterable<Customer> findAllByAttributes(@Param("email") String email, @Param("firstName") String firstName,

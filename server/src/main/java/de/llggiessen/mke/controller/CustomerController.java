@@ -27,11 +27,12 @@ public class CustomerController {
         return repository.findById(id).orElseThrow(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST);});
     }
 
-    @DeleteMapping("")
-    public Customer deleteByEmail(@RequestParam(value = "email") String email) {
-        return repository.deleteByEmail(email);
+    @DeleteMapping(value = "", params = {"email"})
+    public void deleteByEmail(@RequestParam(value = "email") String email) {
+        repository.deleteByEmail(email);
     }
 
+    @DeleteMapping(value = "", params = {"id"})
     public void deleteById(@RequestParam(value = "id") Long Id) {
         repository.deleteById(Id);
     }
