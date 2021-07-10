@@ -1,5 +1,3 @@
-import "../styles/Table.css";
-
 import {
   Control,
   Controller,
