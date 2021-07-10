@@ -145,7 +145,6 @@ export default function PlacesAutocomplete<
       }
     };
 
-
   const renderSuggestions = () =>
     data.map((suggestion) => {
       const data = suggestion;
@@ -160,7 +159,6 @@ export default function PlacesAutocomplete<
   useEffect(() => {
     setValue(params.value as string);
   }, [params.value, setValue]);
-
 
   // useEffect(() => {
   //   async function load() {
@@ -204,6 +202,11 @@ export default function PlacesAutocomplete<
           InputProps: { ...params.InputProps, ...InputProps, className: "" },
           inputProps: { ...params.inputProps, autoComplete },
         })
+      }
+      getOptionLabel={(option) =>
+        option && option.structured_formatting
+          ? `${option.structured_formatting.main_text} ${option.structured_formatting.secondary_text}`
+          : ""
       }
     />
   );
