@@ -419,10 +419,6 @@ export default function Table<T extends SimplestItem>({
         <BetterTable className={classes.table}>
           <colgroup>
             {columnWidths.map((width, index) => {
-              console.log(
-                width / relativeWidth,
-                accessNestedValues(accessKeys[index], tableHeaders).label
-              );
               return <col width={width / relativeWidth} key={index} />;
             })}
           </colgroup>

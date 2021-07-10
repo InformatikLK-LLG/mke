@@ -91,11 +91,8 @@ h2 {
   flex-grow: 1;
   height: 70%;
   padding: 2em 0;
-<<<<<<< HEAD
-=======
 }
 
-<<<<<<< HEAD
 .section {
   display: flex;
   flex-flow: column nowrap;
@@ -108,11 +105,8 @@ h2 {
   /* justify-content: center; */
   align-items: center;
   gap: 3em;
->>>>>>> af8b7d9 (Modify container styling and change layout of institution overlay)
 }
 
-=======
->>>>>>> b392050 (Display loading animation in customer table, clean up styles)
 .container > h1 {
   color: var(--highlighting);
 }
