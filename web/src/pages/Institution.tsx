@@ -393,12 +393,18 @@ export default function Institution() {
   return <Outlet />;
 }
 
+type RecursivePartial<T> = {
+  [K in keyof T]?: RecursivePartial<T[K]>;
+};
+
 export function CreateInstitution({
   disabled = false,
   onSubmit,
+  defaultInstitution,
 }: {
   disabled?: boolean;
   onSubmit?: (event: BaseSyntheticEvent) => void;
+  defaultInstitution?: RecursivePartial<FormInstitutionType>;
 }) {
   const {
     handleSubmit,
@@ -412,11 +418,17 @@ export function CreateInstitution({
   } = useForm<FormInstitutionType>({
     mode: "onChange",
     defaultValues: {
-      id: "",
-      name: "",
-      phoneNumber: "",
-      schoolAdministrativeDistrict: false,
-      address: { street: "", streetNumber: "", town: "", zipCode: "" },
+      id: defaultInstitution?.id || "",
+      name: defaultInstitution?.name || "",
+      phoneNumber: defaultInstitution?.phoneNumber || "",
+      schoolAdministrativeDistrict:
+        defaultInstitution?.schoolAdministrativeDistrict || false,
+      address: {
+        street: defaultInstitution?.address?.street || "",
+        streetNumber: defaultInstitution?.address?.streetNumber || "",
+        town: defaultInstitution?.address?.town || "",
+        zipCode: defaultInstitution?.address?.zipCode || "",
+      },
     },
   });
   const theme = useTheme();
