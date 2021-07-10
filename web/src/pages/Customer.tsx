@@ -1,4 +1,5 @@
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
+import { Controller, useForm } from "react-hook-form";
 import {
   CreateInstitution,
   FormInstitutionType,
@@ -31,7 +32,6 @@ import axios from "axios";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
 import useCustomers from "../hooks/useCustomers";
-import { useForm } from "react-hook-form";
 
 export type CustomerType = {
   id: string;
@@ -93,6 +93,7 @@ export function CreateCustomer() {
     control,
     getValues,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<CustomerType>({ mode: "onChange" });
   const formInput = useInputStyles();
@@ -107,8 +108,9 @@ export function CreateCustomer() {
     setValue,
   };
   const inputFields = useInputFields(theme);
-  const [data, setData] = useState<Array<FormInstitutionType>>();
+  const [data, setData] = useState<Array<{ value: string; id?: string }>>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [name, setName] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,14 +118,21 @@ export function CreateCustomer() {
         const { data } = await axios.get<Array<FormInstitutionType>>(
           "http://localhost:8080/institution"
         );
-        setData(data);
+        const data2 = data.map((dataSingular) => {
+          return {
+            value: dataSingular.name,
+            id: dataSingular.id,
+          };
+        });
+        setData(data2);
       } catch (error) {
         console.error(error);
       }
     };
     fetchData();
-  });
-  const filter = createFilterOptions<FormInstitutionType>();
+  }, []);
+
+  const filter = createFilterOptions<{ value: string; id?: string }>();
 
   return (
     <div className="container">
@@ -131,7 +140,10 @@ export function CreateCustomer() {
         <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
           <DialogTitle>Institution Erstellen</DialogTitle>
           <DialogContent>
-            <CreateInstitution onSubmit={() => setIsDialogOpen(false)} />
+            <CreateInstitution
+              onSubmit={() => setIsDialogOpen(false)}
+              defaultInstitution={{ name }}
+            />
           </DialogContent>
         </Dialog>
       )}
@@ -159,51 +171,56 @@ export function CreateCustomer() {
               formState,
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={6} className={inputFields.institution}>
-            <Autocomplete
-              autoComplete
-              freeSolo
-              includeInputInList
-              selectOnFocus
-              clearOnBlur
-              options={data || []}
-              getOptionLabel={(option) =>
-                `${option.name}${option.id && ` — ${option.id}`}`
-              }
-              filterOptions={(options, state) => {
-                const filtered = filter(options, state);
-                state.inputValue !== "" &&
-                  filtered.push({
-                    id: "",
-                    name: `"${state.inputValue}" hinzufügen`,
-                    phoneNumber: "",
-                    schoolAdministrativeDistrict: false,
-                    address: {
-                      street: "",
-                      streetNumber: "",
-                      zipCode: "",
-                      town: "",
-                    },
-                  });
-                return filtered;
-              }}
-              onChange={(e, option) => {
-                if (typeof option !== "string" && option && option.id === "") {
-                  setIsDialogOpen(true);
-                }
-              }}
-              renderInput={(params) =>
-                RenderInput({
-                  name: "institution",
-                  placeholder: "Name der Institution",
-                  required: "Name der Institution muss angegeben werden",
-                  icon: faUniversity,
-                  formState,
-                  params,
-                })
-              }
+            <Controller
+              control={control}
+              name="institution"
+              render={({ field }) => (
+                <Autocomplete
+                  autoComplete
+                  freeSolo
+                  includeInputInList
+                  filterSelectedOptions
+                  disableClearable
+                  options={data || []}
+                  inputValue={field.value || ""}
+                  onInputChange={(e, value) => field.onChange(value)}
+                  getOptionLabel={(option) => option.value}
+                  renderOption={(option) =>
+                    option.id
+                      ? `${option.value} — ${option.id}`
+                      : `"${option.value}" hinzufügen`
+                  }
+                  filterOptions={(options, state) => {
+                    const filtered = filter(options, state);
+                    state.inputValue !== "" &&
+                      filtered.push({
+                        value: state.inputValue,
+                      });
+                    return filtered;
+                  }}
+                  onChange={(e, option) => {
+                    if (typeof option !== "string" && option && !option.id) {
+                      setName(option.value);
+                      setIsDialogOpen(true);
+                    }
+                  }}
+                  renderInput={(params) =>
+                    RenderInput({
+                      name: "institution",
+                      placeholder: "Name der Institution",
+                      required: "Name der Institution muss angegeben werden",
+                      icon: faUniversity,
+                      formState,
+                      params,
+                    })
+                  }
+                />
+              )}
             />
           </Grid>
+
           <Grid item xs={12} md={6} lg={6} className={inputFields.lastName}>
             {RenderInput({
               name: "lastName",
@@ -213,6 +230,7 @@ export function CreateCustomer() {
               formState,
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
             {RenderInput({
               name: "email",
@@ -222,6 +240,7 @@ export function CreateCustomer() {
               formState,
             })}
           </Grid>
+
           <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>
             {RenderInput({
               name: "mobilePhone",
@@ -231,6 +250,7 @@ export function CreateCustomer() {
               formState,
             })}
           </Grid>
+
           <Grid
             item
             xs={12}
@@ -246,6 +266,7 @@ export function CreateCustomer() {
               formState,
             })}
           </Grid>
+
           <Button
             textColor="white"
             backgroundColor={theme.palette.primary.main}
