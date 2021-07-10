@@ -1,4 +1,10 @@
 import {
+  BaseSyntheticEvent,
+  FormEventHandler,
+  useEffect,
+  useState,
+} from "react";
+import {
   Control,
   Controller,
   ControllerRenderProps,
@@ -40,12 +46,12 @@ import {
   faEdit,
   faSquare,
 } from "@fortawesome/free-regular-svg-icons";
-import { useEffect, useState } from "react";
 import useInstitutions, {
   InstitutionsSearchParams,
 } from "../hooks/useInstitutions";
 
 import { AnimatePresence } from "framer-motion";
+import { AutocompleteRenderInputParams } from "@material-ui/lab";
 import Button from "../components/Button";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -278,6 +284,7 @@ export const RenderInput = <T,>({
   autoComplete,
   disabled,
   formState,
+  params,
 }: {
   name: Path<T>;
   placeholder: string;
@@ -289,6 +296,7 @@ export const RenderInput = <T,>({
   autoComplete?: Autocomplete;
   disabled?: boolean;
   formState: FormState<T>;
+  params?: AutocompleteRenderInputParams;
 }) => {
   const { setValue, control, errors, clearErrors, getValues, formInput } =
     formState;
@@ -368,7 +376,8 @@ export const RenderInput = <T,>({
               type={type}
               className={formInput.input}
               {...field}
-              InputProps={InputProps}
+              {...params}
+              InputProps={{ ...params?.InputProps, ...InputProps }}
               autoFocus={autofocus}
               autoComplete={autoComplete}
               disabled={disabled}
@@ -386,8 +395,10 @@ export default function Institution() {
 
 export function CreateInstitution({
   disabled = false,
+  onSubmit,
 }: {
   disabled?: boolean;
+  onSubmit?: (event: BaseSyntheticEvent) => void;
 }) {
   const {
     handleSubmit,
@@ -454,14 +465,13 @@ export function CreateInstitution({
   return (
     <div className="container">
       <form
-        onSubmit={handleSubmit(async (data) => {
+        onSubmit={handleSubmit(async (data, event) => {
           try {
             const response = await axios.post<FormInstitutionType>(
               "http://localhost:8080/institution",
               data
             );
-            console.log(data);
-            navigate("/institutions");
+            onSubmit && event ? onSubmit(event) : navigate("/institutions");
           } catch (error) {
             console.log(error);
           }
