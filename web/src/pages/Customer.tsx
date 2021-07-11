@@ -110,7 +110,7 @@ export function CreateCustomer() {
   const inputFields = useInputFields(theme);
   const [data, setData] = useState<Array<{ value: string; id?: string }>>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [name, setName] = useState("");
+  const institution = watch("institution");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,6 +118,7 @@ export function CreateCustomer() {
         const { data } = await axios.get<Array<FormInstitutionType>>(
           "http://localhost:8080/institution"
         );
+        console.log(data);
         const data2 = data.map((dataSingular) => {
           return {
             value: dataSingular.name,
@@ -130,7 +131,10 @@ export function CreateCustomer() {
       }
     };
     fetchData();
-  }, []);
+  }, [isDialogOpen]);
+
+  useEffect(() => console.log(institution), [institution]);
+  useEffect(() => console.log(data), [data]);
 
   return (
     <div className="container">
@@ -143,18 +147,20 @@ export function CreateCustomer() {
           <DialogTitle>Institution Erstellen</DialogTitle>
           <DialogContent>
             <CreateInstitution
-              onSubmit={() => setIsDialogOpen(false)}
-              defaultInstitution={{ name }}
+              onSubmit={(data) => {
+                setValue("institution", data.name);
+                setIsDialogOpen(false);
+              }}
+              defaultInstitution={{ name: institution }}
             />
           </DialogContent>
         </Dialog>
       )}
       <form
-        onSubmit={handleSubmit(
-          ({ firstName, lastName, email, mobilePhone, businessPhone }) => {
-            //FOO
-          }
-        )}
+        onSubmit={handleSubmit((data) => {
+          //TODO do stuff here
+          console.log(data);
+        })}
         style={{ width: "80%" }}
       >
         <Grid
@@ -182,34 +188,38 @@ export function CreateCustomer() {
               render={({ field }) => (
                 <Autocomplete
                   autoComplete
-                  freeSolo
                   includeInputInList
-                  filterSelectedOptions
                   disableClearable
+                  noOptionsText="nein. :("
+                  forcePopupIcon={false}
                   options={data || []}
                   inputValue={field.value || ""}
                   onInputChange={(e, value) => field.onChange(value)}
                   getOptionLabel={(option) => option.value}
-                  renderOption={(option) =>
-                    option.id
+                  renderOption={(option) => {
+                    console.log(option);
+                    return option.id
                       ? `${option.value} — ${option.id}`
-                      : `"${option.value}" hinzufügen`
-                  }
+                      : `"${option.value}" hinzufügen`;
+                  }}
                   filterOptions={(options) => {
                     const filtered = options.filter((option) =>
-                      option.value.includes(field.value)
+                      option.value
+                        .toLowerCase()
+                        .includes(field.value?.toLowerCase() || "")
                     );
-                    field.value !== "" &&
+                    field.value &&
+                      field.value !== "" &&
                       filtered.push({
                         value: field.value,
                       });
                     return filtered;
                   }}
                   onChange={(e, option) => {
-                    if (typeof option !== "string" && option && !option.id) {
-                      setName(option.value);
+                    if (!option.id) {
                       setIsDialogOpen(true);
                     }
+                    setValue("institution", option.value);
                   }}
                   renderInput={(params) =>
                     RenderInput({
@@ -217,6 +227,7 @@ export function CreateCustomer() {
                       placeholder: "Name der Institution",
                       required: "Name der Institution muss angegeben werden",
                       icon: faUniversity,
+                      autoComplete: "organization",
                       formState,
                       params,
                     })
@@ -237,13 +248,11 @@ export function CreateCustomer() {
           </Grid>
 
           <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
-            {RenderInput({
-              name: "email",
-              placeholder: "Email",
-              required: "Email muss angegeben werden",
-              icon: faEdit,
-              formState,
-            })}
+            <EmailInputField
+              clearErrors={clearErrors}
+              emailErrors={errors.email}
+              register={register}
+            />
           </Grid>
 
           <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>

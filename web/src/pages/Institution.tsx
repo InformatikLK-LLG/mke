@@ -403,7 +403,7 @@ export function CreateInstitution({
   defaultInstitution,
 }: {
   disabled?: boolean;
-  onSubmit?: (event: BaseSyntheticEvent) => void;
+  onSubmit?: (data: FormInstitutionType, event: BaseSyntheticEvent) => void;
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
 }) {
   const {
@@ -483,7 +483,9 @@ export function CreateInstitution({
               "http://localhost:8080/institution",
               data
             );
-            onSubmit && event ? onSubmit(event) : navigate("/institutions");
+            onSubmit && event
+              ? onSubmit(data, event)
+              : navigate("/institutions");
           } catch (error) {
             console.log(error);
           }
