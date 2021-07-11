@@ -94,7 +94,7 @@ export function CreateCustomer() {
     getValues,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<CustomerType>({ mode: "onChange" });
   const formInput = useInputStyles();
   const theme = useTheme();
@@ -132,12 +132,14 @@ export function CreateCustomer() {
     fetchData();
   }, []);
 
-  const filter = createFilterOptions<{ value: string; id?: string }>();
-
   return (
     <div className="container">
       {isDialogOpen && (
-        <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+        <Dialog
+          open={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          maxWidth="lg"
+        >
           <DialogTitle>Institution Erstellen</DialogTitle>
           <DialogContent>
             <CreateInstitution
@@ -153,6 +155,7 @@ export function CreateCustomer() {
             //FOO
           }
         )}
+        style={{ width: "80%" }}
       >
         <Grid
           container
@@ -192,11 +195,13 @@ export function CreateCustomer() {
                       ? `${option.value} — ${option.id}`
                       : `"${option.value}" hinzufügen`
                   }
-                  filterOptions={(options, state) => {
-                    const filtered = filter(options, state);
-                    state.inputValue !== "" &&
+                  filterOptions={(options) => {
+                    const filtered = options.filter((option) =>
+                      option.value.includes(field.value)
+                    );
+                    field.value !== "" &&
                       filtered.push({
-                        value: state.inputValue,
+                        value: field.value,
                       });
                     return filtered;
                   }}
@@ -273,6 +278,7 @@ export function CreateCustomer() {
             type="submit"
             label="Erstellen"
             buttonStyle={formButton}
+            disabled={!isValid}
           />
         </Grid>
       </form>
