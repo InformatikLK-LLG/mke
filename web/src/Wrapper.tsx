@@ -66,7 +66,7 @@ export default function Wrapper() {
     },
     {
       path: "/customers",
-      name: "Kundinnnen",
+      name: "Kundinnen",
       heading: "Kundinnen",
       subroutes: [
         {
