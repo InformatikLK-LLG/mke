@@ -183,7 +183,7 @@ export const useButtonStyles = makeStyles({
 
 export const useInputStyles = makeStyles({
   input: {
-    margin: "0.5em",
+    margin: "0.5em 0",
     minWidth: "100%",
     fontSize: "1em",
     "&>*": {
@@ -277,6 +277,7 @@ export const RenderInput = <T,>({
   name,
   placeholder,
   required,
+  pattern,
   type = "text",
   icon = faEdit,
   autocompletePlaces,
@@ -289,6 +290,7 @@ export const RenderInput = <T,>({
   name: Path<T>;
   placeholder: string;
   required?: ValidationRule<boolean> | string;
+  pattern?: ValidationRule<RegExp>;
   type?: string;
   icon?: IconDefinition;
   autocompletePlaces?: "address" | "school" | "point_of_interest";
@@ -333,7 +335,7 @@ export const RenderInput = <T,>({
   };
 
   return (
-    <label>
+    <>
       <AnimatePresence>
         {accessNestedValues(name, errors) && (
           <FormErrorMessage
@@ -345,7 +347,7 @@ export const RenderInput = <T,>({
       <Controller
         control={control}
         name={name}
-        rules={required ? { required } : undefined}
+        rules={{ required, pattern }}
         render={({ field }) =>
           autocompletePlaces ? (
             <PlacesAutocomplete
@@ -385,7 +387,7 @@ export const RenderInput = <T,>({
           )
         }
       />
-    </label>
+    </>
   );
 };
 
