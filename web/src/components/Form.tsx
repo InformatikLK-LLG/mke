@@ -7,7 +7,9 @@ import {
   UseFormRegister,
   useForm,
 } from "react-hook-form";
+import { FormState, RenderInput, useInputStyles } from "../pages/Institution";
 import {
+  Grid,
   InputAdornment,
   TextField,
   makeStyles,
@@ -38,24 +40,6 @@ const useButtonStyles = makeStyles({
   },
 });
 
-const useInputStyles = makeStyles({
-  input: {
-    margin: "0.5em",
-    width: "30vw",
-    minWidth: "200px",
-    maxWidth: "350px",
-    fontSize: "1em",
-    fontFamily: "inherit",
-    "& .MuiInput-underline:hover:not(.Mui-disabled)::before": {
-      borderColor: "var(--border)",
-      borderWidth: "1.5px",
-    },
-    "& .MuiInput-underline:after": {
-      transitionDuration: "300ms",
-    },
-  },
-});
-
 type LoginFormInputs = {
   email: string;
   password: string;
@@ -68,11 +52,22 @@ export function LoginForm() {
     register,
     handleSubmit,
     clearErrors,
+    control,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const navigate = useNavigate();
   const auth = useAuth();
   const theme = useTheme();
+  const formState: FormState<LoginFormInputs> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+  };
 
   useEffect(() => {
     if (errors.password) {
@@ -87,25 +82,27 @@ export function LoginForm() {
         auth.signin(email, password);
         navigate("/");
       })}
+      style={{ width: "40%" }}
     >
-      <EmailInputField
-        register={register}
-        emailErrors={errors.email}
-        clearErrors={clearErrors}
-      />
-      <TextField
-        placeholder="Password"
-        type="password"
-        className={formInput.input}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FontAwesomeIcon className="inputIcon" icon={faKey} />
-            </InputAdornment>
-          ),
-          ...register("password"),
-        }}
-      />
+      <Grid container spacing={2} xs={10} alignItems="center" justify="center">
+        <Grid item xs={12}>
+          <EmailInputField
+            register={register}
+            emailErrors={errors.email}
+            clearErrors={clearErrors}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          {RenderInput({
+            name: "password",
+            type: "password",
+            placeholder: "Passwort",
+            required: "Passwort muss angegeben werden",
+            icon: faKey,
+            formState,
+          })}
+        </Grid>
+      </Grid>
       <Link to="/forgotpassword">Passwort vergessen?</Link>
       <Button
         type="submit"
@@ -135,11 +132,15 @@ export function ForgotPasswordForm() {
 
   return (
     <form onSubmit={handleSubmit(({ email }) => navigate("/login"))}>
-      <EmailInputField
-        register={register}
-        emailErrors={errors.email}
-        clearErrors={clearErrors}
-      />
+      <Grid container>
+        <Grid item xs={12}>
+          <EmailInputField
+            register={register}
+            emailErrors={errors.email}
+            clearErrors={clearErrors}
+          />
+        </Grid>
+      </Grid>
       <Button
         type="submit"
         label="Weiter"
@@ -163,8 +164,19 @@ export function RegisterForm1() {
     handleSubmit,
     setError,
     clearErrors,
+    getValues,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
+  const formState: FormState<RegisterForm1Inputs> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+  };
   const navigate = useNavigate();
   const theme = useTheme();
   const { validateInviteCode } = useAuth();
@@ -183,32 +195,24 @@ export function RegisterForm1() {
           navigate("./1", { state: { registerState: { code } } });
         setError("code", { message: "Code falsch" });
       })}
+      style={{ width: "40%" }}
     >
-      <label>
-        <AnimatePresence>
-          {errors.code && (
-            <FormErrorMessage name="code" message={errors.code.message} />
-          )}
-        </AnimatePresence>
-        <TextField
-          placeholder="Code"
-          className={formInput.input}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faKeyboard} />
-              </InputAdornment>
-            ),
-            ...register("code", {
-              required: "Einladungscode ist notwendig.",
-              pattern: {
-                value: /^[0-9]{6}$/,
-                message: "0-6 chars bla dass wir sehen dass was da ist.",
-              },
-            }),
-          }}
-        />
-      </label>
+      <Grid container>
+        <Grid item xs={12}>
+          {RenderInput({
+            name: "code",
+            placeholder: "Code",
+            required: "Code muss angegeben werden",
+            pattern: {
+              value: /^[0-9]{6}$/,
+              message: "0-6 chars bla dass wir sehen dass was da ist.",
+            },
+            icon: faKeyboard,
+            formState,
+            autofocus: true,
+          })}
+        </Grid>
+      </Grid>
       <Button
         textColor="white"
         backgroundColor={theme.palette.primary.main}
@@ -234,8 +238,18 @@ export function RegisterForm2() {
     handleSubmit,
     getValues,
     clearErrors,
+    setValue,
+    control,
     formState: { errors },
   } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
+  const formState: FormState<RegisterForm2Inputs> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+  };
   const navigate = useNavigate();
   const theme = useTheme();
   const location = useLocation();
@@ -267,60 +281,34 @@ export function RegisterForm2() {
         })
       )}
     >
-      <label>
-        <AnimatePresence>
-          {errors.firstName && (
-            <FormErrorMessage
-              name="firstName"
-              message={errors.firstName.message}
-            />
-          )}
-        </AnimatePresence>
-        <TextField
-          placeholder="Vorname"
-          className={formInput.input}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faEdit} />
-              </InputAdornment>
-            ),
-            ...register("firstName", {
-              required: "Vorname muss angegeben werden",
-            }),
-          }}
-          autoFocus
-        />
-      </label>
-      <label>
-        <AnimatePresence>
-          {errors.lastName && (
-            <FormErrorMessage
-              name="lastName"
-              message={errors.lastName.message}
-            />
-          )}
-        </AnimatePresence>
-        <TextField
-          placeholder="Nachname"
-          className={formInput.input}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faUser} />
-              </InputAdornment>
-            ),
-            ...register("lastName", {
-              required: "Nachname muss angegeben werden",
-            }),
-          }}
-        />
-      </label>
-      <EmailInputField
-        register={register}
-        emailErrors={errors.email}
-        clearErrors={clearErrors}
-      />
+      <Grid container>
+        <Grid item>
+          {RenderInput({
+            name: "firstName",
+            placeholder: "Vorname",
+            required: "Vorname muss angegeben werden",
+            icon: faEdit,
+            formState,
+            autofocus: true,
+          })}
+        </Grid>
+        <Grid item>
+          {RenderInput({
+            name: "lastName",
+            placeholder: "Nachname",
+            required: "Nachname muss angegeben werden",
+            icon: faKeyboard,
+            formState,
+          })}
+        </Grid>
+        <Grid item>
+          <EmailInputField
+            register={register}
+            emailErrors={errors.email}
+            clearErrors={clearErrors}
+          />
+        </Grid>
+      </Grid>
       <Button
         textColor="white"
         backgroundColor={theme.palette.primary.main}
@@ -351,9 +339,19 @@ export function RegisterForm3() {
     handleSubmit,
     setError,
     getValues,
+    setValue,
+    control,
     clearErrors,
     formState: { errors },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
+  const formState: FormState<RegisterForm3Inputs> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+  };
   const navigate = useNavigate();
   const theme = useTheme();
   const auth = useAuth();
@@ -400,62 +398,34 @@ export function RegisterForm3() {
           });
       })}
     >
-      <label>
-        <AnimatePresence>
-          {errors.password && (
-            <FormErrorMessage
-              name="password"
-              message={errors.password.message}
-            />
-          )}
-        </AnimatePresence>
-        <TextField
-          placeholder="Passwort"
-          type="password"
-          className={formInput.input}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faKey} />
-              </InputAdornment>
-            ),
-            ...register("password", {
-              required: "Passwort muss angegeben werden ",
-              pattern: {
-                value: /\w{8}/,
-                message:
-                  "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
-              },
-            }),
-          }}
-          autoFocus
-        />
-      </label>
-      <label>
-        <AnimatePresence>
-          {errors.passwordRepeated && (
-            <FormErrorMessage
-              name="passwordRepeated"
-              message={errors.passwordRepeated.message}
-            />
-          )}
-        </AnimatePresence>
-        <TextField
-          placeholder="Passwort bestätigen"
-          type="password"
-          className={formInput.input}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faKey} />
-              </InputAdornment>
-            ),
-            ...register("passwordRepeated", {
-              required: "Passwort muss angegeben werden",
-            }),
-          }}
-        />
-      </label>
+      <Grid container>
+        <Grid item>
+          {RenderInput({
+            name: "password",
+            type: "password",
+            placeholder: "Passwort",
+            required: "Passwort muss angegeben werden ",
+            pattern: {
+              value: /\w{8}/,
+              message:
+                "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
+            },
+            icon: faKey,
+            formState,
+            autofocus: true,
+          })}
+        </Grid>
+        <Grid item>
+          {RenderInput({
+            name: "passwordRepeated",
+            type: "password",
+            placeholder: "Passwort bestätigen",
+            required: "Passwort muss angegeben werden",
+            icon: faKey,
+            formState,
+          })}
+        </Grid>
+      </Grid>
       <Button
         textColor="white"
         type="submit"
@@ -491,31 +461,29 @@ export function EmailInputField<T>({
 
   return (
     <>
-      <label>
-        <AnimatePresence>
-          {emailErrors && (
-            <FormErrorMessage name="email" message={emailErrors.message} />
-          )}
-        </AnimatePresence>
-        <TextField
-          placeholder="Email"
-          className={formInput.input}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
-              </InputAdornment>
-            ),
-            ...register("email", {
-              required: "Email muss angegeben werden",
-              pattern: {
-                value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-                message: "gültige Email mit @ und so.",
-              },
-            }),
-          }}
-        />
-      </label>
+      <AnimatePresence>
+        {emailErrors && (
+          <FormErrorMessage name="email" message={emailErrors.message} />
+        )}
+      </AnimatePresence>
+      <TextField
+        placeholder="Email"
+        className={formInput.input}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
+            </InputAdornment>
+          ),
+          ...register("email", {
+            required: "Email muss angegeben werden",
+            pattern: {
+              value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+              message: "gültige Email mit @ und so.",
+            },
+          }),
+        }}
+      />
     </>
   );
 }
