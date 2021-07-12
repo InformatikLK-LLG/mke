@@ -51,6 +51,7 @@ const useInstitutionStyles = makeStyles({
     display: "flex",
     flexFlow: "column nowrap",
     alignItems: "center",
+    width: "70%",
     "&:last-child": { marginBottom: "3em" },
   },
   enclosure: {
@@ -365,7 +366,7 @@ export function InstitutionOverlay({
         </form>
       </div>
       <Divider
-        style={{ width: "70%" }}
+        style={{ width: "80%" }}
         classes={{ root: institutionStyles.divider }}
       />
       <div className={institutionStyles.section}>

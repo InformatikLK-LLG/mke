@@ -226,6 +226,7 @@ export function RegisterForm1() {
           {RenderInput({
             name: "code",
             placeholder: "Code",
+            autoComplete: "one-time-code",
             required: "Code muss angegeben werden",
             pattern: {
               value: /^[0-9]{6}$/,
@@ -305,6 +306,7 @@ export function RegisterForm2() {
           {RenderInput({
             name: "firstName",
             placeholder: "Vorname",
+            autoComplete: "given-name",
             required: "Vorname muss angegeben werden",
             icon: faEdit,
             formState,
@@ -315,6 +317,7 @@ export function RegisterForm2() {
           {RenderInput({
             name: "lastName",
             placeholder: "Nachname",
+            autoComplete: "family-name",
             required: "Nachname muss angegeben werden",
             icon: faKeyboard,
             formState,
@@ -414,6 +417,7 @@ export function RegisterForm3() {
             name: "password",
             type: "password",
             placeholder: "Passwort",
+            autoComplete: "new-password",
             required: "Passwort muss angegeben werden ",
             pattern: {
               value: /\w{8}/,
@@ -429,6 +433,7 @@ export function RegisterForm3() {
           {RenderInput({
             name: "passwordRepeated",
             type: "password",
+            autoComplete: "new-password",
             placeholder: "Passwort bestätigen",
             required: "Passwort muss angegeben werden",
             icon: faKey,
@@ -459,6 +464,7 @@ export function EmailInputField<T extends { email: string }>({
   return RenderInput({
     name: "email" as Path<T>,
     placeholder: "Email",
+    autoComplete: "email",
     required: "Email muss angegeben werden",
     pattern: {
       value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,

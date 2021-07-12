@@ -110,6 +110,7 @@ export function CreateCustomer() {
   const inputFields = useInputFields(theme);
   const [data, setData] = useState<Array<{ value: string; id?: string }>>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const institution = watch("institution");
 
   useEffect(() => {
@@ -118,7 +119,6 @@ export function CreateCustomer() {
         const { data } = await axios.get<Array<FormInstitutionType>>(
           "http://localhost:8080/institution"
         );
-        console.log(data);
         const data2 = data.map((dataSingular) => {
           return {
             value: dataSingular.name,
@@ -132,9 +132,6 @@ export function CreateCustomer() {
     };
     fetchData();
   }, [isDialogOpen]);
-
-  useEffect(() => console.log(institution), [institution]);
-  useEffect(() => console.log(data), [data]);
 
   return (
     <div className="container">
@@ -174,6 +171,7 @@ export function CreateCustomer() {
             {RenderInput({
               name: "firstName",
               placeholder: "Vorname",
+              autoComplete: "given-name",
               required: "Vorname muss angegeben werden",
               autofocus: true,
               icon: faEdit,
@@ -196,12 +194,11 @@ export function CreateCustomer() {
                   inputValue={field.value || ""}
                   onInputChange={(e, value) => field.onChange(value)}
                   getOptionLabel={(option) => option.value}
-                  renderOption={(option) => {
-                    console.log(option);
-                    return option.id
+                  renderOption={(option) =>
+                    option.id
                       ? `${option.value} — ${option.id}`
-                      : `"${option.value}" hinzufügen`;
-                  }}
+                      : `"${option.value}" hinzufügen`
+                  }
                   filterOptions={(options) => {
                     const filtered = options.filter((option) =>
                       option.value
@@ -225,9 +222,9 @@ export function CreateCustomer() {
                     RenderInput({
                       name: "institution",
                       placeholder: "Name der Institution",
+                      autoComplete: "organization",
                       required: "Name der Institution muss angegeben werden",
                       icon: faUniversity,
-                      autoComplete: "organization",
                       formState,
                       params,
                     })
@@ -241,6 +238,7 @@ export function CreateCustomer() {
             {RenderInput({
               name: "lastName",
               placeholder: "Nachname",
+              autoComplete: "family-name",
               required: "Nachname muss angegeben werden",
               icon: faEdit,
               formState,
@@ -255,6 +253,7 @@ export function CreateCustomer() {
             {RenderInput({
               name: "mobilePhone",
               placeholder: "Handynummer",
+              type: "tel",
               required: "Handynummer muss angegeben werden",
               icon: faEdit,
               formState,
@@ -271,6 +270,7 @@ export function CreateCustomer() {
             {RenderInput({
               name: "businessPhone",
               placeholder: "Telefonnummer dienstlich",
+              type: "tel",
               required: "Telefonnummer dienstlich muss angegeben werden",
               icon: faEdit,
               formState,
@@ -284,6 +284,7 @@ export function CreateCustomer() {
             label="Erstellen"
             buttonStyle={formButton}
             disabled={!isValid}
+            isLoading={isLoading}
           />
         </Grid>
       </form>
