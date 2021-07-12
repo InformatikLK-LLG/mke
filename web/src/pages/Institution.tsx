@@ -335,7 +335,7 @@ export const RenderInput = <T,>({
   };
 
   return (
-    <>
+    <label>
       <AnimatePresence>
         {accessNestedValues(name, errors) && (
           <FormErrorMessage
@@ -378,6 +378,7 @@ export const RenderInput = <T,>({
               type={type}
               className={formInput.input}
               {...field}
+              value={field.value || ""}
               {...params}
               InputProps={{ ...params?.InputProps, ...InputProps }}
               autoFocus={autofocus}
@@ -387,7 +388,7 @@ export const RenderInput = <T,>({
           )
         }
       />
-    </>
+    </label>
   );
 };
 

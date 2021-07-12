@@ -248,11 +248,7 @@ export function CreateCustomer() {
           </Grid>
 
           <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
-            <EmailInputField
-              clearErrors={clearErrors}
-              emailErrors={errors.email}
-              register={register}
-            />
+            <EmailInputField formState={formState} />
           </Grid>
 
           <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>
