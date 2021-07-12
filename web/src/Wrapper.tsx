@@ -100,6 +100,7 @@ export default function Wrapper() {
         endOfParameter === -1 ? route.path.length : endOfParameter
       )
     );
+    console.log(newPath, location.pathname);
     return newPath === location.pathname;
   };
 
