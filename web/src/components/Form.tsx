@@ -77,9 +77,6 @@ export function LoginForm() {
   };
   const classes = useFormStyles();
 
-  useEffect(() => console.log(getValues("email")), [getValues("email")]);
-  useEffect(() => console.log(getValues("password")), [getValues("password")]);
-
   return (
     <form
       onSubmit={handleSubmit(({ email, password }) => {
