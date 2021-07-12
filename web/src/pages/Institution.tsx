@@ -438,6 +438,7 @@ export function CreateInstitution({
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const inputFields = useInputFields(theme);
+  const [isLoading, setIsLoading] = useState(false);
 
   const zipCode = watch("address.zipCode");
   const formState: FormState<FormInstitutionType> = {
@@ -482,10 +483,12 @@ export function CreateInstitution({
       <form
         onSubmit={handleSubmit(async (data, event) => {
           try {
+            setIsLoading(true);
             const response = await axios.post<FormInstitutionType>(
               "http://localhost:8080/institution",
               data
             );
+            setIsLoading(false);
             onSubmit && event
               ? onSubmit(data, event)
               : navigate("/institutions");
@@ -638,6 +641,7 @@ export function CreateInstitution({
           textColor="white"
           backgroundColor={theme.palette.primary.main}
           disabled={!isValid}
+          isLoading={isLoading}
         />
       </form>
     </div>
