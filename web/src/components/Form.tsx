@@ -27,6 +27,7 @@ import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "./FormErrorMessage";
+import { classicNameResolver } from "typescript";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect } from "react";
@@ -37,6 +38,12 @@ const useButtonStyles = makeStyles({
     justifyContent: "center",
     marginTop: "2em",
     padding: "0.5em 10%",
+  },
+});
+
+const useFormStyles = makeStyles({
+  form: {
+    width: "40%",
   },
 });
 
@@ -56,7 +63,7 @@ export function LoginForm() {
     getValues,
     setValue,
     formState: { errors },
-  } = useForm<LoginFormInputs>();
+  } = useForm<LoginFormInputs>({ mode: "onChange" });
   const navigate = useNavigate();
   const auth = useAuth();
   const theme = useTheme();
@@ -68,13 +75,10 @@ export function LoginForm() {
     getValues,
     setValue,
   };
+  const classes = useFormStyles();
 
-  useEffect(() => {
-    if (errors.password) {
-      const timer = setTimeout(() => clearErrors("password"), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errors.password, clearErrors]);
+  useEffect(() => console.log(getValues("email")), [getValues("email")]);
+  useEffect(() => console.log(getValues("password")), [getValues("password")]);
 
   return (
     <form
@@ -82,15 +86,18 @@ export function LoginForm() {
         auth.signin(email, password);
         navigate("/");
       })}
-      style={{ width: "40%" }}
+      className={classes.form}
     >
-      <Grid container spacing={2} xs={10} alignItems="center" justify="center">
+      <Grid
+        container
+        item
+        spacing={2}
+        xs={10}
+        alignItems="center"
+        justify="center"
+      >
         <Grid item xs={12}>
-          <EmailInputField
-            register={register}
-            emailErrors={errors.email}
-            clearErrors={clearErrors}
-          />
+          <EmailInputField formState={formState} />
         </Grid>
         <Grid item xs={12}>
           {RenderInput({
@@ -121,24 +128,43 @@ type ForgotPasswordFormInputs = {
 
 export function ForgotPasswordForm() {
   const formButton = useButtonStyles();
+  const formInput = useInputStyles();
   const {
     register,
     handleSubmit,
+    control,
+    getValues,
+    setValue,
     clearErrors,
     formState: { errors },
-  } = useForm<ForgotPasswordFormInputs>();
+  } = useForm<ForgotPasswordFormInputs>({ mode: "onChange" });
+  const formState: FormState<ForgotPasswordFormInputs> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+  };
   const navigate = useNavigate();
   const theme = useTheme();
+  const classes = useFormStyles();
 
   return (
-    <form onSubmit={handleSubmit(({ email }) => navigate("/login"))}>
-      <Grid container>
+    <form
+      onSubmit={handleSubmit(({ email }) => navigate("/login"))}
+      className={classes.form}
+    >
+      <Grid
+        container
+        item
+        spacing={2}
+        xs={10}
+        alignItems="center"
+        justify="center"
+      >
         <Grid item xs={12}>
-          <EmailInputField
-            register={register}
-            emailErrors={errors.email}
-            clearErrors={clearErrors}
-          />
+          <EmailInputField formState={formState} />
         </Grid>
       </Grid>
       <Button
@@ -178,15 +204,9 @@ export function RegisterForm1() {
     setValue,
   };
   const navigate = useNavigate();
-  const theme = useTheme();
   const { validateInviteCode } = useAuth();
-
-  useEffect(() => {
-    if (errors.code) {
-      const timer = setTimeout(() => clearErrors("code"), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errors.code, clearErrors]);
+  const theme = useTheme();
+  const classes = useFormStyles();
 
   return (
     <form
@@ -195,9 +215,16 @@ export function RegisterForm1() {
           navigate("./1", { state: { registerState: { code } } });
         setError("code", { message: "Code falsch" });
       })}
-      style={{ width: "40%" }}
+      className={classes.form}
     >
-      <Grid container>
+      <Grid
+        container
+        item
+        spacing={2}
+        xs={12}
+        alignItems="center"
+        justify="center"
+      >
         <Grid item xs={12}>
           {RenderInput({
             name: "code",
@@ -251,25 +278,12 @@ export function RegisterForm2() {
     setValue,
   };
   const navigate = useNavigate();
-  const theme = useTheme();
   const location = useLocation();
   const {
     registerState: { code },
   } = location.state as { registerState: { code: number } };
-
-  useEffect(() => {
-    if (errors.firstName) {
-      const timer = setTimeout(() => clearErrors("firstName"), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errors.firstName, clearErrors]);
-
-  useEffect(() => {
-    if (errors.lastName) {
-      const timer = setTimeout(() => clearErrors("lastName"), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errors.lastName, clearErrors]);
+  const theme = useTheme();
+  const classes = useFormStyles();
 
   return (
     <form
@@ -280,8 +294,16 @@ export function RegisterForm2() {
           },
         })
       )}
+      className={classes.form}
     >
-      <Grid container>
+      <Grid
+        container
+        item
+        spacing={2}
+        xs={12}
+        alignItems="center"
+        justify="center"
+      >
         <Grid item>
           {RenderInput({
             name: "firstName",
@@ -302,11 +324,7 @@ export function RegisterForm2() {
           })}
         </Grid>
         <Grid item>
-          <EmailInputField
-            register={register}
-            emailErrors={errors.email}
-            clearErrors={clearErrors}
-          />
+          <EmailInputField formState={formState} />
         </Grid>
       </Grid>
       <Button
@@ -353,7 +371,6 @@ export function RegisterForm3() {
     setValue,
   };
   const navigate = useNavigate();
-  const theme = useTheme();
   const auth = useAuth();
   const location = useLocation();
   const { registerState } = location.state as {
@@ -364,20 +381,8 @@ export function RegisterForm3() {
       email: string;
     };
   };
-
-  useEffect(() => {
-    if (errors.password) {
-      const timer = setTimeout(() => clearErrors("password"), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errors.password, clearErrors]);
-
-  useEffect(() => {
-    if (errors.passwordRepeated) {
-      const timer = setTimeout(() => clearErrors("passwordRepeated"), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errors.passwordRepeated, clearErrors]);
+  const theme = useTheme();
+  const classes = useFormStyles();
 
   return (
     <form
@@ -397,8 +402,16 @@ export function RegisterForm3() {
             message: "Passwörter stimmen nicht überein",
           });
       })}
+      className={classes.form}
     >
-      <Grid container>
+      <Grid
+        container
+        item
+        spacing={2}
+        xs={12}
+        alignItems="center"
+        justify="center"
+      >
         <Grid item>
           {RenderInput({
             name: "password",
@@ -441,49 +454,20 @@ export function RegisterForm3() {
   );
 }
 
-export function EmailInputField<T>({
-  register,
-  emailErrors,
-  clearErrors,
+export function EmailInputField<T extends { email: string }>({
+  formState,
 }: {
-  register: UseFormRegister<any>;
-  emailErrors: FieldError | undefined;
-  clearErrors: UseFormClearErrors<T>;
+  formState: FormState<T>;
 }) {
-  const formInput = useInputStyles();
-
-  useEffect(() => {
-    if (emailErrors) {
-      const timer = setTimeout(() => clearErrors("email" as Path<T>), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [emailErrors, clearErrors]);
-
-  return (
-    <>
-      <AnimatePresence>
-        {emailErrors && (
-          <FormErrorMessage name="email" message={emailErrors.message} />
-        )}
-      </AnimatePresence>
-      <TextField
-        placeholder="Email"
-        className={formInput.input}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FontAwesomeIcon className="inputIcon" icon={faEnvelope} />
-            </InputAdornment>
-          ),
-          ...register("email", {
-            required: "Email muss angegeben werden",
-            pattern: {
-              value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
-              message: "gültige Email mit @ und so.",
-            },
-          }),
-        }}
-      />
-    </>
-  );
+  return RenderInput({
+    name: "email" as Path<T>,
+    placeholder: "Email",
+    required: "Email muss angegeben werden",
+    pattern: {
+      value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
+      message: "gültige Email mit @ und so.",
+    },
+    icon: faEnvelope,
+    formState,
+  });
 }

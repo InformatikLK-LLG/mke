@@ -176,7 +176,7 @@ export default function PlacesAutocomplete<
       disableClearable
       disabled={disabled}
       style={{ display: "inline" }}
-      inputValue={value as string}
+      inputValue={value || ""}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
         if (typeof option !== "string" && option) {
