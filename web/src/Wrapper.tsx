@@ -89,6 +89,10 @@ export default function Wrapper() {
     if (startOfParameter === -1) return route.path === location.pathname;
 
     const endOfParameter = route.path.indexOf("/", startOfParameter);
+    const endOfParameterLocation = location.pathname.indexOf(
+      "/",
+      startOfParameter
+    );
 
     const newPath = route.path.replace(
       route.path.slice(
@@ -97,10 +101,11 @@ export default function Wrapper() {
       ),
       location.pathname.slice(
         startOfParameter,
-        endOfParameter === -1 ? route.path.length : endOfParameter
+        endOfParameter === -1
+          ? location.pathname.length
+          : endOfParameterLocation
       )
     );
-    console.log(newPath, location.pathname);
     return newPath === location.pathname;
   };
 

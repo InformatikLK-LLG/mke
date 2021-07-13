@@ -40,7 +40,7 @@ export type CustomerType = {
   email: string;
   mobilePhone: string;
   businessPhone: string;
-  institution: string;
+  institution: { name: string; id: string };
 };
 
 export const useInputFields = makeStyles((theme: Theme) => ({
@@ -94,11 +94,14 @@ export function CreateCustomer() {
     getValues,
     setValue,
     watch,
+    reset,
     formState: { errors, isValid },
   } = useForm<CustomerType>({ mode: "onChange" });
   const formInput = useInputStyles();
-  const theme = useTheme();
   const formButton = useButtonStyles();
+  const theme = useTheme();
+  const inputFields = useInputFields(theme);
+
   const formState: FormState<CustomerType> = {
     clearErrors,
     control,
@@ -107,31 +110,38 @@ export function CreateCustomer() {
     getValues,
     setValue,
   };
-  const inputFields = useInputFields(theme);
-  const [data, setData] = useState<Array<{ value: string; id?: string }>>();
+  const [options, setOptions] =
+    useState<Array<{ value: string; id?: string }>>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<{
+    value: string;
+    id?: string;
+  }>();
   const institution = watch("institution");
 
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get<Array<FormInstitutionType>>(
+        "http://localhost:8080/institution"
+      );
+      const data2 = data.map((dataSingular) => {
+        return {
+          value: dataSingular.name,
+          id: dataSingular.id,
+        };
+      });
+      setOptions(data2);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get<Array<FormInstitutionType>>(
-          "http://localhost:8080/institution"
-        );
-        const data2 = data.map((dataSingular) => {
-          return {
-            value: dataSingular.name,
-            id: dataSingular.id,
-          };
-        });
-        setData(data2);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
-  }, [isDialogOpen]);
+  }, []);
+
+  useEffect(() => console.log(institution), [institution]);
 
   return (
     <div className="container">
@@ -145,10 +155,12 @@ export function CreateCustomer() {
           <DialogContent>
             <CreateInstitution
               onSubmit={(data) => {
-                setValue("institution", data.name);
+                fetchData();
+                setValue("institution.name", data.name);
+                setValue("institution.id", data.id);
                 setIsDialogOpen(false);
               }}
-              defaultInstitution={{ name: institution }}
+              defaultInstitution={{ name: institution.name }}
             />
           </DialogContent>
         </Dialog>
@@ -157,6 +169,7 @@ export function CreateCustomer() {
         onSubmit={handleSubmit((data) => {
           //TODO do stuff here
           console.log(data);
+          console.log();
         })}
         style={{ width: "80%" }}
       >
@@ -182,18 +195,26 @@ export function CreateCustomer() {
           <Grid item xs={12} md={6} lg={6} className={inputFields.institution}>
             <Controller
               control={control}
-              name="institution"
+              name="institution.name"
               render={({ field }) => (
                 <Autocomplete
+                  // value={selectedOption || { value: "" }}
                   autoComplete
                   includeInputInList
                   disableClearable
                   noOptionsText="nein. :("
                   forcePopupIcon={false}
-                  options={data || []}
+                  options={options || []}
                   inputValue={field.value || ""}
-                  onInputChange={(e, value) => field.onChange(value)}
+                  onInputChange={(e, value) => {
+                    field.onChange(value);
+                    institution.id && setValue("institution.id", "");
+                  }}
                   getOptionLabel={(option) => option.value}
+                  getOptionSelected={(option, value) => {
+                    // console.log( option, value, option.id === value.id && Boolean(value.id));
+                    return option.id === value.id && Boolean(value.id);
+                  }}
                   renderOption={(option) =>
                     option.id
                       ? `${option.value} — ${option.id}`
@@ -215,12 +236,13 @@ export function CreateCustomer() {
                   onChange={(e, option) => {
                     if (!option.id) {
                       setIsDialogOpen(true);
-                    }
-                    setValue("institution", option.value);
+                    } else setValue("institution.id", option.id);
+                    setValue("institution.name", option.value);
+                    setSelectedOption(option);
                   }}
                   renderInput={(params) =>
                     RenderInput({
-                      name: "institution",
+                      name: "institution.name",
                       placeholder: "Name der Institution",
                       autoComplete: "organization",
                       required: "Name der Institution muss angegeben werden",
@@ -283,7 +305,7 @@ export function CreateCustomer() {
             type="submit"
             label="Erstellen"
             buttonStyle={formButton}
-            disabled={!isValid}
+            // disabled={!isValid}
             isLoading={isLoading}
           />
         </Grid>

@@ -54,7 +54,7 @@ const useStyles = makeStyles({
   clickable: {
     cursor: "pointer",
   },
-  table: { tableLayout: "fixed" },
+  table: { tableLayout: "fixed", width: "max-content" },
   tableHeader: {
     position: "sticky",
     top: 0,
