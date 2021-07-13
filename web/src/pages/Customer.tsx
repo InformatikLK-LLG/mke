@@ -19,13 +19,13 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
+import Form, { EmailInputField } from "../components/Form";
 import { Outlet, useNavigate } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
-import { EmailInputField } from "../components/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import axios from "axios";
@@ -95,7 +95,7 @@ export function CreateCustomer() {
     setValue,
     watch,
     reset,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<CustomerType>({ mode: "onChange" });
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
@@ -119,6 +119,120 @@ export function CreateCustomer() {
     id?: string;
   }>();
   const institution = watch("institution");
+  const inputs = [
+    <Grid item xs={12} md={6} lg={6} className={inputFields.firstName}>
+      {RenderInput({
+        name: "firstName",
+        placeholder: "Vorname",
+        autoComplete: "given-name",
+        required: "Vorname muss angegeben werden",
+        autofocus: true,
+        icon: faEdit,
+        formState,
+      })}
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.institution}>
+      <Controller
+        control={control}
+        name="institution.name"
+        render={({ field }) => (
+          <Autocomplete
+            // value={selectedOption || { value: "" }}
+            autoComplete
+            includeInputInList
+            disableClearable
+            noOptionsText="nein. :("
+            forcePopupIcon={false}
+            options={options || []}
+            inputValue={field.value || ""}
+            onInputChange={(e, value) => {
+              field.onChange(value);
+              institution.id && setValue("institution.id", "");
+            }}
+            getOptionLabel={(option) => option.value}
+            getOptionSelected={(option, value) => {
+              // console.log( option, value, option.id === value.id && Boolean(value.id));
+              return option.id === value.id && Boolean(value.id);
+            }}
+            renderOption={(option) =>
+              option.id
+                ? `${option.value} — ${option.id}`
+                : `"${option.value}" hinzufügen`
+            }
+            filterOptions={(options) => {
+              const filtered = options.filter((option) =>
+                option.value
+                  .toLowerCase()
+                  .includes(field.value?.toLowerCase() || "")
+              );
+              field.value &&
+                field.value !== "" &&
+                filtered.push({
+                  value: field.value,
+                });
+              return filtered;
+            }}
+            onChange={(e, option) => {
+              if (!option.id) {
+                setIsDialogOpen(true);
+              } else setValue("institution.id", option.id);
+              setValue("institution.name", option.value);
+              setSelectedOption(option);
+            }}
+            renderInput={(params) =>
+              RenderInput({
+                name: "institution.name",
+                placeholder: "Name der Institution",
+                autoComplete: "organization",
+                required: "Name der Institution muss angegeben werden",
+                icon: faUniversity,
+                formState,
+                params,
+              })
+            }
+          />
+        )}
+      />
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.lastName}>
+      {RenderInput({
+        name: "lastName",
+        placeholder: "Nachname",
+        autoComplete: "family-name",
+        required: "Nachname muss angegeben werden",
+        icon: faEdit,
+        formState,
+      })}
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
+      <EmailInputField formState={formState} />
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>
+      {RenderInput({
+        name: "mobilePhone",
+        placeholder: "Handynummer",
+        type: "tel",
+        required: "Handynummer muss angegeben werden",
+        icon: faEdit,
+        formState,
+      })}
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.businessPhone}>
+      {RenderInput({
+        name: "businessPhone",
+        placeholder: "Telefonnummer dienstlich",
+        type: "tel",
+        required: "Telefonnummer dienstlich muss angegeben werden",
+        icon: faEdit,
+        formState,
+      })}
+    </Grid>,
+  ];
 
   const fetchData = async () => {
     try {
@@ -165,151 +279,25 @@ export function CreateCustomer() {
           </DialogContent>
         </Dialog>
       )}
-      <form
+
+      <Form
+        inputs={inputs}
         onSubmit={handleSubmit((data) => {
           //TODO do stuff here
           console.log(data);
           console.log();
         })}
-        style={{ width: "80%" }}
-      >
-        <Grid
-          container
-          spacing={2}
-          direction="row"
-          alignItems="flex-end"
-          justify="center"
-        >
-          <Grid item xs={12} md={6} lg={6} className={inputFields.firstName}>
-            {RenderInput({
-              name: "firstName",
-              placeholder: "Vorname",
-              autoComplete: "given-name",
-              required: "Vorname muss angegeben werden",
-              autofocus: true,
-              icon: faEdit,
-              formState,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6} className={inputFields.institution}>
-            <Controller
-              control={control}
-              name="institution.name"
-              render={({ field }) => (
-                <Autocomplete
-                  // value={selectedOption || { value: "" }}
-                  autoComplete
-                  includeInputInList
-                  disableClearable
-                  noOptionsText="nein. :("
-                  forcePopupIcon={false}
-                  options={options || []}
-                  inputValue={field.value || ""}
-                  onInputChange={(e, value) => {
-                    field.onChange(value);
-                    institution.id && setValue("institution.id", "");
-                  }}
-                  getOptionLabel={(option) => option.value}
-                  getOptionSelected={(option, value) => {
-                    // console.log( option, value, option.id === value.id && Boolean(value.id));
-                    return option.id === value.id && Boolean(value.id);
-                  }}
-                  renderOption={(option) =>
-                    option.id
-                      ? `${option.value} — ${option.id}`
-                      : `"${option.value}" hinzufügen`
-                  }
-                  filterOptions={(options) => {
-                    const filtered = options.filter((option) =>
-                      option.value
-                        .toLowerCase()
-                        .includes(field.value?.toLowerCase() || "")
-                    );
-                    field.value &&
-                      field.value !== "" &&
-                      filtered.push({
-                        value: field.value,
-                      });
-                    return filtered;
-                  }}
-                  onChange={(e, option) => {
-                    if (!option.id) {
-                      setIsDialogOpen(true);
-                    } else setValue("institution.id", option.id);
-                    setValue("institution.name", option.value);
-                    setSelectedOption(option);
-                  }}
-                  renderInput={(params) =>
-                    RenderInput({
-                      name: "institution.name",
-                      placeholder: "Name der Institution",
-                      autoComplete: "organization",
-                      required: "Name der Institution muss angegeben werden",
-                      icon: faUniversity,
-                      formState,
-                      params,
-                    })
-                  }
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6} className={inputFields.lastName}>
-            {RenderInput({
-              name: "lastName",
-              placeholder: "Nachname",
-              autoComplete: "family-name",
-              required: "Nachname muss angegeben werden",
-              icon: faEdit,
-              formState,
-            })}
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
-            <EmailInputField formState={formState} />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>
-            {RenderInput({
-              name: "mobilePhone",
-              placeholder: "Handynummer",
-              type: "tel",
-              required: "Handynummer muss angegeben werden",
-              icon: faEdit,
-              formState,
-            })}
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={6}
-            className={inputFields.businessPhone}
-          >
-            {RenderInput({
-              name: "businessPhone",
-              placeholder: "Telefonnummer dienstlich",
-              type: "tel",
-              required: "Telefonnummer dienstlich muss angegeben werden",
-              icon: faEdit,
-              formState,
-            })}
-          </Grid>
-
+        button={
           <Button
             textColor="white"
             backgroundColor={theme.palette.primary.main}
             type="submit"
             label="Erstellen"
             buttonStyle={formButton}
-            // disabled={!isValid}
             isLoading={isLoading}
           />
-        </Grid>
-      </form>
+        }
+      />
     </div>
   );
 }

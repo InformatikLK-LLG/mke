@@ -524,7 +524,9 @@ export default function Form<T>({
             order[breakpoint]!.map((index) => (
               <Fragment key={index}>{inputs[index - 1]}</Fragment>
             ))
-          : inputs}
+          : inputs.map((input, index) => (
+              <Fragment key={index}>{input}</Fragment>
+            ))}
       </Grid>
 
       {button}
