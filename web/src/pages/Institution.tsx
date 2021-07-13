@@ -20,6 +20,7 @@ import {
   ValidationRule,
   useForm,
 } from "react-hook-form";
+import Form, { OrderType } from "../components/Form";
 import {
   FormControl,
   Grid,
@@ -543,28 +544,29 @@ export function CreateInstitution({
     </Grid>,
   ];
 
-  const order = {
+  const order: OrderType = {
     xs: [1, 2, 3, 4, 5, 6, 7, 8],
     md: [1, 2, 4, 5, 7, 6, 3, 8],
     lg: [1, 2, 4, 5, 3, 6, 7, 8],
-    xl: [],
   };
-
-  const breakpoints = theme.breakpoints.values;
-  const breakpoint =
-    width >= breakpoints.md
-      ? width >= breakpoints.lg
-        ? width >= breakpoints.xl
-          ? "xl"
-          : "lg"
-        : "md"
-      : "xs";
 
   useEventListener("keydown", onKeyDown);
 
   return (
     <div className="container">
-      <form
+      <Form
+        button={
+          <Button
+            type="submit"
+            label="Erstellen"
+            buttonStyle={formButton}
+            textColor="white"
+            backgroundColor={theme.palette.primary.main}
+            disabled={!isValid}
+            isLoading={isLoading}
+          />
+        }
+        inputs={inputs}
         onSubmit={handleSubmit(async (data, event) => {
           try {
             setIsLoading(true);
@@ -581,30 +583,8 @@ export function CreateInstitution({
             setIsLoading(false);
           }
         })}
-        style={{ width: "80%" }}
-      >
-        <Grid
-          container
-          spacing={2}
-          direction="row"
-          alignItems="flex-end"
-          justify="center"
-        >
-          {order[breakpoint].map((index) => (
-            <Fragment key={index}>{inputs[index - 1]}</Fragment>
-          ))}
-        </Grid>
-
-        <Button
-          type="submit"
-          label="Erstellen"
-          buttonStyle={formButton}
-          textColor="white"
-          backgroundColor={theme.palette.primary.main}
-          disabled={!isValid}
-          isLoading={isLoading}
-        />
-      </form>
+        order={order}
+      />
     </div>
   );
 }

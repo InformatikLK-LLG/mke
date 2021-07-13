@@ -7,6 +7,7 @@ import {
   UseFormRegister,
   useForm,
 } from "react-hook-form";
+import { FormEventHandler, Fragment, useEffect } from "react";
 import { FormState, RenderInput, useInputStyles } from "../pages/Institution";
 import {
   Grid,
@@ -30,7 +31,7 @@ import FormErrorMessage from "./FormErrorMessage";
 import { classicNameResolver } from "typescript";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
-import { useEffect } from "react";
+import useViewport from "../hooks/useViewport";
 
 const useButtonStyles = makeStyles({
   button: {
@@ -473,4 +474,60 @@ export function EmailInputField<T extends { email: string }>({
     icon: faEnvelope,
     formState,
   });
+}
+
+export type OrderType = {
+  xs?: number[];
+  md?: number[];
+  lg?: number[];
+  xl?: number[];
+};
+
+export default function Form<T>({
+  inputs,
+  button,
+  onSubmit,
+  order,
+  width = "80%",
+}: {
+  inputs: Array<JSX.Element>;
+  button: JSX.Element;
+  onSubmit: FormEventHandler<HTMLFormElement>;
+  order?: OrderType;
+  width?: string;
+}) {
+  const viewportWidth = useViewport();
+  const theme = useTheme();
+  const breakpoints = theme.breakpoints.values;
+
+  const breakpoint = order
+    ? viewportWidth >= breakpoints.xl && order["xl"]
+      ? "xl"
+      : viewportWidth >= breakpoints.lg && order["lg"]
+      ? "lg"
+      : viewportWidth >= breakpoints.md && order["md"]
+      ? "md"
+      : "xs"
+    : "xs";
+
+  return (
+    <form onSubmit={onSubmit} style={{ width }}>
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+        alignItems="flex-end"
+        justify="center"
+      >
+        {order && order["xs"]
+          ? //order[breakpoint] can never be undefined because breakpoint is checking this case already^
+            order[breakpoint]!.map((index) => (
+              <Fragment key={index}>{inputs[index - 1]}</Fragment>
+            ))
+          : inputs}
+      </Grid>
+
+      {button}
+    </form>
+  );
 }
