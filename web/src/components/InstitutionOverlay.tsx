@@ -17,7 +17,6 @@ import {
   FormState,
   RenderInput,
   useButtonStyles,
-  useInputFields,
   useInputStyles,
 } from "../pages/Institution";
 import axios, { AxiosResponse } from "axios";
@@ -108,7 +107,6 @@ export function InstitutionOverlay({
   const [disabled, setDisabled] = useState(true);
 
   const theme = useTheme();
-  const inputFields = useInputFields(theme);
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const institutionStyles = useInstitutionStyles();
@@ -195,13 +193,7 @@ export function InstitutionOverlay({
                 className={institutionStyles.toggleLabel}
               />
             </Grid>
-            <Grid
-              item
-              xs={12}
-              md={6}
-              lg={6}
-              className={inputFields.institutionName}
-            >
+            <Grid item xs={12} md={6} lg={6}>
               {RenderInput({
                 name: "name",
                 placeholder: "Name",
@@ -215,7 +207,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid item xs={12} md={6} lg={6} className={inputFields.instCode}>
+            <Grid item xs={12} md={6} lg={6}>
               {RenderInput({
                 name: "id",
                 placeholder: "INST-Code",
@@ -226,13 +218,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              md={6}
-              lg={6}
-              className={inputFields.phoneNumber}
-            >
+            <Grid item xs={12} md={6} lg={6}>
               {RenderInput({
                 name: "phoneNumber",
                 placeholder: "Telefonnummer",
@@ -244,7 +230,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4} className={inputFields.street}>
+            <Grid item xs={12} md={6} lg={4}>
               {RenderInput({
                 name: "address.street",
                 placeholder: "Straße",
@@ -257,13 +243,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              md={6}
-              lg={2}
-              className={inputFields.streetNumber}
-            >
+            <Grid item xs={12} md={6} lg={2}>
               {RenderInput({
                 name: "address.streetNumber",
                 placeholder: "Hausnummer",
@@ -275,7 +255,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid item xs={12} md={6} lg={4} className={inputFields.town}>
+            <Grid item xs={12} md={6} lg={4}>
               {RenderInput({
                 name: "address.town",
                 placeholder: "Stadt",
@@ -287,7 +267,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid item xs={12} md={6} lg={2} className={inputFields.zipCode}>
+            <Grid item xs={12} md={6} lg={2}>
               {RenderInput({
                 name: "address.zipCode",
                 placeholder: "Postleitzahl",
@@ -299,13 +279,7 @@ export function InstitutionOverlay({
               })}
             </Grid>
 
-            <Grid
-              item
-              xs={12}
-              md={6}
-              lg={6}
-              className={inputFields.schoolAdministrativeDistrict}
-            >
+            <Grid item xs={12} md={6} lg={6}>
               <Controller
                 control={control}
                 name="schoolAdministrativeDistrict"
