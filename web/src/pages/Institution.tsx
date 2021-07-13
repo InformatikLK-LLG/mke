@@ -562,7 +562,6 @@ export function CreateInstitution({
             buttonStyle={formButton}
             textColor="white"
             backgroundColor={theme.palette.primary.main}
-            disabled={!isValid}
             isLoading={isLoading}
           />
         }
