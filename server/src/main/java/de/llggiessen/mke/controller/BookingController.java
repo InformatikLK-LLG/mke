@@ -40,7 +40,7 @@ public class BookingController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrievalDate));
-        }catch(Exception e){
+        } catch(Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Try using this timeformat: yyyy-MM-dd");
         }
     }
@@ -68,6 +68,37 @@ public class BookingController {
     @GetMapping(value = "", params = {"status"})
     public Iterable<Booking> getBookingsByStatus(@RequestParam char status){
         return repository.findAllByStatus(status);
+    }
+
+    @DeleteMapping(value = "", params = {"id"})
+    public void deleteById(@RequestParam long id){
+        repository.deleteById(id);
+    }
+
+    @PostMapping("")
+    public Booking createBooking(@RequestBody Booking booking){
+        try {
+            if(!repository.existsById(booking.getId())) {
+                return repository.save(booking);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID already exist");
+            }
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("")
+    public Booking updateBooking(@RequestBody Booking booking){
+        try{
+            if(repository.existsById(booking.getId())) {
+                return repository.save(booking);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find object with this id");
+            }
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

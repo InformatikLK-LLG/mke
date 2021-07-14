@@ -1,6 +1,7 @@
 package de.llggiessen.mke.repository;
 
 import de.llggiessen.mke.schema.Booking;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,8 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
 
     @Query(value = "SELECT * FROM booking WHERE booking.retrieval_date BETWEEN :retrievalDate AND :returnDate AND booking.return_date BETWEEN :retrievalDate AND :returnDate", nativeQuery = true)
     Iterable<Booking> findAllInRange(@Param("retrievalDate") Date retrievalDate, @Param("returnDate") Date returnDate);
+
+    @Modifying
+    @Query(value = "DELETE FROM booking WHERE booking.id = :id", nativeQuery = true)
+    void deleteById(@Param("id") long id);
 }
