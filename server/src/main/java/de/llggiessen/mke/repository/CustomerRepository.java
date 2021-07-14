@@ -2,6 +2,7 @@ package de.llggiessen.mke.repository;
 
 
 import de.llggiessen.mke.schema.Customer;
+import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Repository;
     @RepositoryRestResource(exported = false)
     public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
+        @Modifying
         @Query(value = "DELETE FROM customer WHERE customer.email = :email", nativeQuery = true)
         void deleteByEmail(@Param("email") String email);
 
+        @Modifying
         @Query(value = "DELETE FROM customer WHERE customer.id = :id", nativeQuery = true)
         void deleteById(@Param("id") Long id);
 
