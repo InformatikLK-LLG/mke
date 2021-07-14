@@ -76,45 +76,43 @@ export function LoginForm() {
   };
   const classes = useFormStyles();
 
+  const inputs = [
+    <Grid item xs={12}>
+      <EmailInputField formState={formState} />
+    </Grid>,
+    <Grid item xs={12}>
+      {RenderInput({
+        name: "password",
+        type: "password",
+        placeholder: "Passwort",
+        required: "Passwort muss angegeben werden",
+        icon: faKey,
+        formState,
+      })}
+    </Grid>,
+  ];
+
   return (
-    <form
+    <Form
+      button={
+        <Button
+          type="submit"
+          label="Login"
+          buttonStyle={formButton}
+          textColor="white"
+          backgroundColor={theme.palette.primary.main}
+        />
+      }
+      inputs={inputs}
       onSubmit={handleSubmit(({ email, password }) => {
         auth.signin(email, password);
         navigate("/");
       })}
-      className={classes.form}
-    >
-      <Grid
-        container
-        item
-        spacing={2}
-        xs={10}
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item xs={12}>
-          <EmailInputField formState={formState} />
-        </Grid>
-        <Grid item xs={12}>
-          {RenderInput({
-            name: "password",
-            type: "password",
-            placeholder: "Passwort",
-            required: "Passwort muss angegeben werden",
-            icon: faKey,
-            formState,
-          })}
-        </Grid>
-      </Grid>
-      <Link to="/forgotpassword">Passwort vergessen?</Link>
-      <Button
-        type="submit"
-        label="Login"
-        buttonStyle={formButton}
-        textColor="white"
-        backgroundColor={theme.palette.primary.main}
-      />
-    </form>
+      width="40%"
+      otherElements={{
+        middle: <Link to="/forgotpassword">Passwort vergessen?</Link>,
+      }}
+    />
   );
 }
 
@@ -487,12 +485,18 @@ export default function Form<T>({
   onSubmit,
   order,
   width = "80%",
+  otherElements,
 }: {
   inputs: Array<JSX.Element>;
   button: JSX.Element;
   onSubmit: FormEventHandler<HTMLFormElement>;
   order?: OrderType;
   width?: string;
+  otherElements?: Partial<{
+    start: JSX.Element;
+    middle: JSX.Element;
+    end: JSX.Element;
+  }>;
 }) {
   const viewportWidth = useViewport();
   const theme = useTheme();
@@ -517,6 +521,7 @@ export default function Form<T>({
         alignItems="flex-end"
         justify="center"
       >
+        {otherElements?.start}
         {order && order["xs"]
           ? //order[breakpoint] can never be undefined because breakpoint is checking this case already^
             order[breakpoint]!.map((index) => (
@@ -526,8 +531,9 @@ export default function Form<T>({
               <Fragment key={index}>{input}</Fragment>
             ))}
       </Grid>
-
+      {otherElements?.middle}
       {button}
+      {otherElements?.end}
     </form>
   );
 }
