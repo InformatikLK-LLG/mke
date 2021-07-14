@@ -88,5 +88,18 @@ public class BookingController {
         }
     }
 
+    @PutMapping("")
+    public Booking updateBooking(@RequestBody Booking booking){
+        try{
+            if(repository.existsById(booking.getId())) {
+                return repository.save(booking);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find object with this id");
+            }
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
 

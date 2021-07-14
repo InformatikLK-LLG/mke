@@ -36,5 +36,4 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
     @Modifying
     @Query(value = "DELETE FROM booking WHERE booking.id = :id", nativeQuery = true)
     void deleteById(@Param("id") long id);
-
 }
