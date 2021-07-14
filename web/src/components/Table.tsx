@@ -73,19 +73,6 @@ const useStyles = makeStyles({
     maxWidth: "100%",
     overflowX: "auto",
     overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.5em",
-      height: "0.5em",
-      backgroundColor: "var(--input)",
-      borderRadius: "1em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "var(--border)",
-      borderRadius: "1em",
-    },
-    "&::-webkit-scrollbar-thumb:hover": {
-      backgroundColor: "var(--highlighting)",
-    },
   },
   pagination: {
     alignSelf: "flex-end",
