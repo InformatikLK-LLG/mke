@@ -37,7 +37,6 @@ const useButtonStyles = makeStyles({
   button: {
     display: "flex",
     justifyContent: "center",
-    marginTop: "2em",
     padding: "0.5em 10%",
   },
 });

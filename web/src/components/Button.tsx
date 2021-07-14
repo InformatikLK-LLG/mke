@@ -30,14 +30,15 @@ const useStyles: (props: { backgroundColor: string; textColor: string }) => {
 const useProgressStyles = makeStyles({
   wrapper: {
     position: "relative",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "2em",
   },
   progress: {
-    color: "var(--highlighting)",
     position: "absolute",
-    top: "50%",
-    left: "50%",
-    marginTop: 6,
-    marginLeft: -12,
+    color: "var(--highlighting)",
   },
 });
 
