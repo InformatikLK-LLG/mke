@@ -2,12 +2,22 @@
   font-size: 18px;
 }
 
+*::selection {
+  background: yellowgreen;
+}
+
 body {
   margin: 0;
   padding: 0;
+  /* font-size: 20px; */
+  font-display: optional;
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
-  /* font-size: 20px; */
+}
+
+span.MuiTypography-root {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
 }
 
 h1,
@@ -54,7 +64,6 @@ h2 {
     --input: #f0f0f0;
   }
 }
-
 .flexrow {
   display: flex;
   flex-flow: row nowrap;
@@ -71,6 +80,8 @@ h2 {
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  height: 70%;
+  padding: 2em 0;
 }
 
 .container > h1 {
@@ -79,7 +90,7 @@ h2 {
 
 .wrapper {
   height: 100vh;
-  width: 100vw;
+  /* width: 100vw;*/
   box-sizing: border-box;
   display: flex;
   flex-flow: column nowrap;
@@ -94,7 +105,7 @@ h2 {
   flex-flow: row wrap;
   justify-content: space-between;
   height: 10%;
-  /* padding: 2em; */
+  padding-bottom: 2em;
 }
 
 .content {
@@ -125,6 +136,9 @@ h2 {
 /* .flexcolumn.reverse {
   flex-direction: column-reverse;
 } */
+.flexrow.reverse {
+  flex-direction: row-reverse;
+}
 
 .lower {
   display: flex;
