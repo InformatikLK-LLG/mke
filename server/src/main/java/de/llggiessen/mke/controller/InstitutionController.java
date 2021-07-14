@@ -1,6 +1,7 @@
 package de.llggiessen.mke.controller;
 
 import de.llggiessen.mke.repository.InstitutionRepository;
+import de.llggiessen.mke.schema.Address;
 import de.llggiessen.mke.schema.Institution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class InstitutionController {
     @GetMapping(value = "", params = {"id"})
     public Institution getInstitutionByID(@RequestParam String id) {
         return repository.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Could not find Institution");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find Institution");
         });
     }
 
@@ -41,7 +42,7 @@ public class InstitutionController {
         try {
             return repository.deleteInstitutionByID(id);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Institution could not be deleted");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Institution could not be deleted");
         }
     }
 
@@ -55,6 +56,15 @@ public class InstitutionController {
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not create new Institution");
             }
+        }
+    }
+
+    @PutMapping(value = "")
+    public Institution changeInstitution(@RequestBody Institution newInstitution) {
+        if (repository.existsById(newInstitution.getId())) {
+            return repository.save(newInstitution);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID does not exist");
         }
     }
 }
