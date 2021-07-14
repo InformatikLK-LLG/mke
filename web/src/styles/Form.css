@@ -27,19 +27,21 @@ label {
 }
 
 form > a {
+  width: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 1em;
   text-decoration: none;
   color: var(--border);
+  white-space: nowrap;
 }
 
 @media (min-width: 730px) {
   form > a::after {
     outline: none;
     content: "";
-    width: 120%;
+    width: 110%;
     height: 0.1em;
     margin-top: 0.5em;
     border-bottom: 2px solid var(--border);
@@ -55,7 +57,7 @@ form > a {
 @media (max-width: 730px) {
   form > a::before {
     content: "";
-    width: 120%;
+    width: 110%;
     height: 0.1em;
     margin-bottom: 0.5em;
     background-color: var(--border);
@@ -65,7 +67,7 @@ form > a {
   }
 
   form > a::before:focus {
-    width: 120%;
+    width: 110%;
   }
 }
 
