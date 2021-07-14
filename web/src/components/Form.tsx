@@ -114,7 +114,11 @@ export function LoginForm() {
       })}
       width="40%"
       otherElements={{
-        middle: <Link to="/forgotpassword">Passwort vergessen?</Link>,
+        middle: (
+          <Link className="separator" to="/forgotpassword">
+            Passwort vergessen?
+          </Link>
+        ),
       }}
       containerStyling={{ spacing: 1 }}
     />
