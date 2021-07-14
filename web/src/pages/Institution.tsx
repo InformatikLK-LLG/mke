@@ -564,6 +564,7 @@ export function CreateInstitution({
           />
         }
         inputs={inputs}
+        maxWidth="200ch"
         onSubmit={handleSubmit(async (data, event) => {
           try {
             setIsLoading(true);

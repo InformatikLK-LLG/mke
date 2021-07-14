@@ -287,6 +287,7 @@ export function CreateCustomer() {
           console.log(data);
           console.log();
         })}
+        maxWidth="200ch"
         button={
           <Button
             textColor="white"

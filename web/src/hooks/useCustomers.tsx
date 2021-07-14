@@ -7,7 +7,7 @@ const useCustomers = (instCode?: string) => {
     axios.get<Array<Customer>>(
       `http://localhost:8080${
         instCode ? "/institution/" + instCode : ""
-      }/customers`
+      }/customer`
     )
   );
 };
