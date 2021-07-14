@@ -1,7 +1,6 @@
 package de.llggiessen.mke.controller;
 
 import de.llggiessen.mke.repository.InstitutionRepository;
-import de.llggiessen.mke.schema.Address;
 import de.llggiessen.mke.schema.Institution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
