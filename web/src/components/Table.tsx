@@ -54,7 +54,14 @@ const useStyles = makeStyles({
   clickable: {
     cursor: "pointer",
   },
-  table: { tableLayout: "fixed", width: "auto" },
+  table: {
+    tableLayout: "fixed",
+    width: "fill-available",
+    fallbacks: [
+      { width: "-moz-available" },
+      { width: "-webkit-fill-available" },
+    ],
+  },
   tableHeader: {
     position: "sticky",
     top: 0,
@@ -407,6 +414,7 @@ export default function Table<T extends SimplestItem>({
                 label="Suche"
                 variant="outlined"
                 onChange={(e) => {
+                  setPage(0);
                   search(searchParam, e.target.value);
                   e.target.value === "blume" && setIsBlume(true);
                   e.target.value === "wtf" && setIsBlume(false);

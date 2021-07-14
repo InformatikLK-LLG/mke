@@ -11,7 +11,7 @@ const useStyles: (props: { backgroundColor: string; textColor: string }) => {
     color: ({ textColor }) => textColor,
     transition: "none",
     fontSize: "1em",
-    padding: "0.5em 2em",
+    padding: "0.5em max(10%, 2.5em)",
     borderRadius: "30px",
     fontFamily:
       '"Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif',
