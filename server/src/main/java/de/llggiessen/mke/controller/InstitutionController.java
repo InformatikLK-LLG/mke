@@ -42,6 +42,7 @@ public class InstitutionController {
             return repository.deleteInstitutionByID(id);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Institution could not be deleted");
+
         }
     }
 
@@ -67,3 +68,4 @@ public class InstitutionController {
         }
     }
 }
+

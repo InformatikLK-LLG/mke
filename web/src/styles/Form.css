@@ -3,9 +3,22 @@ form {
   flex-flow: column nowrap;
   align-items: center;
   margin-top: 1em;
+  width: fit-content;
+  align-self: center;
+}
+.halfstuff {
+  display: flex;
+  flex-flow: row wrap;
+  width: 50%;
 }
 
-form > label {
+form > .halfstuff > .half {
+  padding: 0 1em;
+  /* width: calc(50% - 1em); */
+  /* width: 50%; */
+}
+
+label {
   position: relative;
 }
 
@@ -82,6 +95,10 @@ input[type="number"] {
   border-radius: 10px;
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3),
     0 0.0625rem 0.125rem rgba(0, 0, 0, 0.2);
+}
+
+.validationMessage::selection {
+  background-color: transparent;
 }
 
 .validationMessage::before,
