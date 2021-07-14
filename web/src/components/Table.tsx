@@ -54,7 +54,7 @@ const useStyles = makeStyles({
   clickable: {
     cursor: "pointer",
   },
-  table: { tableLayout: "fixed", width: "max-content" },
+  table: { tableLayout: "fixed", width: "auto" },
   tableHeader: {
     position: "sticky",
     top: 0,
@@ -419,7 +419,9 @@ export default function Table<T extends SimplestItem>({
         <BetterTable className={classes.table}>
           <colgroup>
             {columnWidths.map((width, index) => {
-              return <col width={width / relativeWidth} key={index} />;
+              return (
+                <col width={`${100 * (width / relativeWidth)}%`} key={index} />
+              );
             })}
           </colgroup>
           <TableHead className={classes.tableHeader}>
