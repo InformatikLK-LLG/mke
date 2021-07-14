@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 @Repository
 @RepositoryRestResource(exported = false)
 public interface InstitutionRepository extends CrudRepository<Institution, String> {
@@ -20,5 +22,4 @@ public interface InstitutionRepository extends CrudRepository<Institution, Strin
 
     @Query(value = "DELETE FROM institution WHERE institution.id = :id", nativeQuery = true)
     Institution deleteInstitutionByID(@Param("id") String id);
-
 }
