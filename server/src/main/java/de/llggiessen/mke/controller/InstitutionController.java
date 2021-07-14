@@ -4,10 +4,7 @@ import de.llggiessen.mke.repository.InstitutionRepository;
 import de.llggiessen.mke.schema.Institution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -18,13 +15,15 @@ public class InstitutionController {
     InstitutionRepository repository;
 
     @GetMapping("")
-    public Iterable<Institution> getInsttitutions(){
+    public Iterable<Institution> getInstitutions() {
         return repository.findAll();
     }
 
     @GetMapping(value = "", params = {"id"})
     public Institution getInstitutionByID(@RequestParam String id) {
-        return repository.findById(id).orElseThrow(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST);});
+        return repository.findById(id).orElseThrow(() -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Could not find Institution");
+        });
     }
 
     @GetMapping(value = "", params = {"svb"})
@@ -37,6 +36,26 @@ public class InstitutionController {
         return repository.findInstitutions(name);
     }
 
+    @DeleteMapping(value = "", params = {"id"})
+    public Institution deleteInstitutionByID(@RequestParam String id) {
+        try {
+            return repository.deleteInstitutionByID(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Institution could not be deleted");
+        }
+    }
 
-
+    @PostMapping(value = "")
+    public Institution newInstitution(@RequestBody Institution newInstitution) {
+        if (repository.existsById(newInstitution.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID already exist");
+        } else {
+            try {
+                return repository.save(newInstitution);
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not create new Institution");
+            }
+        }
+    }
 }
+

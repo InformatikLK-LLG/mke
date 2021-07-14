@@ -3,11 +3,12 @@ package de.llggiessen.mke.controller;
 import de.llggiessen.mke.repository.BookingRepository;
 import de.llggiessen.mke.schema.Booking;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -37,24 +38,37 @@ public class BookingController {
     @GetMapping(value = "", params = {"retrievalDate"})
     public Iterable<Booking> getBookingsByRetrievalDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrievalDate){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrievalDate));
+        try {
+            return repository.findAllByRetrievalBoatDate(simpleDateFormat.format(retrievalDate));
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Try using this timeformat: yyyy-MM-dd");
+        }
     }
 
     @GetMapping(value = "", params = {"returnDate"})
     public Iterable<Booking> getBookingsByReturnDate(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date returnDate){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return repository.findAllByReturnBoatDate(simpleDateFormat.format(returnDate));
+        try{
+            return repository.findAllByReturnBoatDate(simpleDateFormat.format(returnDate));
+        } catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Try using this timeformat: yyyy-MM-dd");
+        }
     }
 
     @GetMapping(value = "", params = {"retrievalDate", "returnDate"})
-    public Iterable<Booking> getBookingsInRange(@RequestParam("retrievalDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date retrievalDate, @RequestParam("returnDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date returnDate){
+    public Iterable<Booking> getBookingsInRange(@RequestParam("retrievalDate") String retrievalDate, @RequestParam("returnDate") String returnDate){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return  repository.findAllInRange(simpleDateFormat.format(retrievalDate), simpleDateFormat.format(returnDate));
+        try {
+            return  repository.findAllInRange(simpleDateFormat.parse(retrievalDate), simpleDateFormat.parse(returnDate));
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Try using this timeformat: yyyy-MM-dd");
+        }
     }
 
     @GetMapping(value = "", params = {"status"})
     public Iterable<Booking> getBookingsByStatus(@RequestParam char status){
         return repository.findAllByStatus(status);
     }
+
 }
 

@@ -12,6 +12,8 @@ const useStyles: (props: { backgroundColor: string; textColor: string }) => {
     fontSize: "1em",
     padding: "0.5em 2em",
     borderRadius: "30px",
+    fontFamily:
+      '"Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif',
     "&:hover": {
       boxShadow: "0 0 5px #444444",
       filter: "brightness(1.05)",
@@ -32,6 +34,7 @@ export default function Button({
   onClick,
   buttonStyle,
   isCapitalized = false,
+  disabled = false,
 }: {
   type: "button" | "submit" | "reset" | undefined;
   textColor?: "primary" | "secondary" | string;
@@ -40,6 +43,7 @@ export default function Button({
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   buttonStyle?: ClassNameMap<"button">;
   isCapitalized?: boolean;
+  disabled?: boolean;
 }): JSX.Element {
   const classes = useStyles({
     textColor: textColor,
@@ -56,6 +60,7 @@ export default function Button({
       style={{ textTransform: isCapitalized ? "uppercase" : "none" }}
       disableRipple
       disableElevation
+      disabled={disabled}
     >
       {label}
     </BetterButton>
