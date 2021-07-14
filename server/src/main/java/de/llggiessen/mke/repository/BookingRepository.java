@@ -6,6 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
 import java.util.Optional;
 
 @Repository
@@ -28,5 +30,5 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
     Iterable<Booking> findAllByStatus(@Param("status") char status);
 
     @Query(value = "SELECT * FROM booking WHERE booking.retrieval_date BETWEEN :retrievalDate AND :returnDate AND booking.return_date BETWEEN :retrievalDate AND :returnDate", nativeQuery = true)
-    Iterable<Booking> findAllInRange(@Param("retrievalDate") String retrievalDate, @Param("returnDate") String returnDate);
+    Iterable<Booking> findAllInRange(@Param("retrievalDate") Date retrievalDate, @Param("returnDate") Date returnDate);
 }
