@@ -178,7 +178,6 @@ export type Autocomplete =
 
 export const useButtonStyles = makeStyles({
   button: {
-    marginTop: "2em",
     padding: "0.5em max(10%, 3em)",
     maxWidth: "1em",
   },
