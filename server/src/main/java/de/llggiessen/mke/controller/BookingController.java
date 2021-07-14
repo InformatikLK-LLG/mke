@@ -77,7 +77,11 @@ public class BookingController {
     @PostMapping("")
     public Booking createBooking(@RequestBody Booking booking){
         try {
-            return repository.save(booking);
+            if(!repository.existsById(booking.getId())) {
+                return repository.save(booking);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID already exist");
+            }
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
