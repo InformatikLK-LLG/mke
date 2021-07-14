@@ -11,6 +11,10 @@ import { FormEventHandler, Fragment, useEffect } from "react";
 import { FormState, RenderInput, useInputStyles } from "../pages/Institution";
 import {
   Grid,
+  GridDirection,
+  GridItemsAlignment,
+  GridJustification,
+  GridSpacing,
   InputAdornment,
   TextField,
   makeStyles,
@@ -112,6 +116,7 @@ export function LoginForm() {
       otherElements={{
         middle: <Link to="/forgotpassword">Passwort vergessen?</Link>,
       }}
+      containerStyling={{ spacing: 1 }}
     />
   );
 }
@@ -143,32 +148,27 @@ export function ForgotPasswordForm() {
   const navigate = useNavigate();
   const theme = useTheme();
   const classes = useFormStyles();
+  const inputs = [
+    <Grid item xs={12}>
+      <EmailInputField formState={formState} />
+    </Grid>,
+  ];
 
   return (
-    <form
+    <Form
       onSubmit={handleSubmit(({ email }) => navigate("/login"))}
-      className={classes.form}
-    >
-      <Grid
-        container
-        item
-        spacing={2}
-        xs={10}
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item xs={12}>
-          <EmailInputField formState={formState} />
-        </Grid>
-      </Grid>
-      <Button
-        type="submit"
-        label="Weiter"
-        buttonStyle={formButton}
-        textColor="white"
-        backgroundColor={theme.palette.primary.main}
-      />
-    </form>
+      inputs={inputs}
+      button={
+        <Button
+          type="submit"
+          label="Weiter"
+          buttonStyle={formButton}
+          textColor="white"
+          backgroundColor={theme.palette.primary.main}
+        />
+      }
+      containerStyling={{ alignItems: "center" }}
+    />
   );
 }
 
@@ -461,8 +461,8 @@ export function EmailInputField<T extends { email: string }>({
   return RenderInput({
     name: "email" as Path<T>,
     placeholder: "Email",
-    autoComplete: "email",
     required: "Email muss angegeben werden",
+    autoComplete: "email",
     pattern: {
       value: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/,
       message: "gültige Email mit @ und so.",
@@ -485,17 +485,31 @@ export default function Form<T>({
   onSubmit,
   order,
   width = "80%",
+  maxWidth = "50ch",
   otherElements,
+  containerStyling = {
+    spacing: 2,
+    direction: "row",
+    alignItems: "flex-end",
+    justify: "center",
+  },
 }: {
   inputs: Array<JSX.Element>;
   button: JSX.Element;
   onSubmit: FormEventHandler<HTMLFormElement>;
   order?: OrderType;
   width?: string;
+  maxWidth?: string;
   otherElements?: Partial<{
     start: JSX.Element;
     middle: JSX.Element;
     end: JSX.Element;
+  }>;
+  containerStyling?: Partial<{
+    spacing: GridSpacing;
+    direction: GridDirection;
+    alignItems: GridItemsAlignment;
+    justify: GridJustification;
   }>;
 }) {
   const viewportWidth = useViewport();
@@ -513,13 +527,13 @@ export default function Form<T>({
     : "xs";
 
   return (
-    <form onSubmit={onSubmit} style={{ width }}>
+    <form onSubmit={onSubmit} style={{ width, maxWidth }}>
       <Grid
         container
-        spacing={2}
-        direction="row"
-        alignItems="flex-end"
-        justify="center"
+        spacing={containerStyling.spacing}
+        direction={containerStyling.direction}
+        alignItems={containerStyling.alignItems}
+        justify={containerStyling.justify}
       >
         {otherElements?.start}
         {order && order["xs"]
