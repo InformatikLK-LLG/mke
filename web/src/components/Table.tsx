@@ -180,6 +180,9 @@ function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
   if (!isNaN(newA) && !isNaN(newB)) {
     newA = parseInt(newA);
     newB = parseInt(newB);
+  } else {
+    newA = newA.toLowerCase();
+    newB = newB.toLowerCase();
   }
 
   if (newA > newB) return -1;
