@@ -1,14 +1,17 @@
 package de.llggiessen.mke.controller;
 
 import de.llggiessen.mke.repository.InstitutionRepository;
+import de.llggiessen.mke.schema.Customer;
 import de.llggiessen.mke.schema.Institution;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-@RestController
+@RestController()
 @RequestMapping(path = "/institution")
+@CrossOrigin(origins = "*")
 public class InstitutionController {
 
     @Autowired
@@ -19,30 +22,35 @@ public class InstitutionController {
         return repository.findAll();
     }
 
-    @GetMapping(value = "", params = {"id"})
+    @GetMapping(value = "", params = { "id" })
     public Institution getInstitutionByID(@RequestParam String id) {
         return repository.findById(id).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find Institution");
         });
     }
 
-    @GetMapping(value = "", params = {"svb"})
+    @GetMapping(value = "", params = { "svb" })
     public Iterable<Institution> getInstitutionsBySvb(@RequestParam boolean svb) {
         return repository.findInstitutionsBySvb(svb);
     }
 
-    @GetMapping(value = "", params = {"name"})
+    @GetMapping(value = "", params = { "name" })
     public Iterable<Institution> getInstitutionsByName(@RequestParam String name) {
         return repository.findInstitutions(name);
     }
 
-    @DeleteMapping(value = "", params = {"id"})
+    @GetMapping(value = "{instCode}/customer")
+    public Iterable<Customer> getCustomersOfInstitution(@PathVariable String instCode) {
+        Institution foo = repository.findById(instCode).get();
+        return foo.getCustomers();
+    }
+
+    @DeleteMapping(value = "", params = { "id" })
     public Institution deleteInstitutionByID(@RequestParam String id) {
         try {
             return repository.deleteInstitutionByID(id);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Institution could not be deleted");
-
         }
     }
 
@@ -68,4 +76,3 @@ public class InstitutionController {
         }
     }
 }
-

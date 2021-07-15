@@ -1,14 +1,12 @@
 package de.llggiessen.mke.repository;
 
-import de.llggiessen.mke.schema.Address;
 import de.llggiessen.mke.schema.Institution;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.criteria.CriteriaBuilder;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RepositoryRestResource(exported = false)
@@ -18,7 +16,7 @@ public interface InstitutionRepository extends CrudRepository<Institution, Strin
     Iterable<Institution> findInstitutionsBySvb(@Param("svb") boolean svb);
 
     @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name%", nativeQuery = true)
-    Iterable<Institution> findInstitutions(@Param("name")String name);
+    Iterable<Institution> findInstitutions(@Param("name") String name);
 
     @Query(value = "DELETE FROM institution WHERE institution.id = :id", nativeQuery = true)
     Institution deleteInstitutionByID(@Param("id") String id);
