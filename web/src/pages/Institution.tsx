@@ -82,6 +82,7 @@ export type Customer = {
   email: string;
   mobilePhone: string;
   businessPhone: string;
+  institution: Omit<InstitutionType, "customers">;
 };
 
 type InstitutionType = {

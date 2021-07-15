@@ -347,7 +347,6 @@ export function InstitutionOverlay({
         <h3 style={{ alignSelf: "flex-start" }}>{`Kundinnen — ${name}`}</h3>
         <Table
           tableHeaders={{
-            id: { label: "INST-Code", width: 1 },
             firstName: { label: "Vorname", width: 1 },
             lastName: { label: "Nachname", width: 1 },
             email: { label: "Email", width: 1 },

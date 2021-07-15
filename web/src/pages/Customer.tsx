@@ -95,12 +95,15 @@ export function CreateCustomer() {
     setValue,
     watch,
     reset,
-    formState: { errors },
+    trigger,
+    formState: { errors, isValid },
   } = useForm<CustomerType>({ mode: "onChange" });
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const theme = useTheme();
   const inputFields = useInputFields(theme);
+
+  const navigate = useNavigate();
 
   const formState: FormState<CustomerType> = {
     clearErrors,
@@ -257,6 +260,24 @@ export function CreateCustomer() {
 
   useEffect(() => console.log(institution), [institution]);
 
+  const onKeyDown = async (event: KeyboardEvent) => {
+    if (event.key === "s" && event.altKey) {
+      event.preventDefault();
+      trigger();
+      if (isValid) {
+        try {
+          await axios.post<CustomerType>(
+            "http://localhost:8080/customer",
+            getValues()
+          );
+          navigate("/customer");
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+  };
+
   return (
     <div className="container">
       {isDialogOpen && (
@@ -282,10 +303,19 @@ export function CreateCustomer() {
 
       <Form
         inputs={inputs}
-        onSubmit={handleSubmit((data) => {
-          //TODO do stuff here
-          console.log(data);
-          console.log();
+        onSubmit={handleSubmit(async (data) => {
+          try {
+            setIsLoading(true);
+            const response = await axios.post<CustomerType>(
+              "http://localhost:8080/customer",
+              data
+            );
+            navigate("/customers");
+          } catch (error) {
+            console.log(error);
+          } finally {
+            setIsLoading(false);
+          }
         })}
         maxWidth="200ch"
         button={
