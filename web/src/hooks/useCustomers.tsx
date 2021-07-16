@@ -1,15 +1,28 @@
 import { Customer } from "../pages/Institution";
 import axios from "axios";
 import { useQuery } from "react-query";
+import { useState } from "react";
+
+export type CustomerSearchParams = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+};
 
 const useCustomers = (instCode?: string) => {
-  return useQuery("customers", () =>
-    axios.get<Array<Customer>>(
-      `http://localhost:8080${
-        instCode ? "/institution/" + instCode : ""
-      }/customer`
-    )
-  );
+  const [searchParams, setSearchParams] = useState<CustomerSearchParams>();
+  return {
+    ...useQuery(["customers", searchParams], () =>
+      axios.get<Array<Customer>>(
+        `http://localhost:8080${
+          instCode ? "/institution/" + instCode : ""
+        }/customer`,
+        { params: searchParams }
+      )
+    ),
+    searchParams,
+    setSearchParams,
+  };
 };
 
 export default useCustomers;

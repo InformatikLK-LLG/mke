@@ -22,6 +22,7 @@ import {
 import Form, { EmailInputField } from "../components/Form";
 import { Outlet, useNavigate } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
+import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
@@ -31,7 +32,6 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import axios from "axios";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
-import useCustomers from "../hooks/useCustomers";
 
 export type CustomerType = {
   id: string;
@@ -72,8 +72,12 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
     mobilePhone: { label: "Handynummer", width: 1 },
     businessPhone: { label: "Telefonnummer dienstlich", width: 1 },
   };
-  const { data, isLoading } = useCustomers(instCode);
+  const { data, isLoading, setSearchParams } = useCustomers(instCode);
   const navigate = useNavigate();
+  const search = (searchParam: keyof CustomerSearchParams, query: string) => {
+    setSearchParams({ [searchParam]: query });
+  };
+
   return (
     <Table
       tableHeaders={tableHeaders}
@@ -81,6 +85,8 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
       sort={["Vorname", "Nachname", "Email"]}
       onRowClick={(row) => navigate(`/customers/${row.id}`)}
       isLoading={isLoading}
+      search={search}
+      searchParams={["firstName", "lastName"]}
     />
   );
 }
@@ -257,8 +263,6 @@ export function CreateCustomer() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => console.log(institution), [institution]);
 
   const onKeyDown = async (event: KeyboardEvent) => {
     if (event.key === "s" && event.altKey) {

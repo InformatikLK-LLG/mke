@@ -124,12 +124,12 @@ export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
     }
   : Header;
 
-interface TableProps<T extends SimplestItem> {
+interface TableProps<T extends SimplestItem, K> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
   sort?: Array<string>;
-  search?: (parameter: keyof InstitutionsSearchParams, query: string) => void;
-  searchParams?: Array<keyof InstitutionsSearchParams>;
+  search?: (parameter: keyof K, query: string) => void;
+  searchParams?: Array<keyof K>;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
@@ -208,7 +208,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
   return array;
 }
 
-export default function Table<T extends SimplestItem>({
+export default function Table<T extends SimplestItem, K>({
   tableHeaders,
   rows,
   sort,
@@ -216,7 +216,7 @@ export default function Table<T extends SimplestItem>({
   searchParams = [],
   onRowClick,
   isLoading,
-}: TableProps<T>) {
+}: TableProps<T, K>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
@@ -399,8 +399,8 @@ export default function Table<T extends SimplestItem>({
             search && (
               <TextField
                 size="small"
-                key={searchParam}
-                id={searchParam}
+                key={searchParam as string}
+                id={searchParam as string}
                 label="Suche"
                 variant="outlined"
                 onChange={(e) => {
