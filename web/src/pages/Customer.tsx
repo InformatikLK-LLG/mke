@@ -20,7 +20,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import Form, { EmailInputField } from "../components/Form";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 import { useEffect, useState } from "react";
@@ -32,6 +32,7 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import axios from "axios";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
+import Loading from "../components/Loading";
 
 export type CustomerType = {
   id: string;
@@ -336,3 +337,13 @@ export function CreateCustomer() {
     </div>
   );
 }
+
+// export function ViewDetails() {
+//   const { id } = useParams();
+//   const { data, isLoading } = useCustomers(id);
+//   // GET and stuff
+//   // useEffect(() => {
+//   //   console.log(data);
+//   // }, [data]);
+//   return isLoading ? <Loading /> : <CustomerOverlay id={} data={data} />;
+// }
