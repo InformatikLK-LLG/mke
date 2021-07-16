@@ -30,7 +30,7 @@ public class Customer {
     private String mobilePhone;
     private String businessPhone;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "institution_id")
     @JsonIgnoreProperties("customers")
     private Institution institution;

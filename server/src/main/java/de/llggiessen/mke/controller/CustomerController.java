@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-@RestController
+@RestController()
 @RequestMapping(path = "/customer")
 @CrossOrigin("*")
 public class CustomerController {
@@ -30,9 +30,9 @@ public class CustomerController {
     }
 
     @GetMapping(value = "", params = { "id" })
-    public Customer getCustomerByID(@RequestParam Long id) {
+    public Customer getCustomerByID(@RequestParam long id) {
         return repository.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no customer with this id.");
         });
     }
 
@@ -42,16 +42,24 @@ public class CustomerController {
     }
 
     @DeleteMapping(value = "", params = { "id" })
-    public void deleteById(@RequestParam Long Id) {
-        repository.deleteById(Id);
+    public void deleteById(@RequestParam long id) {
+        repository.deleteById(id);
     }
 
     @PostMapping("")
     public Customer createCustomer(@RequestBody Customer customer) {
-        Institution institution = institutionRepository.findById(customer.getInstitution().getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "no."));
+        Institution institution = institutionRepository.findById(customer.getInstitution().getId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no institution with this id."));
         institution.addCustomer(customer);
         customer.setInstitution(institution);
-        return repository.save(customer);
+        try {
+            return repository.save(customer);
+        } catch (Exception e) {
+            String message = "Could not save customer.";
+            if (repository.findByEmail(customer.getEmail()).isPresent()) {
+                message = "A customer with this email already exists. Try another one.";
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
     }
 }

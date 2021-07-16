@@ -41,28 +41,28 @@ public class InstitutionController {
 
     @GetMapping(value = "{instCode}/customer")
     public Iterable<Customer> getCustomersOfInstitution(@PathVariable String instCode) {
-        Institution foo = repository.findById(instCode).get();
-        return foo.getCustomers();
+        return repository.findById(instCode).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Could not find an institution with this id.")).getCustomers();
     }
 
     @DeleteMapping(value = "", params = { "id" })
-    public Institution deleteInstitutionByID(@RequestParam String id) {
+    public void deleteInstitutionByID(@RequestParam String id) {
         try {
-            return repository.deleteInstitutionByID(id);
+            repository.deleteById(id);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Institution could not be deleted");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Institution could not be deleted.");
         }
     }
 
     @PostMapping(value = "")
     public Institution newInstitution(@RequestBody Institution newInstitution) {
         if (repository.existsById(newInstitution.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID already exist");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id already exists.");
         } else {
             try {
                 return repository.save(newInstitution);
             } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not create new Institution");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save institution.");
             }
         }
     }
@@ -72,7 +72,7 @@ public class InstitutionController {
         if (repository.existsById(newInstitution.getId())) {
             return repository.save(newInstitution);
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID does not exist");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id does not exist.");
         }
     }
 }

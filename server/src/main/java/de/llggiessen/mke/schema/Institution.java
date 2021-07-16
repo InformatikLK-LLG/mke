@@ -26,7 +26,6 @@ public class Institution {
     @Id
     private String id;
     private String name;
-    // private String schoolType;
     private boolean schoolAdministrativeDistrict;
     private String phoneNumber;
     @Embedded
