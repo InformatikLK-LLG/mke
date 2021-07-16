@@ -23,11 +23,13 @@ import {
 import Form, { OrderType } from "../components/Form";
 import {
   FormControl,
+  FormControlLabel,
   Grid,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   TextField,
   makeStyles,
   useTheme,
@@ -41,6 +43,10 @@ import {
   faUniversity,
   faVoicemail,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  InstitutionOverlay,
+  useInstitutionStyles,
+} from "../components/InstitutionDetails";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders, accessNestedValues } from "../components/Table";
 import {
@@ -58,7 +64,6 @@ import Button from "../components/Button";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
-import { InstitutionOverlay } from "../components/InstitutionOverlay";
 import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
@@ -368,6 +373,140 @@ export function CreateInstitution({
   onSubmit?: (data: FormInstitutionType, event: BaseSyntheticEvent) => void;
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
 }) {
+  // useEventListener("keydown", onKeyDown);
+  return <CreateInstitutionForm defaultInstitution={defaultInstitution} />;
+}
+
+const format = (value: boolean) => (
+  <FontAwesomeIcon
+    style={{ marginRight: "2em", fontSize: "1em" }}
+    icon={value ? faCheckSquare : faSquare}
+  />
+);
+
+const tableHeaders: TableHeaders<InstitutionType> = {
+  id: { label: "INST-Code", width: 1 },
+  name: { label: "Name", width: 2 },
+  address: {
+    street: { label: "Straße", width: 2 },
+    streetNumber: { label: "Hausnummer", width: 1 },
+    town: { label: "Ort", width: 1 },
+    zipCode: { label: "PLZ", width: 1 },
+  },
+  phoneNumber: { label: "Telefonnummer", width: 2 },
+  schoolAdministrativeDistrict: {
+    label: "SVB?",
+    format,
+    align: "right",
+    width: 0.5,
+  },
+};
+
+export function CreateInstitutionForm({
+  defaultInstitution,
+}: {
+  defaultInstitution?: RecursivePartial<FormInstitutionType>;
+}) {
+  const navigate = useNavigate();
+
+  const onSubmit: (
+    data: FormInstitutionType,
+    event?: BaseSyntheticEvent
+  ) => void = async (data, event) => {
+    const response = await axios.post<FormInstitutionType>(
+      "http://localhost:8080/institution",
+      data
+    );
+    navigate("/institutions");
+  };
+
+  return (
+    <InstitutionForm onSubmit={onSubmit} defaultValues={defaultInstitution} />
+  );
+}
+
+export function UpdateInstitutionForm({
+  data,
+}: {
+  data?: FormInstitutionType;
+}) {
+  const queryClient = useQueryClient();
+  const institutionStyles = useInstitutionStyles();
+  const navigate = useNavigate();
+  const updateData = async (data?: FormInstitutionType) => {
+    const values = data;
+    try {
+      const response = await axios.put<FormInstitutionType>(
+        "http://localhost:8080/institution",
+        values
+      );
+      // navigate("/institutions");
+      queryClient.invalidateQueries("institutions");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const toggleLabel = (
+    disabled: boolean,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    const editableToggle = (
+      <Grid item container xs={12} justify="flex-end">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!disabled}
+              onChange={() => {
+                if (!disabled) updateData(data);
+                setDisabled((value) => !value);
+              }}
+              name="toggleDisabled"
+              color="primary"
+            />
+          }
+          label="Bearbeiten"
+          labelPlacement="start"
+          className={institutionStyles.toggleLabel}
+        />
+      </Grid>
+    );
+    return editableToggle;
+  };
+  return (
+    <InstitutionForm
+      onSubmit={(data) => updateData(data)}
+      defaultValues={data}
+      toggleLabel={toggleLabel}
+    />
+  );
+}
+
+export function InstitutionForm({
+  defaultValues,
+  onSubmit,
+  toggleLabel,
+}: {
+  defaultValues?: RecursivePartial<FormInstitutionType>;
+  onSubmit: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
+  toggleLabel?: (
+    disabled: boolean,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+  ) => JSX.Element;
+}) {
+  const defaultInstitution = {
+    id: defaultValues?.id || "",
+    name: defaultValues?.name || "",
+    phoneNumber: defaultValues?.phoneNumber || "",
+    schoolAdministrativeDistrict:
+      defaultValues?.schoolAdministrativeDistrict || false,
+    address: {
+      street: defaultValues?.address?.street || "",
+      streetNumber: defaultValues?.address?.streetNumber || "",
+      town: defaultValues?.address?.town || "",
+      zipCode: defaultValues?.address?.zipCode || "",
+    },
+  };
+
   const {
     handleSubmit,
     setValue,
@@ -379,25 +518,16 @@ export function CreateInstitution({
     trigger,
   } = useForm<FormInstitutionType>({
     mode: "onChange",
-    defaultValues: {
-      id: defaultInstitution?.id || "",
-      name: defaultInstitution?.name || "",
-      phoneNumber: defaultInstitution?.phoneNumber || "",
-      schoolAdministrativeDistrict:
-        defaultInstitution?.schoolAdministrativeDistrict || false,
-      address: {
-        street: defaultInstitution?.address?.street || "",
-        streetNumber: defaultInstitution?.address?.streetNumber || "",
-        town: defaultInstitution?.address?.town || "",
-        zipCode: defaultInstitution?.address?.zipCode || "",
-      },
-    },
+    defaultValues: defaultInstitution,
   });
+
   const theme = useTheme();
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const [isLoading, setIsLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const width = useViewport();
+  const navigate = useNavigate();
 
   const zipCode = watch("address.zipCode");
   const formState: FormState<FormInstitutionType> = {
@@ -408,8 +538,11 @@ export function CreateInstitution({
     getValues,
     setValue,
   };
-
-  const navigate = useNavigate();
+  const order: OrderType = {
+    xs: [1, 2, 3, 4, 5, 6, 7, 8],
+    md: [1, 2, 4, 5, 7, 6, 3, 8],
+    lg: [1, 2, 4, 5, 3, 6, 7, 8],
+  };
 
   useEffect(() => {
     setValue("schoolAdministrativeDistrict", Boolean(zipCode));
@@ -434,8 +567,8 @@ export function CreateInstitution({
       }
     }
   };
-
   const inputs = [
+    toggleLabel ? toggleLabel(disabled, setDisabled) : <></>,
     <Grid item xs={12} md={6} lg={6}>
       {RenderInput({
         name: "name",
@@ -445,6 +578,7 @@ export function CreateInstitution({
         autofocus: true,
         icon: faUniversity,
         autoComplete: "organization",
+        disabled,
         formState,
       })}
     </Grid>,
@@ -454,6 +588,7 @@ export function CreateInstitution({
         placeholder: "INST-Code",
         required: "INST-Code muss angegeben werden",
         icon: faKeyboard,
+        disabled,
         formState,
       })}
     </Grid>,
@@ -464,6 +599,7 @@ export function CreateInstitution({
         required: "Telefonnummer muss angegeben werden",
         icon: faVoicemail,
         autoComplete: "tel",
+        disabled,
         formState,
       })}
     </Grid>,
@@ -475,6 +611,7 @@ export function CreateInstitution({
         required: "Straße muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "address-line1",
+        disabled,
         formState,
       })}
     </Grid>,
@@ -485,6 +622,7 @@ export function CreateInstitution({
         required: "Hausnummer muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "address-line2",
+        disabled,
         formState,
       })}
     </Grid>,
@@ -495,6 +633,7 @@ export function CreateInstitution({
         required: "Stadt muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "address-level2",
+        disabled,
         formState,
       })}
     </Grid>,
@@ -505,6 +644,7 @@ export function CreateInstitution({
         required: "Postleitzahl muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "postal-code",
+        disabled,
         formState,
       })}
     </Grid>,
@@ -515,6 +655,7 @@ export function CreateInstitution({
         render={({ field }) => (
           <FormControl
             className={`${formInput.input} ${formInput.formControl}`}
+            disabled={disabled}
           >
             <InputLabel id="schoolAdministrativeDistrict">
               Schulverwaltungsbezirk?
@@ -542,15 +683,6 @@ export function CreateInstitution({
       />
     </Grid>,
   ];
-
-  const order: OrderType = {
-    xs: [1, 2, 3, 4, 5, 6, 7, 8],
-    md: [1, 2, 4, 5, 7, 6, 3, 8],
-    lg: [1, 2, 4, 5, 3, 6, 7, 8],
-  };
-
-  useEventListener("keydown", onKeyDown);
-
   return (
     <div className="container">
       <Form
@@ -562,22 +694,17 @@ export function CreateInstitution({
             textColor="white"
             backgroundColor={theme.palette.primary.main}
             isLoading={isLoading}
+            disabled={disabled}
           />
         }
         inputs={inputs}
         maxWidth="200ch"
-        onSubmit={handleSubmit(async (data, event) => {
+        onSubmit={handleSubmit((data, event) => {
+          setIsLoading(true);
           try {
-            setIsLoading(true);
-            const response = await axios.post<FormInstitutionType>(
-              "http://localhost:8080/institution",
-              data
-            );
-            onSubmit && event
-              ? onSubmit(data, event)
-              : navigate("/institutions");
+            onSubmit(data, event);
           } catch (error) {
-            console.log(error);
+            console.error(error);
           } finally {
             setIsLoading(false);
           }
@@ -587,31 +714,6 @@ export function CreateInstitution({
     </div>
   );
 }
-
-const format = (value: boolean) => (
-  <FontAwesomeIcon
-    style={{ marginRight: "2em", fontSize: "1em" }}
-    icon={value ? faCheckSquare : faSquare}
-  />
-);
-
-const tableHeaders: TableHeaders<InstitutionType> = {
-  id: { label: "INST-Code", width: 1 },
-  name: { label: "Name", width: 2 },
-  address: {
-    street: { label: "Straße", width: 2 },
-    streetNumber: { label: "Hausnummer", width: 1 },
-    town: { label: "Ort", width: 1 },
-    zipCode: { label: "PLZ", width: 1 },
-  },
-  phoneNumber: { label: "Telefonnummer", width: 2 },
-  schoolAdministrativeDistrict: {
-    label: "SVB?",
-    format,
-    align: "right",
-    width: 0.5,
-  },
-};
 
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
@@ -648,7 +750,6 @@ export function Institutions() {
         searchParams={["name"]}
         isLoading={isLoading}
       />
-      {/* </div> */}
     </div>
   );
 }

@@ -1,5 +1,14 @@
 import { Controller, useForm } from "react-hook-form";
 import {
+  CreateInstitution,
+  FormInstitutionType,
+  FormState,
+  RenderInput,
+  UpdateInstitutionForm,
+  useButtonStyles,
+  useInputStyles,
+} from "../pages/Institution";
+import {
   Divider,
   FormControl,
   FormControlLabel,
@@ -12,13 +21,6 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import {
-  FormInstitutionType,
-  FormState,
-  RenderInput,
-  useButtonStyles,
-  useInputStyles,
-} from "../pages/Institution";
 import axios, { AxiosResponse } from "axios";
 import {
   faMapMarkerAlt,
@@ -40,7 +42,7 @@ import { useHeader } from "../Wrapper";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "react-query";
 
-const useInstitutionStyles = makeStyles({
+export const useInstitutionStyles = makeStyles({
   toggleLabel: {
     "& > span::selection": {
       backgroundColor: "transparent",
@@ -61,15 +63,6 @@ const useInstitutionStyles = makeStyles({
     gap: "3em",
   },
 });
-
-type Customer = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  mobilePhone: string;
-  businessPhone: string;
-};
 
 export function InstitutionOverlay({
   instCode,
@@ -335,6 +328,8 @@ export function InstitutionOverlay({
             navigate("/institutions");
           })}
         />
+        {/* <CreateInstitution defaultInstitution={data?.data} disabled /> */}
+        <UpdateInstitutionForm data={data?.data} />
       </div>
       <Divider
         style={{ width: "80%" }}
