@@ -121,6 +121,7 @@ export function CreateCustomerForm({
   onSubmit?: (data: CustomerType, event?: BaseSyntheticEvent) => void;
 }) {
   const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
 
   const submit: (data: CustomerType, event?: BaseSyntheticEvent) => void =
     onSubmit ||
@@ -129,7 +130,9 @@ export function CreateCustomerForm({
         "http://localhost:8080/customer",
         data
       );
-      // navigate("/customers");
+      setMessage("Erfolgreich gespeichert.");
+      setSnackbarOpen(true);
+      navigate("/customers");
     });
 
   return <CustomerForm onSubmit={submit} defaultValues={defaultCustomer} />;
@@ -139,6 +142,7 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
   const queryClient = useQueryClient();
   const detailsStyles = useDetailsStyles();
   const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
   const updateData = async (data?: CustomerType) => {
     try {
       const response = await axios.put<CustomerType>(
@@ -163,7 +167,11 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
             <Switch
               checked={!disabled}
               onChange={() => {
-                if (!disabled) updateData(getValues());
+                if (!disabled) {
+                  updateData(getValues());
+                  setMessage("Erfolgreich aktualisiert.");
+                  setSnackbarOpen(true);
+                }
                 setDisabled((value) => !value);
               }}
               name="toggleDisabled"
@@ -183,6 +191,8 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
       onSubmit={(data) => {
         navigate("/customers");
         updateData(data);
+        setMessage("Erfolgreich aktualisiert.");
+        setSnackbarOpen(true);
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -442,7 +452,7 @@ export function CustomerForm({
                   setValue("institution.name", data.name);
                   setValue("institution.id", data.id);
                   setIsDialogOpen(false);
-                  setMessage("update yay");
+                  setMessage("Erfolgreich gespeichert.");
                   setSnackbarOpen(true);
                 }}
                 defaultInstitution={{ name: institution.name }}
@@ -469,9 +479,9 @@ export function CustomerForm({
           setIsLoading(true);
           try {
             onSubmit(data, event);
-            setMessage("Update yay");
-            setSnackbarOpen(true);
           } catch (error) {
+            setMessage("Fehler beim Speichern.");
+            setSnackbarOpen(true);
             console.error(error);
           } finally {
             setIsLoading(false);

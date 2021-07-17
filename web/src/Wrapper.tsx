@@ -1,9 +1,10 @@
+import { IconButton, Snackbar } from "@material-ui/core";
 import NavBar, { NavBarItem } from "./components/NavBar";
 import { Outlet, useLocation } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Snackbar } from "@material-ui/core";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
 
@@ -172,8 +173,17 @@ export default function Wrapper() {
       <Snackbar
         open={snackbar.isSnackbarOpen}
         message={snackbar.message}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         onClose={() => snackbar.setSnackbarOpen(false)}
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+        action={
+          <IconButton
+            size="small"
+            onClick={() => snackbar.setSnackbarOpen(false)}
+          >
+            <FontAwesomeIcon icon={faTimes} style={{ color: "var(--input)" }} />
+          </IconButton>
+        }
       />
       <headerContext.Provider value={header}>
         <snackbarContext.Provider value={snackbar}>

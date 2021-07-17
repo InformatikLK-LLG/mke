@@ -72,6 +72,7 @@ import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import { useQueryClient } from "react-query";
+import { useSnackbar } from "../Wrapper";
 import useViewport from "../hooks/useViewport";
 
 type Address = {
@@ -402,6 +403,7 @@ export function CreateInstitutionForm({
   onSubmit?: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
 }) {
   const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
 
   const submit: (
     data: FormInstitutionType,
@@ -409,10 +411,16 @@ export function CreateInstitutionForm({
   ) => void =
     onSubmit ||
     (async (data, event) => {
-      const response = await axios.post<FormInstitutionType>(
-        "http://localhost:8080/institution",
-        data
-      );
+      try {
+        const response = await axios.post<FormInstitutionType>(
+          "http://localhost:8080/institution",
+          data
+        );
+      } catch (error) {
+        throw error;
+      }
+      setMessage("Erfolgreich gespeichert.");
+      setSnackbarOpen(true);
       navigate("/institutions");
     });
 
@@ -429,6 +437,7 @@ export function UpdateInstitutionForm({
   const queryClient = useQueryClient();
   const institutionStyles = useDetailsStyles();
   const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
   const updateData = async (data?: FormInstitutionType) => {
     try {
       const response = await axios.put<FormInstitutionType>(
@@ -453,7 +462,11 @@ export function UpdateInstitutionForm({
             <Switch
               checked={!disabled}
               onChange={() => {
-                if (!disabled) updateData(getValues());
+                if (!disabled) {
+                  updateData(getValues());
+                  setMessage("Erfolgreich aktualisiert.");
+                  setSnackbarOpen(true);
+                }
                 setDisabled((value) => !value);
               }}
               name="toggleDisabled"
@@ -473,6 +486,8 @@ export function UpdateInstitutionForm({
       onSubmit={(data) => {
         navigate("/institutions");
         updateData(data);
+        setMessage("Erfolgreich aktualisiert.");
+        setSnackbarOpen(true);
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -531,6 +546,7 @@ export function InstitutionForm({
   const [disabled, setDisabled] = useState(defaultDisabled);
   const width = useViewport();
   const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
 
   const zipCode = watch("address.zipCode");
   const formState: FormState<FormInstitutionType> = {
@@ -710,6 +726,8 @@ export function InstitutionForm({
         try {
           onSubmit(data, event);
         } catch (error) {
+          setMessage("Fehler beim Speichern.");
+          setSnackbarOpen(true);
           console.error(error);
         } finally {
           setIsLoading(false);
