@@ -18,6 +18,7 @@ import {
   FormControlLabel,
   Grid,
   InputAdornment,
+  Snackbar,
   Switch,
   TextField,
   Theme,
@@ -40,6 +41,7 @@ import { faUniversity } from "@fortawesome/free-solid-svg-icons";
 import useCustomer from "../hooks/useCustomer";
 import { useDetailsStyles } from "../components/InstitutionDetails";
 import { useQueryClient } from "react-query";
+import { useSnackbar } from "../Wrapper";
 
 export type CustomerType = {
   id: string;
@@ -127,7 +129,7 @@ export function CreateCustomerForm({
         "http://localhost:8080/customer",
         data
       );
-      navigate("/customers");
+      // navigate("/customers");
     });
 
   return <CustomerForm onSubmit={submit} defaultValues={defaultCustomer} />;
@@ -245,6 +247,7 @@ export function CustomerForm({
     id?: string;
   }>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { setSnackbarOpen, setMessage } = useSnackbar();
 
   const institution = watch("institution");
   const formState: FormState<CustomerType> = {
@@ -432,15 +435,19 @@ export function CustomerForm({
         >
           <DialogTitle>Institution Erstellen</DialogTitle>
           <DialogContent>
-            <CreateInstitutionForm
-              onSubmit={(data) => {
-                fetchData();
-                setValue("institution.name", data.name);
-                setValue("institution.id", data.id);
-                setIsDialogOpen(false);
-              }}
-              defaultInstitution={{ name: institution.name }}
-            />
+            <div className="container">
+              <CreateInstitutionForm
+                onSubmit={(data) => {
+                  fetchData();
+                  setValue("institution.name", data.name);
+                  setValue("institution.id", data.id);
+                  setIsDialogOpen(false);
+                  setMessage("update yay");
+                  setSnackbarOpen(true);
+                }}
+                defaultInstitution={{ name: institution.name }}
+              />
+            </div>
           </DialogContent>
         </Dialog>
       )}
@@ -462,6 +469,8 @@ export function CustomerForm({
           setIsLoading(true);
           try {
             onSubmit(data, event);
+            setMessage("Update yay");
+            setSnackbarOpen(true);
           } catch (error) {
             console.error(error);
           } finally {
