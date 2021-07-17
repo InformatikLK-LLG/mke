@@ -3,12 +3,20 @@ import { Outlet, useLocation } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Snackbar } from "@material-ui/core";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
 
 type HeaderType = {
   header: string;
   setHeader: (header: string) => void;
+};
+
+type SnackbarType = {
+  isSnackbarOpen: boolean;
+  setSnackbarOpen: (isOpen: boolean) => void;
+  message: string;
+  setMessage: (message: string) => void;
 };
 
 interface RouteItem extends NavBarItem {
@@ -21,6 +29,13 @@ interface RouteType extends Array<RouteItem> {}
 const defaultHeader: HeaderType = {
   header: "",
   setHeader: () => {},
+};
+
+const defaultSnackbar: SnackbarType = {
+  isSnackbarOpen: false,
+  setSnackbarOpen: () => {},
+  message: "",
+  setMessage: () => {},
 };
 
 const headerContext = createContext<HeaderType>(defaultHeader);
@@ -37,10 +52,26 @@ function useProvideHeader(): HeaderType {
   return { header: headerArray[0], setHeader };
 }
 
+const snackbarContext = createContext<SnackbarType>(defaultSnackbar);
+
+export const useSnackbar = () => useContext(snackbarContext);
+
+function useProvideSnackbar(): SnackbarType {
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [message, setSnackbarMessage] = useState("");
+
+  const setSnackbarOpen = (isOpen: boolean) => setIsSnackbarOpen(isOpen);
+
+  const setMessage = (message: string) => setSnackbarMessage(message);
+
+  return { isSnackbarOpen, setSnackbarOpen, message, setMessage };
+}
+
 export default function Wrapper() {
   const location = useLocation();
   const auth = useAuth();
   const header = useProvideHeader();
+  const snackbar = useProvideSnackbar();
 
   const routes: RouteType = [
     {
@@ -138,8 +169,16 @@ export default function Wrapper() {
           <NavBar routes={routes} />
         </div>
       )}
+      <Snackbar
+        open={snackbar.isSnackbarOpen}
+        message={snackbar.message}
+        autoHideDuration={4000}
+        onClose={() => snackbar.setSnackbarOpen(false)}
+      />
       <headerContext.Provider value={header}>
-        <Outlet />
+        <snackbarContext.Provider value={snackbar}>
+          <Outlet />
+        </snackbarContext.Provider>
       </headerContext.Provider>
     </div>
   );
