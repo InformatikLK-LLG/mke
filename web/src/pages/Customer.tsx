@@ -1,10 +1,12 @@
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   CreateInstitution,
   CreateInstitutionForm,
   FormInstitutionType,
   FormState,
+  RecursivePartial,
   RenderInput,
   useButtonStyles,
   useInputStyles,
@@ -13,18 +15,19 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Grid,
   InputAdornment,
+  Switch,
   TextField,
   Theme,
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import Form, { EmailInputField } from "../components/Form";
+import Form, { EmailInputField, OrderType } from "../components/Form";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
-import { useEffect, useState } from "react";
 
 import { AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
@@ -34,6 +37,9 @@ import Loading from "../components/Loading";
 import axios from "axios";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
+import useCustomer from "../hooks/useCustomer";
+import { useDetailsStyles } from "../components/InstitutionDetails";
+import { useQueryClient } from "react-query";
 
 export type CustomerType = {
   id: string;
@@ -94,25 +100,151 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
 }
 
 export function CreateCustomer() {
-  const {
-    register,
-    handleSubmit,
-    clearErrors,
-    control,
-    getValues,
-    setValue,
-    watch,
-    reset,
-    trigger,
-    formState: { errors, isValid },
-  } = useForm<CustomerType>({ mode: "onChange" });
-  const formInput = useInputStyles();
-  const formButton = useButtonStyles();
-  const theme = useTheme();
-  const inputFields = useInputFields(theme);
+  return <CreateCustomerForm />;
+}
 
+export function CustomerDetails({ data }: { data?: CustomerType }) {
+  return (
+    <div className="container">
+      <UpdateCustomerForm data={data} />
+    </div>
+  );
+}
+
+export function CreateCustomerForm({
+  defaultCustomer,
+  onSubmit,
+}: {
+  defaultCustomer?: RecursivePartial<CustomerType>;
+  onSubmit?: (data: CustomerType, event?: BaseSyntheticEvent) => void;
+}) {
   const navigate = useNavigate();
 
+  const submit: (data: CustomerType, event?: BaseSyntheticEvent) => void =
+    onSubmit ||
+    (async (data, event) => {
+      const response = await axios.post<CustomerType>(
+        "http://localhost:8080/customer",
+        data
+      );
+      navigate("/customers");
+    });
+
+  return <CustomerForm onSubmit={submit} defaultValues={defaultCustomer} />;
+}
+
+export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
+  const queryClient = useQueryClient();
+  const detailsStyles = useDetailsStyles();
+  const navigate = useNavigate();
+  const updateData = async (data?: CustomerType) => {
+    const values = data;
+    try {
+      const response = await axios.put<CustomerType>(
+        "http://localhost:8080/customer",
+        values
+      );
+      // navigate("/customers");
+      queryClient.invalidateQueries("customers");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const toggleLabel = (
+    disabled: boolean,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    const editableToggle = (
+      <Grid item container xs={12} justify="flex-end">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!disabled}
+              onChange={() => {
+                if (!disabled) updateData(data);
+                setDisabled((value) => !value);
+              }}
+              name="toggleDisabled"
+              color="primary"
+            />
+          }
+          label="Bearbeiten"
+          labelPlacement="start"
+          className={detailsStyles.toggleLabel}
+        />
+      </Grid>
+    );
+    return editableToggle;
+  };
+  return (
+    <CustomerForm
+      onSubmit={(data) => updateData(data)}
+      defaultValues={data}
+      toggleLabel={toggleLabel}
+      defaultDisabled
+    />
+  );
+}
+
+export function CustomerForm({
+  defaultValues,
+  onSubmit,
+  toggleLabel,
+  defaultDisabled = false,
+}: {
+  defaultValues?: RecursivePartial<CustomerType>;
+  onSubmit: (data: CustomerType, event?: BaseSyntheticEvent) => void;
+  toggleLabel?: (
+    disabled: boolean,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+  ) => JSX.Element;
+  defaultDisabled?: boolean;
+}) {
+  const theme = useTheme();
+  const inputFields = useInputFields(theme);
+  const defaultCustomer = {
+    id: defaultValues?.id || "",
+    firstName: defaultValues?.firstName || "",
+    lastName: defaultValues?.lastName || "",
+    email: defaultValues?.email || "",
+    mobilePhone: defaultValues?.mobilePhone || "",
+    businessPhone: defaultValues?.businessPhone || "",
+    institution: defaultValues?.institution || {
+      id: "",
+      name: "",
+    },
+  };
+
+  useEffect(() => console.log(defaultValues), [defaultValues]);
+
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    watch,
+    getValues,
+    formState: { errors, isValid },
+    clearErrors,
+    trigger,
+  } = useForm<CustomerType>({
+    mode: "onChange",
+    defaultValues: defaultCustomer,
+  });
+
+  const formInput = useInputStyles();
+  const formButton = useButtonStyles();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [disabled, setDisabled] = useState(defaultDisabled);
+  const [options, setOptions] =
+    useState<Array<{ name: string; id?: string }>>();
+  const [selectedOption, setSelectedOption] = useState<{
+    name: string;
+    id?: string;
+  }>();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const institution = watch("institution");
   const formState: FormState<CustomerType> = {
     clearErrors,
     control,
@@ -121,130 +253,12 @@ export function CreateCustomer() {
     getValues,
     setValue,
   };
-  const [options, setOptions] =
-    useState<Array<{ value: string; id?: string }>>();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<{
-    value: string;
-    id?: string;
-  }>();
-  const institution = watch("institution");
-  const inputs = [
-    <Grid item xs={12} md={6} lg={6} className={inputFields.firstName}>
-      {RenderInput({
-        name: "firstName",
-        placeholder: "Vorname",
-        autoComplete: "given-name",
-        required: "Vorname muss angegeben werden",
-        autofocus: true,
-        icon: faEdit,
-        formState,
-      })}
-    </Grid>,
 
-    <Grid item xs={12} md={6} lg={6} className={inputFields.institution}>
-      <Controller
-        control={control}
-        name="institution.name"
-        render={({ field }) => (
-          <Autocomplete
-            // value={selectedOption || { value: "" }}
-            autoComplete
-            includeInputInList
-            disableClearable
-            noOptionsText="nein. :("
-            forcePopupIcon={false}
-            options={options || []}
-            inputValue={field.value || ""}
-            onInputChange={(e, value) => {
-              field.onChange(value);
-              institution.id && setValue("institution.id", "");
-            }}
-            getOptionLabel={(option) => option.value}
-            getOptionSelected={(option, value) => {
-              // console.log( option, value, option.id === value.id && Boolean(value.id));
-              return option.id === value.id && Boolean(value.id);
-            }}
-            renderOption={(option) =>
-              option.id
-                ? `${option.value} — ${option.id}`
-                : `"${option.value}" hinzufügen`
-            }
-            filterOptions={(options) => {
-              const filtered = options.filter((option) =>
-                option.value
-                  .toLowerCase()
-                  .includes(field.value?.toLowerCase() || "")
-              );
-              field.value &&
-                field.value !== "" &&
-                filtered.push({
-                  value: field.value,
-                });
-              return filtered;
-            }}
-            onChange={(e, option) => {
-              if (!option.id) {
-                setIsDialogOpen(true);
-              } else setValue("institution.id", option.id);
-              setValue("institution.name", option.value);
-              setSelectedOption(option);
-            }}
-            renderInput={(params) =>
-              RenderInput({
-                name: "institution.name",
-                placeholder: "Name der Institution",
-                autoComplete: "organization",
-                required: "Name der Institution muss angegeben werden",
-                icon: faUniversity,
-                formState,
-                params,
-              })
-            }
-          />
-        )}
-      />
-    </Grid>,
-
-    <Grid item xs={12} md={6} lg={6} className={inputFields.lastName}>
-      {RenderInput({
-        name: "lastName",
-        placeholder: "Nachname",
-        autoComplete: "family-name",
-        required: "Nachname muss angegeben werden",
-        icon: faEdit,
-        formState,
-      })}
-    </Grid>,
-
-    <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
-      <EmailInputField formState={formState} />
-    </Grid>,
-
-    <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>
-      {RenderInput({
-        name: "mobilePhone",
-        placeholder: "Handynummer",
-        type: "tel",
-        required: "Handynummer muss angegeben werden",
-        icon: faEdit,
-        formState,
-      })}
-    </Grid>,
-
-    <Grid item xs={12} md={6} lg={6} className={inputFields.businessPhone}>
-      {RenderInput({
-        name: "businessPhone",
-        placeholder: "Telefonnummer dienstlich",
-        type: "tel",
-        required: "Telefonnummer dienstlich muss angegeben werden",
-        icon: faEdit,
-        formState,
-      })}
-    </Grid>,
-  ];
-
+  const order: OrderType = {
+    xs: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    md: [1, 2, 3, 5, 6, 7, 8, 4, 9],
+    lg: [1, 2, 3, 5, 6, 4, 7, 8, 9],
+  };
   const fetchData = async () => {
     try {
       const { data } = await axios.get<Array<FormInstitutionType>>(
@@ -252,7 +266,7 @@ export function CreateCustomer() {
       );
       const data2 = data.map((dataSingular) => {
         return {
-          value: dataSingular.name,
+          name: dataSingular.name,
           id: dataSingular.id,
         };
       });
@@ -272,17 +286,139 @@ export function CreateCustomer() {
       trigger();
       if (isValid) {
         try {
-          await axios.post<CustomerType>(
+          await axios.post<FormInstitutionType>(
             "http://localhost:8080/customer",
             getValues()
           );
-          navigate("/customer");
+          navigate("/customers");
         } catch (error) {
           console.log(error);
         }
       }
     }
   };
+
+  const inputs = [
+    toggleLabel ? toggleLabel(disabled, setDisabled) : <></>,
+    <Grid item xs={12} md={6} lg={6} className={inputFields.firstName}>
+      {RenderInput({
+        name: "firstName",
+        placeholder: "Vorname",
+        autoComplete: "given-name",
+        required: "Vorname muss angegeben werden",
+        autofocus: true,
+        icon: faEdit,
+        disabled,
+        formState,
+      })}
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.institution}>
+      <Controller
+        control={control}
+        name="institution.name"
+        render={({ field }) => (
+          <Autocomplete
+            // value={selectedOption || { value: "" }}
+            value={institution}
+            autoComplete
+            includeInputInList
+            disableClearable
+            noOptionsText="nein. :("
+            forcePopupIcon={false}
+            options={options || []}
+            inputValue={field.value || ""}
+            onInputChange={(e, value) => {
+              field.onChange(value);
+              institution.id && setValue("institution.id", "");
+            }}
+            getOptionLabel={(option) => option.name}
+            getOptionSelected={(option, value) => {
+              return option.id === value.id && Boolean(value.id);
+            }}
+            renderOption={(option) =>
+              option.id
+                ? `${option.name} — ${option.id}`
+                : `"${option.name}" hinzufügen`
+            }
+            filterOptions={(options) => {
+              const filtered = options.filter((option) =>
+                option.name
+                  .toLowerCase()
+                  .includes(field.value?.toLowerCase() || "")
+              );
+              field.value &&
+                field.value !== "" &&
+                filtered.push({
+                  name: field.value,
+                });
+              return filtered;
+            }}
+            onChange={(e, option) => {
+              if (!option.id) {
+                setIsDialogOpen(true);
+              } else setValue("institution.id", option.id);
+              setValue("institution.name", option.name);
+              setSelectedOption(option);
+            }}
+            disabled={disabled}
+            renderInput={(params) =>
+              RenderInput({
+                name: "institution.name",
+                placeholder: "Name der Institution",
+                autoComplete: "organization",
+                required: "Name der Institution muss angegeben werden",
+                icon: faUniversity,
+                formState,
+                disabled,
+                params,
+              })
+            }
+          />
+        )}
+      />
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.lastName}>
+      {RenderInput({
+        name: "lastName",
+        placeholder: "Nachname",
+        autoComplete: "family-name",
+        required: "Nachname muss angegeben werden",
+        icon: faEdit,
+        disabled,
+        formState,
+      })}
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.email}>
+      <EmailInputField formState={formState} disabled={disabled} />
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.mobilePhone}>
+      {RenderInput({
+        name: "mobilePhone",
+        placeholder: "Handynummer",
+        type: "tel",
+        required: "Handynummer muss angegeben werden",
+        icon: faEdit,
+        disabled,
+        formState,
+      })}
+    </Grid>,
+
+    <Grid item xs={12} md={6} lg={6} className={inputFields.businessPhone}>
+      {RenderInput({
+        name: "businessPhone",
+        placeholder: "Telefonnummer dienstlich",
+        type: "tel",
+        required: "Telefonnummer dienstlich muss angegeben werden",
+        icon: faEdit,
+        disabled,
+        formState,
+      })}
+    </Grid>,
+  ];
 
   return (
     <div className="container">
@@ -306,45 +442,42 @@ export function CreateCustomer() {
           </DialogContent>
         </Dialog>
       )}
-
       <Form
+        button={
+          <Button
+            type="submit"
+            label="Erstellen"
+            buttonStyle={formButton}
+            textColor="white"
+            backgroundColor={theme.palette.primary.main}
+            isLoading={isLoading}
+            disabled={disabled || isLoading}
+          />
+        }
         inputs={inputs}
-        onSubmit={handleSubmit(async (data) => {
+        maxWidth="200ch"
+        onSubmit={handleSubmit((data, event) => {
+          setIsLoading(true);
           try {
-            setIsLoading(true);
-            const response = await axios.post<CustomerType>(
-              "http://localhost:8080/customer",
-              data
-            );
-            navigate("/customers");
+            onSubmit(data, event);
           } catch (error) {
-            console.log(error);
+            console.error(error);
           } finally {
             setIsLoading(false);
           }
         })}
-        maxWidth="200ch"
-        button={
-          <Button
-            textColor="white"
-            backgroundColor={theme.palette.primary.main}
-            type="submit"
-            label="Erstellen"
-            buttonStyle={formButton}
-            isLoading={isLoading}
-          />
-        }
+        order={order}
       />
     </div>
   );
 }
 
-// export function ViewDetails() {
-//   const { id } = useParams();
-//   const { data, isLoading } = useCustomers(id);
-//   // GET and stuff
-//   // useEffect(() => {
-//   //   console.log(data);
-//   // }, [data]);
-//   return isLoading ? <Loading /> : <CustomerOverlay id={} data={data} />;
-// }
+export function ViewCustomerDetails() {
+  const { id } = useParams();
+  const { data, isLoading } = useCustomer(id);
+  // GET and stuff
+  // useEffect(() => {
+  //   console.log(data);
+  // }, [data]);
+  return isLoading ? <Loading /> : <CustomerDetails data={data?.data} />;
+}

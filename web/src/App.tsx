@@ -1,9 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Customer, { CreateCustomer, Customers } from "./pages/Customer";
+import Customer, {
+  CreateCustomer,
+  Customers,
+  ViewCustomerDetails,
+} from "./pages/Customer";
 import Institution, {
   CreateInstitution,
   Institutions,
-  ViewDetails,
+  ViewInstitutionDetails,
 } from "./pages/Institution";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
@@ -52,11 +56,18 @@ function App() {
                       path="/create"
                       element={<CreateInstitution />}
                     />
-                    <PrivateRoute path="/:instCode" element={<ViewDetails />} />
+                    <PrivateRoute
+                      path="/:instCode"
+                      element={<ViewInstitutionDetails />}
+                    />
                   </PrivateRoute>
                   <PrivateRoute path="/customers" element={<Customer />}>
                     <PrivateRoute path="/" element={<Customers />} />
                     <PrivateRoute path="/create" element={<CreateCustomer />} />
+                    <PrivateRoute
+                      path="/:id"
+                      element={<ViewCustomerDetails />}
+                    />
                   </PrivateRoute>
                 </Route>
               </Routes>

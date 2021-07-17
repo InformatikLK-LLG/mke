@@ -74,6 +74,10 @@ export default function Wrapper() {
           name: "Erstellen",
           heading: "Kundin erstellen",
         },
+        {
+          path: "/customers/:id",
+          heading: "",
+        },
       ],
     },
     {
