@@ -145,7 +145,6 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
       );
       queryClient.invalidateQueries("customer");
       queryClient.invalidateQueries("customers");
-      // navigate("/customers");
     } catch (error) {
       console.log(error);
     }
@@ -180,8 +179,8 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
   return (
     <CustomerForm
       onSubmit={(data) => {
+        navigate("/customers");
         updateData(data);
-        console.log(data);
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -219,8 +218,6 @@ export function CustomerForm({
       name: "",
     },
   };
-
-  useEffect(() => console.log(defaultValues), [defaultValues]);
 
   const {
     handleSubmit,
@@ -291,7 +288,7 @@ export function CustomerForm({
       trigger();
       if (isValid) {
         try {
-          await axios.post<FormInstitutionType>(
+          await axios.post<CustomerType>(
             "http://localhost:8080/customer",
             getValues()
           );

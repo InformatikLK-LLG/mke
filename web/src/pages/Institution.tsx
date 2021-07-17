@@ -435,7 +435,6 @@ export function UpdateInstitutionForm({
         "http://localhost:8080/institution",
         data
       );
-      // navigate("/institutions");
       queryClient.invalidateQueries("institutions");
       queryClient.invalidateQueries("institution");
     } catch (error) {
@@ -471,7 +470,10 @@ export function UpdateInstitutionForm({
   };
   return (
     <InstitutionForm
-      onSubmit={(data) => updateData(data)}
+      onSubmit={(data) => {
+        navigate("/institutions");
+        updateData(data);
+      }}
       defaultValues={data}
       toggleLabel={toggleLabel}
       defaultDisabled
