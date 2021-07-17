@@ -1,6 +1,6 @@
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormGetValues, useForm } from "react-hook-form";
 import {
   CreateInstitution,
   CreateInstitutionForm,
@@ -138,21 +138,22 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
   const detailsStyles = useDetailsStyles();
   const navigate = useNavigate();
   const updateData = async (data?: CustomerType) => {
-    const values = data;
     try {
       const response = await axios.put<CustomerType>(
         "http://localhost:8080/customer",
-        values
+        data
       );
-      // navigate("/customers");
+      queryClient.invalidateQueries("customer");
       queryClient.invalidateQueries("customers");
+      // navigate("/customers");
     } catch (error) {
       console.log(error);
     }
   };
   const toggleLabel = (
     disabled: boolean,
-    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
+    getValues: UseFormGetValues<CustomerType>
   ) => {
     const editableToggle = (
       <Grid item container xs={12} justify="flex-end">
@@ -161,7 +162,7 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
             <Switch
               checked={!disabled}
               onChange={() => {
-                if (!disabled) updateData(data);
+                if (!disabled) updateData(getValues());
                 setDisabled((value) => !value);
               }}
               name="toggleDisabled"
@@ -178,7 +179,10 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
   };
   return (
     <CustomerForm
-      onSubmit={(data) => updateData(data)}
+      onSubmit={(data) => {
+        updateData(data);
+        console.log(data);
+      }}
       defaultValues={data}
       toggleLabel={toggleLabel}
       defaultDisabled
@@ -196,7 +200,8 @@ export function CustomerForm({
   onSubmit: (data: CustomerType, event?: BaseSyntheticEvent) => void;
   toggleLabel?: (
     disabled: boolean,
-    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
+    getValues: UseFormGetValues<CustomerType>
   ) => JSX.Element;
   defaultDisabled?: boolean;
 }) {
@@ -299,7 +304,7 @@ export function CustomerForm({
   };
 
   const inputs = [
-    toggleLabel ? toggleLabel(disabled, setDisabled) : <></>,
+    toggleLabel ? toggleLabel(disabled, setDisabled, getValues) : <></>,
     <Grid item xs={12} md={6} lg={6} className={inputFields.firstName}>
       {RenderInput({
         name: "firstName",

@@ -128,6 +128,7 @@ export function InstitutionOverlay({
         "http://localhost:8080/institution",
         values
       );
+      // queryClient.invalidateQueries("institution");
       queryClient.invalidateQueries("institutions");
     } catch (error) {
       console.log(error);

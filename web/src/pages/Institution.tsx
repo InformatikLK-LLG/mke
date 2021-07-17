@@ -430,21 +430,22 @@ export function UpdateInstitutionForm({
   const institutionStyles = useDetailsStyles();
   const navigate = useNavigate();
   const updateData = async (data?: FormInstitutionType) => {
-    const values = data;
     try {
       const response = await axios.put<FormInstitutionType>(
         "http://localhost:8080/institution",
-        values
+        data
       );
       // navigate("/institutions");
       queryClient.invalidateQueries("institutions");
+      queryClient.invalidateQueries("institution");
     } catch (error) {
       console.log(error);
     }
   };
   const toggleLabel = (
     disabled: boolean,
-    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
+    getValues: UseFormGetValues<FormInstitutionType>
   ) => {
     const editableToggle = (
       <Grid item container xs={12} justify="flex-end">
@@ -453,7 +454,7 @@ export function UpdateInstitutionForm({
             <Switch
               checked={!disabled}
               onChange={() => {
-                if (!disabled) updateData(data);
+                if (!disabled) updateData(getValues());
                 setDisabled((value) => !value);
               }}
               name="toggleDisabled"
@@ -488,7 +489,8 @@ export function InstitutionForm({
   onSubmit: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
   toggleLabel?: (
     disabled: boolean,
-    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
+    getValues: UseFormGetValues<FormInstitutionType>
   ) => JSX.Element;
   defaultDisabled?: boolean;
 }) {
@@ -569,7 +571,7 @@ export function InstitutionForm({
   };
 
   const inputs = [
-    toggleLabel ? toggleLabel(disabled, setDisabled) : <></>,
+    toggleLabel ? toggleLabel(disabled, setDisabled, getValues) : <></>,
     <Grid item xs={12} md={6} lg={6}>
       {RenderInput({
         name: "name",
