@@ -247,6 +247,7 @@ export const RenderInput = <T,>({
   autocompletePlaces,
   autofocus,
   autoComplete,
+  isModifiable = true,
   disabled,
   formState,
   params,
@@ -260,6 +261,7 @@ export const RenderInput = <T,>({
   autocompletePlaces?: "address" | "school" | "point_of_interest";
   autofocus?: boolean;
   autoComplete?: Autocomplete;
+  isModifiable?: boolean;
   disabled?: boolean;
   formState: FormState<T>;
   params?: AutocompleteRenderInputParams;
@@ -283,7 +285,7 @@ export const RenderInput = <T,>({
         <FontAwesomeIcon className="inputIcon" icon={icon} />
       </InputAdornment>
     ),
-    endAdornment: getValues(name) && !disabled && (
+    endAdornment: getValues(name) && !disabled && isModifiable && (
       <InputAdornment position="end" className={formInput.clearButton}>
         <FontAwesomeIcon
           className={`inputIcon`}
@@ -327,7 +329,7 @@ export const RenderInput = <T,>({
               searchFor={autocompletePlaces}
               InputProps={InputProps}
               autoComplete={autoComplete}
-              disabled={disabled}
+              disabled={disabled || !isModifiable}
             >
               <TextField
                 placeholder={placeholder}
@@ -347,7 +349,7 @@ export const RenderInput = <T,>({
               InputProps={{ ...params?.InputProps, ...InputProps }}
               autoFocus={autofocus}
               autoComplete={autoComplete}
-              disabled={disabled}
+              disabled={disabled || !isModifiable}
             />
           )
         }
@@ -365,15 +367,10 @@ type RecursivePartial<T> = {
 };
 
 export function CreateInstitution({
-  disabled = false,
-  onSubmit,
   defaultInstitution,
 }: {
-  disabled?: boolean;
-  onSubmit?: (data: FormInstitutionType, event: BaseSyntheticEvent) => void;
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
 }) {
-  // useEventListener("keydown", onKeyDown);
   return <CreateInstitutionForm defaultInstitution={defaultInstitution} />;
 }
 
@@ -404,24 +401,28 @@ const tableHeaders: TableHeaders<InstitutionType> = {
 
 export function CreateInstitutionForm({
   defaultInstitution,
+  onSubmit,
 }: {
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
+  onSubmit?: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
 }) {
   const navigate = useNavigate();
 
-  const onSubmit: (
+  const submit: (
     data: FormInstitutionType,
     event?: BaseSyntheticEvent
-  ) => void = async (data, event) => {
-    const response = await axios.post<FormInstitutionType>(
-      "http://localhost:8080/institution",
-      data
-    );
-    navigate("/institutions");
-  };
+  ) => void =
+    onSubmit ||
+    (async (data, event) => {
+      const response = await axios.post<FormInstitutionType>(
+        "http://localhost:8080/institution",
+        data
+      );
+      navigate("/institutions");
+    });
 
   return (
-    <InstitutionForm onSubmit={onSubmit} defaultValues={defaultInstitution} />
+    <InstitutionForm onSubmit={submit} defaultValues={defaultInstitution} />
   );
 }
 
@@ -477,6 +478,7 @@ export function UpdateInstitutionForm({
       onSubmit={(data) => updateData(data)}
       defaultValues={data}
       toggleLabel={toggleLabel}
+      defaultDisabled
     />
   );
 }
@@ -485,6 +487,7 @@ export function InstitutionForm({
   defaultValues,
   onSubmit,
   toggleLabel,
+  defaultDisabled = false,
 }: {
   defaultValues?: RecursivePartial<FormInstitutionType>;
   onSubmit: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
@@ -492,6 +495,7 @@ export function InstitutionForm({
     disabled: boolean,
     setDisabled: React.Dispatch<React.SetStateAction<boolean>>
   ) => JSX.Element;
+  defaultDisabled?: boolean;
 }) {
   const defaultInstitution = {
     id: defaultValues?.id || "",
@@ -525,7 +529,7 @@ export function InstitutionForm({
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const [isLoading, setIsLoading] = useState(false);
-  const [disabled, setDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(defaultDisabled);
   const width = useViewport();
   const navigate = useNavigate();
 
@@ -538,10 +542,11 @@ export function InstitutionForm({
     getValues,
     setValue,
   };
+
   const order: OrderType = {
-    xs: [1, 2, 3, 4, 5, 6, 7, 8],
-    md: [1, 2, 4, 5, 7, 6, 3, 8],
-    lg: [1, 2, 4, 5, 3, 6, 7, 8],
+    xs: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    md: [1, 2, 3, 5, 6, 7, 8, 4, 9],
+    lg: [1, 2, 3, 5, 6, 4, 7, 8, 9],
   };
 
   useEffect(() => {
@@ -567,6 +572,7 @@ export function InstitutionForm({
       }
     }
   };
+
   const inputs = [
     toggleLabel ? toggleLabel(disabled, setDisabled) : <></>,
     <Grid item xs={12} md={6} lg={6}>
@@ -588,6 +594,7 @@ export function InstitutionForm({
         placeholder: "INST-Code",
         required: "INST-Code muss angegeben werden",
         icon: faKeyboard,
+        isModifiable: !defaultDisabled,
         disabled,
         formState,
       })}

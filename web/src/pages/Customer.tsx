@@ -2,6 +2,7 @@ import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { Controller, useForm } from "react-hook-form";
 import {
   CreateInstitution,
+  CreateInstitutionForm,
   FormInstitutionType,
   FormState,
   RenderInput,
@@ -29,10 +30,10 @@ import { AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
+import Loading from "../components/Loading";
 import axios from "axios";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
-import Loading from "../components/Loading";
 
 export type CustomerType = {
   id: string;
@@ -293,7 +294,7 @@ export function CreateCustomer() {
         >
           <DialogTitle>Institution Erstellen</DialogTitle>
           <DialogContent>
-            <CreateInstitution
+            <CreateInstitutionForm
               onSubmit={(data) => {
                 fetchData();
                 setValue("institution.name", data.name);

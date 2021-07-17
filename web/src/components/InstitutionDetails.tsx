@@ -306,29 +306,6 @@ export function InstitutionOverlay({
   return (
     <div className={institutionStyles.enclosure}>
       <div className={institutionStyles.section}>
-        <Form
-          inputs={inputs}
-          button={
-            <Button
-              type="submit"
-              label="Speichern"
-              buttonStyle={formButton}
-              textColor="white"
-              backgroundColor={theme.palette.primary.main}
-              disabled={disabled || !isValid}
-            />
-          }
-          containerStyling={{
-            spacing: 2,
-            alignItems: "flex-end",
-            direction: "row",
-          }}
-          onSubmit={handleSubmit((data) => {
-            updateData(data);
-            navigate("/institutions");
-          })}
-        />
-        {/* <CreateInstitution defaultInstitution={data?.data} disabled /> */}
         <UpdateInstitutionForm data={data?.data} />
       </div>
       <Divider
