@@ -1,4 +1,4 @@
-import { Customer } from "../pages/Institution";
+import { CustomerType } from "../pages/Customer";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { useState } from "react";
@@ -13,7 +13,7 @@ const useCustomers = (instCode?: string) => {
   const [searchParams, setSearchParams] = useState<CustomerSearchParams>();
   return {
     ...useQuery(["customers", searchParams], () =>
-      axios.get<Array<Customer>>(
+      axios.get<Array<CustomerType>>(
         `http://localhost:8080${
           instCode ? "/institution/" + instCode : ""
         }/customer`,

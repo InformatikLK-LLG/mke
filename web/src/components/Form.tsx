@@ -459,8 +459,10 @@ export function RegisterForm3() {
 
 export function EmailInputField<T extends { email: string }>({
   formState,
+  disabled,
 }: {
   formState: FormState<T>;
+  disabled?: boolean;
 }) {
   return RenderInput({
     name: "email" as Path<T>,
@@ -472,6 +474,7 @@ export function EmailInputField<T extends { email: string }>({
       message: "gültige Email mit @ und so.",
     },
     icon: faEnvelope,
+    disabled,
     formState,
   });
 }

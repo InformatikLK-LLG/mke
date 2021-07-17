@@ -45,7 +45,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {
   InstitutionOverlay,
-  useInstitutionStyles,
+  useDetailsStyles,
 } from "../components/InstitutionDetails";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders, accessNestedValues } from "../components/Table";
@@ -62,6 +62,7 @@ import { AnimatePresence } from "framer-motion";
 import { AutocompleteRenderInputParams } from "@material-ui/lab";
 import Button from "../components/Button";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
+import { CustomerType } from "./Customer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
@@ -80,23 +81,13 @@ type Address = {
   town: string;
 };
 
-export type Customer = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  mobilePhone: string;
-  businessPhone: string;
-  institution: Omit<InstitutionType, "customers">;
-};
-
 type InstitutionType = {
   id: number | string;
   name: string;
   address: Address;
   phoneNumber: number;
   schoolAdministrativeDistrict: boolean;
-  customers?: Array<Customer>;
+  customers?: Array<CustomerType>;
 };
 
 type FormAddress = {
@@ -112,7 +103,7 @@ export type FormInstitutionType = {
   address: FormAddress;
   phoneNumber: string;
   schoolAdministrativeDistrict: boolean;
-  customers?: Array<Customer>;
+  customers?: Array<CustomerType>;
 };
 
 export type FormState<T> = {
@@ -362,7 +353,7 @@ export default function Institution() {
   return <Outlet />;
 }
 
-type RecursivePartial<T> = {
+export type RecursivePartial<T> = {
   [K in keyof T]?: RecursivePartial<T[K]>;
 };
 
@@ -371,7 +362,11 @@ export function CreateInstitution({
 }: {
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
 }) {
-  return <CreateInstitutionForm defaultInstitution={defaultInstitution} />;
+  return (
+    <div className="container">
+      <CreateInstitutionForm defaultInstitution={defaultInstitution} />
+    </div>
+  );
 }
 
 const format = (value: boolean) => (
@@ -432,7 +427,7 @@ export function UpdateInstitutionForm({
   data?: FormInstitutionType;
 }) {
   const queryClient = useQueryClient();
-  const institutionStyles = useInstitutionStyles();
+  const institutionStyles = useDetailsStyles();
   const navigate = useNavigate();
   const updateData = async (data?: FormInstitutionType) => {
     const values = data;
@@ -690,35 +685,34 @@ export function InstitutionForm({
       />
     </Grid>,
   ];
+
   return (
-    <div className="container">
-      <Form
-        button={
-          <Button
-            type="submit"
-            label="Erstellen"
-            buttonStyle={formButton}
-            textColor="white"
-            backgroundColor={theme.palette.primary.main}
-            isLoading={isLoading}
-            disabled={disabled}
-          />
+    <Form
+      button={
+        <Button
+          type="submit"
+          label="Erstellen"
+          buttonStyle={formButton}
+          textColor="white"
+          backgroundColor={theme.palette.primary.main}
+          isLoading={isLoading}
+          disabled={disabled}
+        />
+      }
+      inputs={inputs}
+      maxWidth="200ch"
+      onSubmit={handleSubmit((data, event) => {
+        setIsLoading(true);
+        try {
+          onSubmit(data, event);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
         }
-        inputs={inputs}
-        maxWidth="200ch"
-        onSubmit={handleSubmit((data, event) => {
-          setIsLoading(true);
-          try {
-            onSubmit(data, event);
-          } catch (error) {
-            console.error(error);
-          } finally {
-            setIsLoading(false);
-          }
-        })}
-        order={order}
-      />
-    </div>
+      })}
+      order={order}
+    />
   );
 }
 
@@ -761,7 +755,7 @@ export function Institutions() {
   );
 }
 
-export function ViewDetails() {
+export function ViewInstitutionDetails() {
   const { instCode } = useParams();
   const { data, isLoading } = useInstitution(instCode);
   // GET and stuff
