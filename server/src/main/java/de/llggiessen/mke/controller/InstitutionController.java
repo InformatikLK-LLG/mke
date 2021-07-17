@@ -68,11 +68,15 @@ public class InstitutionController {
     }
 
     @PutMapping(value = "")
-    public Institution changeInstitution(@RequestBody Institution newInstitution) {
-        if (repository.existsById(newInstitution.getId())) {
+    public Institution updateInstitution(@RequestBody Institution newInstitution) {
+        if (!repository.existsById(newInstitution.getId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "There is no institution with this id. Maybe you meant to create a new institution using a POST request.");
+        try {
             return repository.save(newInstitution);
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id does not exist.");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not update institution.");
         }
+
     }
 }

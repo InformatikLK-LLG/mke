@@ -62,4 +62,16 @@ public class CustomerController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
     }
+
+    @PutMapping("")
+    public Customer updateCustomer(@RequestBody Customer customer) {
+        if (!repository.existsById(customer.getId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "There is no customer with this id. Maybe you meant to create a new customer using a POST request.");
+        try {
+            return repository.save(customer);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not update customer.");
+        }
+    }
 }
