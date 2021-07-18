@@ -8,6 +8,7 @@ export type InstitutionsSearchParams = {
   svb?: boolean;
   name?: string;
 };
+
 const useInstitutions = () => {
   const [searchParams, setSearchParams] = useState<InstitutionsSearchParams>();
   return {

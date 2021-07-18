@@ -22,6 +22,7 @@ import Delayed from "./Delayed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InstitutionsSearchParams } from "../hooks/useInstitutions";
 import Loading from "./Loading";
+import flower from "../resources/blume.jpg";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -53,29 +54,41 @@ const useStyles = makeStyles({
   clickable: {
     cursor: "pointer",
   },
-  table: {},
+  table: {
+    tableLayout: "fixed",
+    width: "fill-available",
+    fallbacks: [
+      { width: "-moz-available" },
+      { width: "-webkit-fill-available" },
+    ],
+  },
   tableHeader: {
     position: "sticky",
     top: 0,
     backgroundColor: "white",
+    zIndex: 1,
   },
   tableContainer: {
-    maxHeight: "100%",
+    height: "100%",
     maxWidth: "100%",
     overflowX: "auto",
     overflowY: "auto",
-    "&::-webkit-scrollbar": {
-      width: "0.5em",
-      height: "0.5em",
-      backgroundColor: "var(--input)",
-      borderRadius: "1em",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "var(--border)",
-      borderRadius: "1em",
-    },
-    "&::-webkit-scrollbar-thumb:hover": {
-      backgroundColor: "var(--highlighting)",
+  },
+  pagination: {
+    alignSelf: "flex-end",
+    overflow: "visible",
+  },
+  searchParams: {
+    alignSelf: "flex-start",
+  },
+  flowerBody: {
+    backgroundImage: `url(${flower})`,
+    backgroundSize: "100%",
+  },
+  flowerRow: {
+    "&:hover": {
+      backgroundColor: "transparent",
+      backdropFilter: "brightness(120%)",
     },
   },
 });
@@ -99,6 +112,7 @@ interface Header {
   minWidth?: number;
   align?: "right" | "left" | "center";
   format?: (value: any) => JSX.Element;
+  width: number;
 }
 
 export type TableHeaders<T extends SimplestItem> = AllTableHeaders<T>;
@@ -110,12 +124,12 @@ export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
     }
   : Header;
 
-interface TableProps<T extends SimplestItem> {
+interface TableProps<T extends SimplestItem, K> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
   sort?: Array<string>;
-  search?: (parameter: keyof InstitutionsSearchParams, query: string) => void;
-  searchParams?: Array<keyof InstitutionsSearchParams>;
+  search?: (parameter: keyof K, query: string) => void;
+  searchParams?: Array<keyof K>;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
@@ -166,6 +180,9 @@ function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
   if (!isNaN(newA) && !isNaN(newB)) {
     newA = parseInt(newA);
     newB = parseInt(newB);
+  } else {
+    newA = newA.toLowerCase();
+    newB = newB.toLowerCase();
   }
 
   if (newA > newB) return -1;
@@ -191,7 +208,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
   return array;
 }
 
-export default function Table<T extends SimplestItem>({
+export default function Table<T extends SimplestItem, K>({
   tableHeaders,
   rows,
   sort,
@@ -199,7 +216,7 @@ export default function Table<T extends SimplestItem>({
   searchParams = [],
   onRowClick,
   isLoading,
-}: TableProps<T>) {
+}: TableProps<T, K>) {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
@@ -259,7 +276,9 @@ export default function Table<T extends SimplestItem>({
         // hover
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
-        className={`${classes.row} ${onRowClick && classes.clickable}`}
+        className={`${classes.row} ${onRowClick && classes.clickable} ${
+          isBlume && classes.flowerRow
+        }`}
       >
         {accessKeys.map((nestedKey) => {
           return RenderValue(row, nestedKey);
@@ -364,30 +383,52 @@ export default function Table<T extends SimplestItem>({
     setPage(0);
   };
 
+  const [isBlume, setIsBlume] = useState(false);
+
+  const columnWidths = accessKeys.map((key) => {
+    const header = accessNestedValues(key, tableHeaders) as Header;
+    return header.width;
+  });
+  const relativeWidth = columnWidths.reduce((prev, curr) => prev + curr, 0);
+
   return (
     <>
-      <TableContainer className={classes.tableContainer}>
+      <div className={classes.searchParams}>
         {searchParams.map(
           (searchParam) =>
             search && (
               <TextField
-                key={searchParam}
-                id={searchParam}
+                size="small"
+                key={searchParam as string}
+                id={searchParam as string}
                 label="Suche"
                 variant="outlined"
-                onChange={(e) => search(searchParam, e.target.value)}
+                onChange={(e) => {
+                  setPage(0);
+                  search(searchParam, e.target.value);
+                  e.target.value === "blume" && setIsBlume(true);
+                  e.target.value === "wtf" && setIsBlume(false);
+                }}
               />
             )
         )}
+      </div>
+      <TableContainer className={classes.tableContainer}>
         <BetterTable className={classes.table}>
+          <colgroup>
+            {columnWidths.map((width, index) => {
+              return (
+                <col width={`${100 * (width / relativeWidth)}%`} key={index} />
+              );
+            })}
+          </colgroup>
           <TableHead className={classes.tableHeader}>
             <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody classes={{ root: isBlume ? classes.flowerBody : "" }}>
             {isLoading ? (
               <tr>
                 <td colSpan={accessKeys.length}>
-                  {/*nicht schoen, bitte aendern */}
                   <Delayed delay={750}>
                     <Loading />
                   </Delayed>
@@ -396,9 +437,7 @@ export default function Table<T extends SimplestItem>({
             ) : (
               stableSort(rows, getComparator(direction, sortBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return RenderRow(row);
-                })
+                .map((row) => RenderRow(row))
             )}
           </TableBody>
         </BetterTable>
@@ -419,7 +458,7 @@ export default function Table<T extends SimplestItem>({
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-          style={{ alignSelf: "flex-end" }}
+          className={classes.pagination}
         />
       )}
     </>

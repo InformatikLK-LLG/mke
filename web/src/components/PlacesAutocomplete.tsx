@@ -10,7 +10,10 @@ import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
+import { FormInstitutionType } from "../pages/Institution";
 import { InputProps } from "@material-ui/core";
+import { Loader } from "@googlemaps/js-api-loader";
+import useOnclickOutside from "react-cool-onclickoutside";
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -61,7 +64,7 @@ export default function PlacesAutocomplete<
   });
 
   const handleSelect =
-    ({ place_id, description }: { place_id: string; description: string }) =>
+    ({ place_id, description }: { place_id: any; description: string }) =>
     async () => {
       setValue(description, false);
       clearSuggestions();
@@ -173,7 +176,7 @@ export default function PlacesAutocomplete<
       disableClearable
       disabled={disabled}
       style={{ display: "inline" }}
-      inputValue={value as string}
+      inputValue={value || ""}
       onInputChange={(e, value) => params.onChange(value)}
       onChange={(e, option) => {
         if (typeof option !== "string" && option) {

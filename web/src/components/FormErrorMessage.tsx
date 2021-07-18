@@ -1,3 +1,4 @@
+import { FormInstitutionType } from "../pages/Institution";
 import { motion } from "framer-motion";
 
 export default function FormErrorMessage({

@@ -1,14 +1,23 @@
+import { IconButton, Snackbar } from "@material-ui/core";
 import NavBar, { NavBarItem } from "./components/NavBar";
 import { Outlet, useLocation } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
 
 type HeaderType = {
   header: string;
   setHeader: (header: string) => void;
+};
+
+type SnackbarType = {
+  isSnackbarOpen: boolean;
+  setSnackbarOpen: (isOpen: boolean) => void;
+  message: string;
+  setMessage: (message: string) => void;
 };
 
 interface RouteItem extends NavBarItem {
@@ -21,6 +30,13 @@ interface RouteType extends Array<RouteItem> {}
 const defaultHeader: HeaderType = {
   header: "",
   setHeader: () => {},
+};
+
+const defaultSnackbar: SnackbarType = {
+  isSnackbarOpen: false,
+  setSnackbarOpen: () => {},
+  message: "",
+  setMessage: () => {},
 };
 
 const headerContext = createContext<HeaderType>(defaultHeader);
@@ -37,10 +53,26 @@ function useProvideHeader(): HeaderType {
   return { header: headerArray[0], setHeader };
 }
 
+const snackbarContext = createContext<SnackbarType>(defaultSnackbar);
+
+export const useSnackbar = () => useContext(snackbarContext);
+
+function useProvideSnackbar(): SnackbarType {
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [message, setSnackbarMessage] = useState("");
+
+  const setSnackbarOpen = (isOpen: boolean) => setIsSnackbarOpen(isOpen);
+
+  const setMessage = (message: string) => setSnackbarMessage(message);
+
+  return { isSnackbarOpen, setSnackbarOpen, message, setMessage };
+}
+
 export default function Wrapper() {
   const location = useLocation();
   const auth = useAuth();
   const header = useProvideHeader();
+  const snackbar = useProvideSnackbar();
 
   const routes: RouteType = [
     {
@@ -65,6 +97,22 @@ export default function Wrapper() {
       ],
     },
     {
+      path: "/customers",
+      name: "Kundinnen",
+      heading: "Kundinnen",
+      subroutes: [
+        {
+          path: "/customers/create",
+          name: "Erstellen",
+          heading: "Kundin erstellen",
+        },
+        {
+          path: "/customers/:id",
+          heading: "",
+        },
+      ],
+    },
+    {
       path: "/profile",
       name: <FontAwesomeIcon icon={faUser} />,
       heading: `Hallo ${auth.user?.email}`,
@@ -77,6 +125,10 @@ export default function Wrapper() {
     if (startOfParameter === -1) return route.path === location.pathname;
 
     const endOfParameter = route.path.indexOf("/", startOfParameter);
+    const endOfParameterLocation = location.pathname.indexOf(
+      "/",
+      startOfParameter
+    );
 
     const newPath = route.path.replace(
       route.path.slice(
@@ -85,7 +137,9 @@ export default function Wrapper() {
       ),
       location.pathname.slice(
         startOfParameter,
-        endOfParameter === -1 ? route.path.length : endOfParameter
+        endOfParameter === -1
+          ? location.pathname.length
+          : endOfParameterLocation
       )
     );
     return newPath === location.pathname;
@@ -116,8 +170,25 @@ export default function Wrapper() {
           <NavBar routes={routes} />
         </div>
       )}
+      <Snackbar
+        open={snackbar.isSnackbarOpen}
+        message={snackbar.message}
+        autoHideDuration={3000}
+        onClose={() => snackbar.setSnackbarOpen(false)}
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+        action={
+          <IconButton
+            size="small"
+            onClick={() => snackbar.setSnackbarOpen(false)}
+          >
+            <FontAwesomeIcon icon={faTimes} style={{ color: "var(--input)" }} />
+          </IconButton>
+        }
+      />
       <headerContext.Provider value={header}>
-        <Outlet />
+        <snackbarContext.Provider value={snackbar}>
+          <Outlet />
+        </snackbarContext.Provider>
       </headerContext.Provider>
     </div>
   );
