@@ -78,7 +78,6 @@ export function LoginForm() {
     getValues,
     setValue,
   };
-  const classes = useFormStyles();
 
   const inputs = [
     <Grid item xs={12}>
@@ -151,7 +150,6 @@ export function ForgotPasswordForm() {
   };
   const navigate = useNavigate();
   const theme = useTheme();
-  const classes = useFormStyles();
   const inputs = [
     <Grid item xs={12}>
       <EmailInputField formState={formState} />
@@ -162,6 +160,7 @@ export function ForgotPasswordForm() {
     <Form
       onSubmit={handleSubmit(({ email }) => navigate("/login"))}
       inputs={inputs}
+      maxWidth="50ch"
       button={
         <Button
           type="submit"
@@ -204,49 +203,43 @@ export function RegisterForm1() {
   const navigate = useNavigate();
   const { validateInviteCode } = useAuth();
   const theme = useTheme();
-  const classes = useFormStyles();
+  const inputs = [
+    <Grid item xs={12}>
+      {RenderInput({
+        name: "code",
+        placeholder: "Code",
+        autoComplete: "one-time-code",
+        required: "Code muss angegeben werden",
+        pattern: {
+          value: /^[0-9]{6}$/,
+          message: "0-6 chars bla dass wir sehen dass was da ist.",
+        },
+        icon: faKeyboard,
+        formState,
+        autofocus: true,
+      })}
+    </Grid>,
+  ];
 
   return (
-    <form
+    <Form
       onSubmit={handleSubmit(({ code }) => {
         if (validateInviteCode(code))
           navigate("./1", { state: { registerState: { code } } });
         setError("code", { message: "Code falsch" });
       })}
-      className={classes.form}
-    >
-      <Grid
-        container
-        item
-        spacing={2}
-        xs={12}
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item xs={12}>
-          {RenderInput({
-            name: "code",
-            placeholder: "Code",
-            autoComplete: "one-time-code",
-            required: "Code muss angegeben werden",
-            pattern: {
-              value: /^[0-9]{6}$/,
-              message: "0-6 chars bla dass wir sehen dass was da ist.",
-            },
-            icon: faKeyboard,
-            formState,
-            autofocus: true,
-          })}
-        </Grid>
-      </Grid>
-      <Button
-        textColor="white"
-        backgroundColor={theme.palette.primary.main}
-        type="submit"
-        label="Registrieren"
-        buttonStyle={formButton}
-      />
-    </form>
+      inputs={inputs}
+      maxWidth="40ch"
+      button={
+        <Button
+          textColor="white"
+          backgroundColor={theme.palette.primary.main}
+          type="submit"
+          label="Registrieren"
+          buttonStyle={formButton}
+        />
+      }
+    />
   );
 }
 
@@ -282,10 +275,35 @@ export function RegisterForm2() {
     registerState: { code },
   } = location.state as { registerState: { code: number } };
   const theme = useTheme();
-  const classes = useFormStyles();
+  const inputs = [
+    <Grid item xs={12}>
+      {RenderInput({
+        name: "firstName",
+        placeholder: "Vorname",
+        autoComplete: "given-name",
+        required: "Vorname muss angegeben werden",
+        icon: faEdit,
+        formState,
+        autofocus: true,
+      })}
+    </Grid>,
+    <Grid item xs={12}>
+      {RenderInput({
+        name: "lastName",
+        placeholder: "Nachname",
+        autoComplete: "family-name",
+        required: "Nachname muss angegeben werden",
+        icon: faKeyboard,
+        formState,
+      })}
+    </Grid>,
+    <Grid item xs={12}>
+      <EmailInputField formState={formState} />
+    </Grid>,
+  ];
 
   return (
-    <form
+    <Form
       onSubmit={handleSubmit(({ firstName, lastName, email }) =>
         navigate("../2", {
           state: {
@@ -293,55 +311,18 @@ export function RegisterForm2() {
           },
         })
       )}
-      className={classes.form}
-    >
-      <Grid
-        container
-        item
-        spacing={2}
-        xs={12}
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item>
-          {RenderInput({
-            name: "firstName",
-            placeholder: "Vorname",
-            autoComplete: "given-name",
-            required: "Vorname muss angegeben werden",
-            icon: faEdit,
-            formState,
-            autofocus: true,
-          })}
-        </Grid>
-        <Grid item>
-          {RenderInput({
-            name: "lastName",
-            placeholder: "Nachname",
-            autoComplete: "family-name",
-            required: "Nachname muss angegeben werden",
-            icon: faKeyboard,
-            formState,
-          })}
-        </Grid>
-        <Grid item>
-          <EmailInputField formState={formState} />
-        </Grid>
-      </Grid>
-      <Button
-        textColor="white"
-        backgroundColor={theme.palette.primary.main}
-        type="submit"
-        label="Weiter"
-        buttonStyle={formButton}
-      />
-      <Prompt
-        when={Boolean(
-          getValues().firstName || getValues().lastName || getValues().email
-        )}
-        message="Sicher, dass du die Seite verlassen möchtest?"
-      />
-    </form>
+      inputs={inputs}
+      maxWidth="50ch"
+      button={
+        <Button
+          textColor="white"
+          backgroundColor={theme.palette.primary.main}
+          type="submit"
+          label="Weiter"
+          buttonStyle={formButton}
+        />
+      }
+    />
   );
 }
 
@@ -383,10 +364,39 @@ export function RegisterForm3() {
     };
   };
   const theme = useTheme();
-  const classes = useFormStyles();
+  const inputs = [
+    <Grid item xs={12}>
+      {RenderInput({
+        name: "password",
+        type: "password",
+        placeholder: "Passwort",
+        autoComplete: "new-password",
+        required: "Passwort muss angegeben werden ",
+        pattern: {
+          value: /\w{8}/,
+          message:
+            "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
+        },
+        icon: faKey,
+        formState,
+        autofocus: true,
+      })}
+    </Grid>,
+    <Grid item xs={12}>
+      {RenderInput({
+        name: "passwordRepeated",
+        type: "password",
+        autoComplete: "new-password",
+        placeholder: "Passwort bestätigen",
+        required: "Passwort muss angegeben werden",
+        icon: faKey,
+        formState,
+      })}
+    </Grid>,
+  ];
 
   return (
-    <form
+    <Form
       onSubmit={handleSubmit(({ password, passwordRepeated }) => {
         if (password === passwordRepeated) {
           auth.register(
@@ -403,57 +413,18 @@ export function RegisterForm3() {
             message: "Passwörter stimmen nicht überein",
           });
       })}
-      className={classes.form}
-    >
-      <Grid
-        container
-        item
-        spacing={2}
-        xs={12}
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item>
-          {RenderInput({
-            name: "password",
-            type: "password",
-            placeholder: "Passwort",
-            autoComplete: "new-password",
-            required: "Passwort muss angegeben werden ",
-            pattern: {
-              value: /\w{8}/,
-              message:
-                "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
-            },
-            icon: faKey,
-            formState,
-            autofocus: true,
-          })}
-        </Grid>
-        <Grid item>
-          {RenderInput({
-            name: "passwordRepeated",
-            type: "password",
-            autoComplete: "new-password",
-            placeholder: "Passwort bestätigen",
-            required: "Passwort muss angegeben werden",
-            icon: faKey,
-            formState,
-          })}
-        </Grid>
-      </Grid>
-      <Button
-        textColor="white"
-        type="submit"
-        label="Weiter"
-        buttonStyle={formButton}
-        backgroundColor={theme.palette.primary.main}
-      />
-      <Prompt
-        when={Boolean(getValues().password || getValues().passwordRepeated)}
-        message="Sicher, dass du die Seite verlassen möchtest?"
-      />
-    </form>
+      inputs={inputs}
+      maxWidth="50ch"
+      button={
+        <Button
+          textColor="white"
+          type="submit"
+          label="Weiter"
+          buttonStyle={formButton}
+          backgroundColor={theme.palette.primary.main}
+        />
+      }
+    />
   );
 }
 

@@ -57,6 +57,7 @@ import {
 import useInstitutions, {
   InstitutionsSearchParams,
 } from "../hooks/useInstitutions";
+import { useQuery, useQueryClient } from "react-query";
 
 import { AnimatePresence } from "framer-motion";
 import { AutocompleteRenderInputParams } from "@material-ui/lab";
@@ -71,7 +72,6 @@ import { Theme } from "@material-ui/core/styles";
 import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
-import { useQueryClient } from "react-query";
 import { useSnackbar } from "../Wrapper";
 import useViewport from "../hooks/useViewport";
 
@@ -481,11 +481,12 @@ export function UpdateInstitutionForm({
     );
     return editableToggle;
   };
+
   return (
     <InstitutionForm
       onSubmit={(data) => {
-        navigate("/institutions");
         updateData(data);
+        navigate("/institutions");
         setMessage("Erfolgreich aktualisiert.");
         setSnackbarOpen(true);
       }}
