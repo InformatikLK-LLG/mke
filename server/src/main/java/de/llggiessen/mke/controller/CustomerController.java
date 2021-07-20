@@ -4,6 +4,7 @@ import de.llggiessen.mke.repository.CustomerRepository;
 import de.llggiessen.mke.repository.InstitutionRepository;
 import de.llggiessen.mke.schema.Customer;
 import de.llggiessen.mke.schema.Institution;
+import de.llggiessen.mke.utils.FormValidation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,10 +49,13 @@ public class CustomerController {
 
     @PostMapping("")
     public Customer createCustomer(@RequestBody Customer customer) {
+        FormValidation.validateCustomer(customer);
+
         Institution institution = institutionRepository.findById(customer.getInstitution().getId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no institution with this id."));
         institution.addCustomer(customer);
         customer.setInstitution(institution);
+
         try {
             return repository.save(customer);
         } catch (Exception e) {
@@ -65,6 +69,8 @@ public class CustomerController {
 
     @PutMapping("")
     public Customer updateCustomer(@RequestBody Customer customer) {
+        FormValidation.validateCustomer(customer);
+
         if (!repository.existsById(customer.getId()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "There is no customer with this id. Maybe you meant to create a new customer using a POST request.");
