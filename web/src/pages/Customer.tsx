@@ -26,8 +26,9 @@ import {
   useTheme,
 } from "@material-ui/core";
 import Form, { EmailInputField, OrderType } from "../components/Form";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
+import axios, { AxiosResponse } from "axios";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 
 import { AnimatePresence } from "framer-motion";
@@ -35,11 +36,11 @@ import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
-import axios from "axios";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
 import useCustomer from "../hooks/useCustomer";
 import { useDetailsStyles } from "../components/InstitutionDetails";
+import useEventListener from "@use-it/event-listener";
 import { useQueryClient } from "react-query";
 import { useSnackbar } from "../Wrapper";
 
@@ -118,21 +119,34 @@ export function CreateCustomerForm({
   onSubmit,
 }: {
   defaultCustomer?: RecursivePartial<CustomerType>;
-  onSubmit?: (data: CustomerType, event?: BaseSyntheticEvent) => void;
+  onSubmit?: (
+    data: CustomerType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<CustomerType>>;
 }) {
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
 
-  const submit: (data: CustomerType, event?: BaseSyntheticEvent) => void =
+  const submit: (
+    data: CustomerType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<CustomerType>> =
     onSubmit ||
     (async (data, event) => {
-      const response = await axios.post<CustomerType>(
-        "http://localhost:8080/customer",
-        data
-      );
-      setMessage("Erfolgreich gespeichert.");
-      setSnackbarOpen(true);
-      navigate("/customers");
+      try {
+        const response = await axios.post<CustomerType>(
+          "http://localhost:8080/customer",
+          data
+        );
+        if (response.status === 200) {
+          setMessage("Erfolgreich gespeichert.");
+          setSnackbarOpen(true);
+          navigate("/customers");
+        }
+        return response;
+      } catch (error) {
+        throw error;
+      }
     });
 
   return <CustomerForm onSubmit={submit} defaultValues={defaultCustomer} />;
@@ -149,10 +163,17 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
         "http://localhost:8080/customer",
         data
       );
-      queryClient.invalidateQueries("customer");
-      queryClient.invalidateQueries("customers");
+      if (response.status === 200) {
+        queryClient.invalidateQueries("customer");
+        queryClient.invalidateQueries("customers");
+        setMessage("Erfolgreich aktualisiert.");
+      }
+      return response;
     } catch (error) {
-      console.log(error);
+      setMessage(error.response.data.message);
+      throw error;
+    } finally {
+      setSnackbarOpen(true);
     }
   };
   const toggleLabel = (
@@ -166,13 +187,15 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
           control={
             <Switch
               checked={!disabled}
-              onChange={() => {
+              onChange={async () => {
                 if (!disabled) {
-                  updateData(getValues());
-                  setMessage("Erfolgreich aktualisiert.");
-                  setSnackbarOpen(true);
-                }
-                setDisabled((value) => !value);
+                  try {
+                    await updateData(getValues());
+                    setDisabled(true);
+                  } catch (error) {
+                    setDisabled(false);
+                  }
+                } else setDisabled((value) => !value);
               }}
               name="toggleDisabled"
               color="primary"
@@ -188,11 +211,14 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
   };
   return (
     <CustomerForm
-      onSubmit={(data) => {
-        navigate("/customers");
-        updateData(data);
-        setMessage("Erfolgreich aktualisiert.");
-        setSnackbarOpen(true);
+      onSubmit={async (data) => {
+        try {
+          const response = await updateData(data);
+          navigate("/customers");
+          return response;
+        } catch (error) {
+          throw error;
+        }
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -208,7 +234,10 @@ export function CustomerForm({
   defaultDisabled = false,
 }: {
   defaultValues?: RecursivePartial<CustomerType>;
-  onSubmit: (data: CustomerType, event?: BaseSyntheticEvent) => void;
+  onSubmit: (
+    data: CustomerType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<CustomerType>>;
   toggleLabel?: (
     disabled: boolean,
     setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
@@ -248,6 +277,7 @@ export function CustomerForm({
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [disabled, setDisabled] = useState(defaultDisabled);
   const [options, setOptions] =
@@ -301,18 +331,12 @@ export function CustomerForm({
       event.preventDefault();
       trigger();
       if (isValid) {
-        try {
-          await axios.post<CustomerType>(
-            "http://localhost:8080/customer",
-            getValues()
-          );
-          navigate("/customers");
-        } catch (error) {
-          console.log(error);
-        }
+        onSubmit(getValues());
       }
     }
   };
+
+  useEventListener("keydown", onKeyDown);
 
   const inputs = [
     toggleLabel ? toggleLabel(disabled, setDisabled, getValues) : <></>,
@@ -483,7 +507,6 @@ export function CustomerForm({
           } catch (error) {
             setMessage("Fehler beim Speichern.");
             setSnackbarOpen(true);
-            console.error(error);
           } finally {
             setIsLoading(false);
           }

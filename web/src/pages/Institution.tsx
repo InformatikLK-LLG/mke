@@ -416,14 +416,20 @@ export function CreateInstitutionForm({
   > =
     onSubmit ||
     (async (data, event) => {
-      const response = await axios.post<FormInstitutionType>(
-        "http://localhost:8080/institution",
-        data
-      );
-      setMessage("Erfolgreich gespeichert.");
-      setSnackbarOpen(true);
-      navigate("/institutions");
-      return response;
+      try {
+        const response = await axios.post<FormInstitutionType>(
+          "http://localhost:8080/institution",
+          data
+        );
+        if (response.status === 200) {
+          setMessage("Erfolgreich gespeichert.");
+          setSnackbarOpen(true);
+          navigate("/institutions");
+        }
+        return response;
+      } catch (error) {
+        throw error;
+      }
     });
 
   return (
@@ -440,16 +446,25 @@ export function UpdateInstitutionForm({
   const institutionStyles = useDetailsStyles();
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
+
   const updateData = async (data?: FormInstitutionType) => {
-    const response = await axios.put<FormInstitutionType>(
-      "http://localhost:8080/institution",
-      data
-    );
-    queryClient.invalidateQueries("institutions");
-    queryClient.invalidateQueries("institution");
-    setMessage("Erfolgreich aktualisiert.");
-    setSnackbarOpen(true);
-    return response;
+    try {
+      const response = await axios.put<FormInstitutionType>(
+        "http://localhost:8080/institution",
+        data
+      );
+      if (response.status === 200) {
+        queryClient.invalidateQueries("institutions");
+        queryClient.invalidateQueries("institution");
+        setMessage("Erfolgreich aktualisiert.");
+      }
+      return response;
+    } catch (error) {
+      setMessage(error.response.data.message);
+      throw error;
+    } finally {
+      setSnackbarOpen(true);
+    }
   };
   const toggleLabel = (
     disabled: boolean,
@@ -462,13 +477,15 @@ export function UpdateInstitutionForm({
           control={
             <Switch
               checked={!disabled}
-              onChange={() => {
+              onChange={async () => {
                 if (!disabled) {
-                  updateData(getValues());
-                  setMessage("Erfolgreich aktualisiert.");
-                  setSnackbarOpen(true);
-                }
-                setDisabled((value) => !value);
+                  try {
+                    await updateData(getValues());
+                    setDisabled(true);
+                  } catch (error) {
+                    setDisabled(false);
+                  }
+                } else setDisabled((value) => !value);
               }}
               name="toggleDisabled"
               color="primary"
@@ -486,8 +503,13 @@ export function UpdateInstitutionForm({
   return (
     <InstitutionForm
       onSubmit={async (data) => {
-        navigate("/institutions");
-        return await updateData(data);
+        try {
+          const response = await updateData(data);
+          navigate("/institutions");
+          return response;
+        } catch (error) {
+          throw error;
+        }
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -578,18 +600,12 @@ export function InstitutionForm({
       event.preventDefault();
       trigger();
       if (isValid) {
-        try {
-          await axios.post<FormInstitutionType>(
-            "http://localhost:8080/institution",
-            getValues()
-          );
-          navigate("/institutions");
-        } catch (error) {
-          console.log(error);
-        }
+        onSubmit(getValues());
       }
     }
   };
+
+  useEventListener("keydown", onKeyDown);
 
   const inputs = [
     toggleLabel ? toggleLabel(disabled, setDisabled, getValues) : <></>,
@@ -624,6 +640,10 @@ export function InstitutionForm({
         required: "Telefonnummer muss angegeben werden",
         icon: faVoicemail,
         autoComplete: "tel",
+        pattern: {
+          value: /^[0-9]+([-\s][0-9]+)*$/,
+          message: "Telefonnummer ist ungültig",
+        },
         disabled,
         formState,
       })}
@@ -647,6 +667,11 @@ export function InstitutionForm({
         required: "Hausnummer muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "address-line2",
+        pattern: {
+          value:
+            /^[0-9]+[a-zA-ZäöüÄÖÜß]*((-[0-9]+[a-zA-ZäöüÄÖÜß]*)|(-[a-zA-ZäöüÄÖÜß]))?$/,
+          message: "Hausnummer ist ungültig",
+        },
         disabled,
         formState,
       })}
@@ -669,6 +694,10 @@ export function InstitutionForm({
         required: "Postleitzahl muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "postal-code",
+        pattern: {
+          value: /^[0-9]{5}$/,
+          message: "Postleitzahl ist ungültig",
+        },
         disabled,
         formState,
       })}
