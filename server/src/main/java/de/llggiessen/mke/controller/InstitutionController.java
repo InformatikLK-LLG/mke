@@ -18,25 +18,20 @@ public class InstitutionController {
     InstitutionRepository repository;
 
     @GetMapping("")
-    public Iterable<Institution> getInstitutions() {
-        return repository.findAll();
+    public Iterable<Institution> filterInstitutions(@RequestParam(value = "name", defaultValue = "") String name,
+            @RequestParam(value = "id", defaultValue = "") String id,
+            @RequestParam(value = "schoolAdministrativeDistrict", defaultValue = "-1") int svb) {
+        if (svb == -1)
+            return repository.findInstitutionsByAttributes(name, id);
+        else
+            return repository.filterInstitutions(name, id, svb == 1 ? true : false);
     }
 
-    @GetMapping(value = "", params = { "id" })
-    public Institution getInstitutionByID(@RequestParam String id) {
+    @GetMapping(value = "{id}")
+    public Institution getInstitutionByID(@PathVariable String id) {
         return repository.findById(id).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find Institution");
         });
-    }
-
-    @GetMapping(value = "", params = { "svb" })
-    public Iterable<Institution> getInstitutionsBySvb(@RequestParam boolean svb) {
-        return repository.findInstitutionsBySvb(svb);
-    }
-
-    @GetMapping(value = "", params = { "name" })
-    public Iterable<Institution> getInstitutionsByName(@RequestParam String name) {
-        return repository.findInstitutions(name);
     }
 
     @GetMapping(value = "{instCode}/customer")
@@ -77,6 +72,5 @@ public class InstitutionController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not update institution.");
         }
-
     }
 }
