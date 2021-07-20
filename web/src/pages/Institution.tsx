@@ -49,6 +49,7 @@ import {
 } from "../components/InstitutionDetails";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders, accessNestedValues } from "../components/Table";
+import axios, { AxiosResponse } from "axios";
 import {
   faCheckSquare,
   faEdit,
@@ -69,7 +70,6 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
-import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import { useSnackbar } from "../Wrapper";
@@ -400,7 +400,10 @@ export function CreateInstitutionForm({
   onSubmit,
 }: {
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
-  onSubmit?: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
+  onSubmit?: (
+    data: FormInstitutionType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<FormInstitutionType | Array<FormInstitutionType>>>;
 }) {
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
@@ -408,20 +411,19 @@ export function CreateInstitutionForm({
   const submit: (
     data: FormInstitutionType,
     event?: BaseSyntheticEvent
-  ) => void =
+  ) => Promise<
+    AxiosResponse<FormInstitutionType | Array<FormInstitutionType>>
+  > =
     onSubmit ||
     (async (data, event) => {
-      try {
-        const response = await axios.post<FormInstitutionType>(
-          "http://localhost:8080/institution",
-          data
-        );
-      } catch (error) {
-        throw error;
-      }
+      const response = await axios.post<FormInstitutionType>(
+        "http://localhost:8080/institution",
+        data
+      );
       setMessage("Erfolgreich gespeichert.");
       setSnackbarOpen(true);
       navigate("/institutions");
+      return response;
     });
 
   return (
@@ -439,16 +441,15 @@ export function UpdateInstitutionForm({
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
   const updateData = async (data?: FormInstitutionType) => {
-    try {
-      const response = await axios.put<FormInstitutionType>(
-        "http://localhost:8080/institution",
-        data
-      );
-      queryClient.invalidateQueries("institutions");
-      queryClient.invalidateQueries("institution");
-    } catch (error) {
-      console.log(error);
-    }
+    const response = await axios.put<FormInstitutionType>(
+      "http://localhost:8080/institution",
+      data
+    );
+    queryClient.invalidateQueries("institutions");
+    queryClient.invalidateQueries("institution");
+    setMessage("Erfolgreich aktualisiert.");
+    setSnackbarOpen(true);
+    return response;
   };
   const toggleLabel = (
     disabled: boolean,
@@ -484,11 +485,9 @@ export function UpdateInstitutionForm({
 
   return (
     <InstitutionForm
-      onSubmit={(data) => {
-        updateData(data);
+      onSubmit={async (data) => {
         navigate("/institutions");
-        setMessage("Erfolgreich aktualisiert.");
-        setSnackbarOpen(true);
+        return await updateData(data);
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -504,7 +503,10 @@ export function InstitutionForm({
   defaultDisabled = false,
 }: {
   defaultValues?: RecursivePartial<FormInstitutionType>;
-  onSubmit: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
+  onSubmit: (
+    data: FormInstitutionType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<FormInstitutionType | Array<FormInstitutionType>>>;
   toggleLabel?: (
     disabled: boolean,
     setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
@@ -722,14 +724,17 @@ export function InstitutionForm({
       }
       inputs={inputs}
       maxWidth="200ch"
-      onSubmit={handleSubmit((data, event) => {
+      onSubmit={handleSubmit(async (data, event) => {
         setIsLoading(true);
         try {
-          onSubmit(data, event);
+          const response = await onSubmit(data, event);
+          if (response.status === 200) {
+            setMessage("Erfolgreich gespeichert.");
+            setSnackbarOpen(true);
+          }
         } catch (error) {
-          setMessage("Fehler beim Speichern.");
+          setMessage(error.response.data.message);
           setSnackbarOpen(true);
-          console.error(error);
         } finally {
           setIsLoading(false);
         }

@@ -276,18 +276,19 @@ export function CustomerForm({
   };
   const fetchData = async () => {
     try {
-      const { data } = await axios.get<Array<FormInstitutionType>>(
+      const response = await axios.get<Array<FormInstitutionType>>(
         "http://localhost:8080/institution"
       );
-      const data2 = data.map((dataSingular) => {
+      const data = response.data.map((dataSingular) => {
         return {
           name: dataSingular.name,
           id: dataSingular.id,
         };
       });
-      setOptions(data2);
+      setOptions(data);
+      return response;
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   };
 
@@ -447,13 +448,13 @@ export function CustomerForm({
           <DialogContent>
             <div className="container">
               <CreateInstitutionForm
-                onSubmit={(data) => {
-                  fetchData();
+                onSubmit={async (data) => {
                   setValue("institution.name", data.name);
                   setValue("institution.id", data.id);
                   setIsDialogOpen(false);
                   setMessage("Erfolgreich gespeichert.");
                   setSnackbarOpen(true);
+                  return await fetchData();
                 }}
                 defaultInstitution={{ name: institution.name }}
               />

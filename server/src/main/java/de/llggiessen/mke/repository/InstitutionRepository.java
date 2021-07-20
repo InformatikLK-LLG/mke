@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface InstitutionRepository extends CrudRepository<Institution, String> {
 
-    @Query(value = "SELECT * FROM institution WHERE institution.svb = :svb", nativeQuery = true)
+    @Query(value = "SELECT * FROM institution WHERE institution.schoolAdministrativeDistrict = :svb", nativeQuery = true)
     Iterable<Institution> findInstitutionsBySvb(@Param("svb") boolean svb);
 
     @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name%", nativeQuery = true)
