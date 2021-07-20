@@ -60,7 +60,7 @@ public class InstitutionController {
         FormValidation.validateInstitution(institution);
 
         if (repository.existsById(institution.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id already exists.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dieser INST Code existiert bereits.");
         } else {
             try {
                 return repository.save(institution);

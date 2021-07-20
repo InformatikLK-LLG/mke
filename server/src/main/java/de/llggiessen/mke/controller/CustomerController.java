@@ -61,7 +61,7 @@ public class CustomerController {
         } catch (Exception e) {
             String message = "Could not save customer.";
             if (repository.findByEmail(customer.getEmail()).isPresent()) {
-                message = "A customer with this email already exists. Try another one.";
+                message = "Diese Email-Addresse ist bereits vergeben. Versuche eine andere.";
             }
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
         }
