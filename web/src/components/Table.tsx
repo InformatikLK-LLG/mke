@@ -1,5 +1,10 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Table as BetterTable,
+  Checkbox,
+  Grid,
   TableBody,
   TableCell,
   TableContainer,
@@ -12,6 +17,7 @@ import {
 } from "@material-ui/core";
 import {
   IconDefinition,
+  faFilter,
   faSortDown,
   faSortUp,
 } from "@fortawesome/free-solid-svg-icons";
@@ -19,6 +25,7 @@ import React, { Fragment, useState } from "react";
 
 import Button from "./Button";
 import Delayed from "./Delayed";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { InstitutionsSearchParams } from "../hooks/useInstitutions";
 import Loading from "./Loading";
@@ -129,10 +136,13 @@ interface TableProps<T extends SimplestItem, K> {
   rows: T[];
   sort?: Array<string>;
   search?: (parameter: keyof K, query: string) => void;
-  searchParams?: Array<keyof K>;
+  searchParams?: Array<{ [key in keyof T]?: "number" | "string" }>;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
+
+// [{ name: "number" }, { id: "string" }];
+// {keyof K: "number" | "string"}
 
 type Prev = [
   never,
@@ -393,26 +403,61 @@ export default function Table<T extends SimplestItem, K>({
 
   return (
     <>
-      <div className={classes.searchParams}>
-        {searchParams.map(
-          (searchParam) =>
-            search && (
-              <TextField
-                size="small"
-                key={searchParam as string}
-                id={searchParam as string}
-                label="Suche"
-                variant="outlined"
-                onChange={(e) => {
-                  setPage(0);
-                  search(searchParam, e.target.value);
-                  e.target.value === "blume" && setIsBlume(true);
-                  e.target.value === "wtf" && setIsBlume(false);
-                }}
-              />
-            )
-        )}
-      </div>
+      <Accordion
+        style={{
+          width: "100%",
+          boxShadow: "none",
+          marginBottom: "1.5em",
+        }}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          Filter
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container spacing={2}>
+            {searchParams.map((searchParam) => {
+              const parameter = Object.keys(searchParam)[0] as keyof T;
+              return (
+                search && (
+                  <Grid item key={parameter as string}>
+                    {searchParam[parameter] === "number" ? (
+                      <Checkbox
+                        id={parameter as string}
+                        onChange={(e) => {
+                          setPage(0);
+                          search(
+                            parameter as keyof K,
+                            String(Number(e.target.checked))
+                          );
+                        }}
+                      />
+                    ) : (
+                      <TextField
+                        size="small"
+                        id={parameter as string}
+                        label="Suche"
+                        variant="outlined"
+                        onChange={(e) => {
+                          setPage(0);
+                          search(parameter as keyof K, e.target.value);
+                          e.target.value === "blume" && setIsBlume(true);
+                          e.target.value === "wtf" && setIsBlume(false);
+                        }}
+                      />
+                    )}
+                  </Grid>
+                )
+              );
+            })}
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+      <Grid
+        container
+        alignItems="flex-start"
+        direction="row"
+        spacing={2}
+      ></Grid>
       <TableContainer className={classes.tableContainer}>
         <BetterTable className={classes.table}>
           <colgroup>

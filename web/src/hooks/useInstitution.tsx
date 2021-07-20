@@ -4,9 +4,7 @@ import { useQuery } from "react-query";
 
 const useInstitution = (id: string) => {
   return useQuery(["institution", id], () =>
-    axios.get<FormInstitutionType>("http://localhost:8080/institution", {
-      params: { id },
-    })
+    axios.get<FormInstitutionType>(`http://localhost:8080/institution/${id}`)
   );
 };
 

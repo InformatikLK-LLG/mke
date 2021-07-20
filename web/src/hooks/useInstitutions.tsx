@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export type InstitutionsSearchParams = {
   id?: string;
-  svb?: boolean;
+  svb?: number;
   name?: string;
 };
 
