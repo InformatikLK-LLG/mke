@@ -5,6 +5,7 @@ import {
   Table as BetterTable,
   Checkbox,
   Grid,
+  InputAdornment,
   TableBody,
   TableCell,
   TableContainer,
@@ -20,8 +21,10 @@ import {
   faFilter,
   faSortDown,
   faSortUp,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { Fragment, useState } from "react";
+import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
 
 import Button from "./Button";
 import Delayed from "./Delayed";
@@ -141,9 +144,6 @@ interface TableProps<T extends SimplestItem, K> {
   isLoading?: boolean;
 }
 
-// [{ name: "number" }, { id: "string" }];
-// {keyof K: "number" | "string"}
-
 type Prev = [
   never,
   0,
@@ -230,6 +230,20 @@ export default function Table<T extends SimplestItem, K>({
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
+  const [searchValues, setSearchValues] = useState<
+    { [key in keyof T]: string }
+  >(() => {
+    const tempSearchParams = searchParams.map(
+      (searchParam) => Object.keys(searchParam)[0] as keyof T
+    );
+    const searchArray = tempSearchParams.map((value) => {
+      return { [value]: "" } as { [key in keyof T]: string };
+    });
+    return searchArray.reduce((prev, curr) => {
+      return { ...prev, ...curr };
+    });
+  });
+
   const classes = useStyles();
   const [accessKeys, setAccessKeys] = useState<Array<Leaves<T>>>([]);
   let keyThing = 0;
@@ -421,16 +435,51 @@ export default function Table<T extends SimplestItem, K>({
                 search && (
                   <Grid item key={parameter as string}>
                     {searchParam[parameter] === "number" ? (
-                      <Checkbox
-                        id={parameter as string}
-                        onChange={(e) => {
-                          setPage(0);
-                          search(
-                            parameter as keyof K,
-                            String(Number(e.target.checked))
-                          );
-                        }}
-                      />
+                      <>
+                        <Checkbox
+                          id={parameter as string}
+                          onChange={(e) => {
+                            setPage(0);
+                            setSearchValues((values) => {
+                              return {
+                                ...values,
+                                [parameter]:
+                                  e.target.value === "-1"
+                                    ? "1"
+                                    : String(Number(e.target.checked)),
+                              };
+                            });
+                            search(
+                              parameter as keyof K,
+                              e.target.value === "-1"
+                                ? "1"
+                                : String(Number(e.target.checked))
+                            );
+                          }}
+                          value={searchValues[parameter]}
+                          checked={searchValues[parameter] === "1"}
+                          indeterminate={searchValues[parameter] === "-1"}
+                          icon={<FontAwesomeIcon icon={faSquare} />}
+                          checkedIcon={<FontAwesomeIcon icon={faCheckSquare} />}
+                          color="primary"
+                        />
+                        <InputAdornment position="start">
+                          <FontAwesomeIcon
+                            className={`inputIcon`}
+                            icon={faTimes}
+                            onClick={() => {
+                              setPage(0);
+                              setSearchValues((values) => {
+                                return {
+                                  ...values,
+                                  [parameter]: "-1",
+                                };
+                              });
+                              search(parameter as keyof K, "-1");
+                            }}
+                          />
+                        </InputAdornment>
+                      </>
                     ) : (
                       <TextField
                         size="small"
@@ -439,10 +488,14 @@ export default function Table<T extends SimplestItem, K>({
                         variant="outlined"
                         onChange={(e) => {
                           setPage(0);
+                          setSearchValues((values) => {
+                            return { ...values, [parameter]: e.target.value };
+                          });
                           search(parameter as keyof K, e.target.value);
                           e.target.value === "blume" && setIsBlume(true);
                           e.target.value === "wtf" && setIsBlume(false);
                         }}
+                        value={searchValues[parameter]}
                       />
                     )}
                   </Grid>
