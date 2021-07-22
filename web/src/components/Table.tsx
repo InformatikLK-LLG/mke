@@ -31,6 +31,7 @@ import Button from "./Button";
 import Delayed from "./Delayed";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HomeRounded } from "@material-ui/icons";
 import { InstitutionsSearchParams } from "../hooks/useInstitutions";
 import Loading from "./Loading";
 import flower from "../resources/blume.jpg";
@@ -232,20 +233,24 @@ export default function Table<T extends SimplestItem, K>({
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const [searchValues, setSearchValues] = useState<
-    { [key in keyof T]: string }
+    { [key in keyof T]: string } | undefined
   >(() => {
+    if (!searchParams || searchParams.length === 0) return undefined;
+
     const tempSearchParams = searchParams.map(
       (searchParam) => Object.keys(searchParam)[0] as keyof T
     );
     const searchArray = tempSearchParams.map((value) => {
-      return { [value]: "" } as { [key in keyof T]: string };
+      return {
+        [value]:
+          searchParams[tempSearchParams.indexOf(value)][value] === "number"
+            ? "-1"
+            : "",
+      } as { [key in keyof T]: string };
     });
-    return searchArray.reduce(
-      (prev, curr) => {
-        return { ...prev, ...curr };
-      },
-      { id: "" } as { [key in keyof T]: string }
-    );
+    return searchArray.reduce((prev, curr) => {
+      return { ...prev, ...curr };
+    });
   });
 
   const classes = useStyles();
@@ -301,7 +306,6 @@ export default function Table<T extends SimplestItem, K>({
   function RenderRow(row: T) {
     return (
       <TableRow
-        // hover
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
         className={`${classes.row} ${onRowClick && classes.clickable} ${
@@ -421,7 +425,7 @@ export default function Table<T extends SimplestItem, K>({
 
   return (
     <>
-      {searchParams.length > 0 && (
+      {searchValues && (
         <Accordion
           style={{
             width: "100%",
@@ -454,13 +458,15 @@ export default function Table<T extends SimplestItem, K>({
                               onChange={(e) => {
                                 setPage(0);
                                 setSearchValues((values) => {
-                                  return {
-                                    ...values,
-                                    [parameter]:
-                                      e.target.value === "-1"
-                                        ? "1"
-                                        : String(Number(e.target.checked)),
-                                  };
+                                  return (
+                                    values && {
+                                      ...values,
+                                      [parameter]:
+                                        e.target.value === "-1"
+                                          ? "1"
+                                          : String(Number(e.target.checked)),
+                                    }
+                                  );
                                 });
                                 search(
                                   parameter as keyof K,
@@ -472,6 +478,12 @@ export default function Table<T extends SimplestItem, K>({
                               value={searchValues[parameter]}
                               checked={searchValues[parameter] === "1"}
                               indeterminate={searchValues[parameter] === "-1"}
+                              indeterminateIcon={
+                                <FontAwesomeIcon
+                                  icon={faSquare}
+                                  style={{ color: "var(--input)" }}
+                                />
+                              }
                               icon={<FontAwesomeIcon icon={faSquare} />}
                               checkedIcon={
                                 <FontAwesomeIcon icon={faCheckSquare} />
@@ -497,10 +509,12 @@ export default function Table<T extends SimplestItem, K>({
                           onClick={() => {
                             setPage(0);
                             setSearchValues((values) => {
-                              return {
-                                ...values,
-                                [parameter]: "-1",
-                              };
+                              return (
+                                values && {
+                                  ...values,
+                                  [parameter]: "-1",
+                                }
+                              );
                             });
                             search(parameter as keyof K, "-1");
                           }}
@@ -524,7 +538,12 @@ export default function Table<T extends SimplestItem, K>({
                         onChange={(e) => {
                           setPage(0);
                           setSearchValues((values) => {
-                            return { ...values, [parameter]: e.target.value };
+                            return (
+                              values && {
+                                ...values,
+                                [parameter]: e.target.value,
+                              }
+                            );
                           });
                           search(parameter as keyof K, e.target.value);
                           e.target.value === "blume" && setIsBlume(true);
