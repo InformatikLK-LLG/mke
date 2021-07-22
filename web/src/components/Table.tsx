@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Table as BetterTable,
   Checkbox,
+  FormControlLabel,
   Grid,
   InputAdornment,
   TableBody,
@@ -239,9 +240,12 @@ export default function Table<T extends SimplestItem, K>({
     const searchArray = tempSearchParams.map((value) => {
       return { [value]: "" } as { [key in keyof T]: string };
     });
-    return searchArray.reduce((prev, curr) => {
-      return { ...prev, ...curr };
-    });
+    return searchArray.reduce(
+      (prev, curr) => {
+        return { ...prev, ...curr };
+      },
+      { id: "" } as { [key in keyof T]: string }
+    );
   });
 
   const classes = useStyles();
@@ -417,101 +421,125 @@ export default function Table<T extends SimplestItem, K>({
 
   return (
     <>
-      <Accordion
-        style={{
-          width: "100%",
-          boxShadow: "none",
-          marginBottom: "1.5em",
-        }}
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          Filter
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2} alignItems="center">
-            {searchParams.map((searchParam) => {
-              const parameter = Object.keys(searchParam)[0] as keyof T;
-              return (
-                search &&
-                (searchParam[parameter] === "number" ? (
-                  <Grid
-                    container
-                    item
-                    key={parameter as string}
-                    xs={1}
-                    alignItems="center"
-                  >
-                    <Grid item key={`${parameter}-checkbox`}>
-                      <Checkbox
+      {searchParams.length > 0 && (
+        <Accordion
+          style={{
+            width: "100%",
+            boxShadow: "none",
+            marginBottom: "1.5em",
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            Filter
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container spacing={2} alignItems="center">
+              {searchParams.map((searchParam) => {
+                const parameter = Object.keys(searchParam)[0] as keyof T;
+                return (
+                  search &&
+                  (searchParam[parameter] === "number" ? (
+                    <Grid
+                      container
+                      item
+                      key={parameter as string}
+                      xs
+                      alignItems="center"
+                    >
+                      <Grid item key={`${parameter}-checkbox`}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              id={parameter as string}
+                              onChange={(e) => {
+                                setPage(0);
+                                setSearchValues((values) => {
+                                  return {
+                                    ...values,
+                                    [parameter]:
+                                      e.target.value === "-1"
+                                        ? "1"
+                                        : String(Number(e.target.checked)),
+                                  };
+                                });
+                                search(
+                                  parameter as keyof K,
+                                  e.target.value === "-1"
+                                    ? "1"
+                                    : String(Number(e.target.checked))
+                                );
+                              }}
+                              value={searchValues[parameter]}
+                              checked={searchValues[parameter] === "1"}
+                              indeterminate={searchValues[parameter] === "-1"}
+                              icon={<FontAwesomeIcon icon={faSquare} />}
+                              checkedIcon={
+                                <FontAwesomeIcon icon={faCheckSquare} />
+                              }
+                              color="primary"
+                            />
+                          }
+                          label={
+                            (
+                              accessNestedValues(
+                                String(parameter),
+                                tableHeaders
+                              ) as Header
+                            ).label
+                          }
+                        />
+                      </Grid>
+                      <Grid item key={`${parameter}-icon`}>
+                        <FontAwesomeIcon
+                          className="inputIcon"
+                          icon={faTimes}
+                          tabIndex={0}
+                          onClick={() => {
+                            setPage(0);
+                            setSearchValues((values) => {
+                              return {
+                                ...values,
+                                [parameter]: "-1",
+                              };
+                            });
+                            search(parameter as keyof K, "-1");
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  ) : (
+                    <Grid item key={parameter as string}>
+                      <TextField
+                        size="small"
                         id={parameter as string}
+                        label={
+                          (
+                            accessNestedValues(
+                              String(parameter),
+                              tableHeaders
+                            ) as Header
+                          ).label
+                        }
+                        variant="outlined"
                         onChange={(e) => {
                           setPage(0);
                           setSearchValues((values) => {
-                            return {
-                              ...values,
-                              [parameter]:
-                                e.target.value === "-1"
-                                  ? "1"
-                                  : String(Number(e.target.checked)),
-                            };
+                            return { ...values, [parameter]: e.target.value };
                           });
-                          search(
-                            parameter as keyof K,
-                            e.target.value === "-1"
-                              ? "1"
-                              : String(Number(e.target.checked))
-                          );
+                          search(parameter as keyof K, e.target.value);
+                          e.target.value === "blume" && setIsBlume(true);
+                          e.target.value === "wtf" && setIsBlume(false);
                         }}
                         value={searchValues[parameter]}
-                        checked={searchValues[parameter] === "1"}
-                        indeterminate={searchValues[parameter] === "-1"}
-                        icon={<FontAwesomeIcon icon={faSquare} />}
-                        checkedIcon={<FontAwesomeIcon icon={faCheckSquare} />}
-                        color="primary"
                       />
                     </Grid>
-                    <Grid item key={`${parameter}-icon`}>
-                      <FontAwesomeIcon
-                        className={`inputIcon`}
-                        icon={faTimes}
-                        onClick={() => {
-                          setPage(0);
-                          setSearchValues((values) => {
-                            return {
-                              ...values,
-                              [parameter]: "-1",
-                            };
-                          });
-                          search(parameter as keyof K, "-1");
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Grid item key={parameter as string}>
-                    <TextField
-                      size="small"
-                      id={parameter as string}
-                      label="Suche"
-                      variant="outlined"
-                      onChange={(e) => {
-                        setPage(0);
-                        setSearchValues((values) => {
-                          return { ...values, [parameter]: e.target.value };
-                        });
-                        search(parameter as keyof K, e.target.value);
-                        e.target.value === "blume" && setIsBlume(true);
-                        e.target.value === "wtf" && setIsBlume(false);
-                      }}
-                      value={searchValues[parameter]}
-                    />
-                  </Grid>
-                ))
-              );
-            })}
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
+                  ))
+                );
+              })}
+            </Grid>
+          </AccordionDetails>
+        </Accordion>
+      )}
       <Grid
         container
         alignItems="flex-start"
