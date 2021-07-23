@@ -756,11 +756,13 @@ export function Institutions() {
   useEventListener("keydown", onKeyDown);
 
   async function search(
-    parameter: keyof InstitutionsSearchParams,
-    query: string
+    parameter?: keyof InstitutionsSearchParams,
+    query?: string
   ) {
-    setSearchParams((value) =>
-      value ? { ...value, [parameter]: query } : { [parameter]: query }
+    setSearchParams(
+      (value) =>
+        parameter &&
+        (value ? { ...value, [parameter]: query } : { [parameter]: query })
     );
   }
 

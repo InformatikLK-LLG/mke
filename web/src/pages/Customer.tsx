@@ -84,9 +84,11 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
   };
   const { data, isLoading, setSearchParams } = useCustomers(instCode);
   const navigate = useNavigate();
-  const search = (searchParam: keyof CustomerSearchParams, query: string) => {
-    setSearchParams((value) =>
-      value ? { ...value, [searchParam]: query } : { [searchParam]: query }
+  const search = (searchParam?: keyof CustomerSearchParams, query?: string) => {
+    setSearchParams(
+      (value) =>
+        searchParam &&
+        (value ? { ...value, [searchParam]: query } : { [searchParam]: query })
     );
   };
 

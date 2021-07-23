@@ -10,7 +10,9 @@ export type InstitutionsSearchParams = {
 };
 
 const useInstitutions = () => {
-  const [searchParams, setSearchParams] = useState<InstitutionsSearchParams>();
+  const [searchParams, setSearchParams] = useState<
+    InstitutionsSearchParams | undefined
+  >();
   return {
     ...useQuery(["institutions", searchParams], () =>
       axios.get<Array<FormInstitutionType>>(
