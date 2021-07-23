@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "dependent_list")
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Institution {

@@ -49,6 +49,7 @@ import {
 } from "../components/InstitutionDetails";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders, accessNestedValues } from "../components/Table";
+import axios, { AxiosResponse } from "axios";
 import {
   faCheckSquare,
   faEdit,
@@ -69,7 +70,6 @@ import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import { Theme } from "@material-ui/core/styles";
-import axios from "axios";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import { useSnackbar } from "../Wrapper";
@@ -400,7 +400,10 @@ export function CreateInstitutionForm({
   onSubmit,
 }: {
   defaultInstitution?: RecursivePartial<FormInstitutionType>;
-  onSubmit?: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
+  onSubmit?: (
+    data: FormInstitutionType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<FormInstitutionType | Array<FormInstitutionType>>>;
 }) {
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
@@ -408,7 +411,9 @@ export function CreateInstitutionForm({
   const submit: (
     data: FormInstitutionType,
     event?: BaseSyntheticEvent
-  ) => void =
+  ) => Promise<
+    AxiosResponse<FormInstitutionType | Array<FormInstitutionType>>
+  > =
     onSubmit ||
     (async (data, event) => {
       try {
@@ -416,12 +421,15 @@ export function CreateInstitutionForm({
           "http://localhost:8080/institution",
           data
         );
+        if (response.status === 200) {
+          setMessage("Erfolgreich gespeichert.");
+          setSnackbarOpen(true);
+          navigate("/institutions");
+        }
+        return response;
       } catch (error) {
         throw error;
       }
-      setMessage("Erfolgreich gespeichert.");
-      setSnackbarOpen(true);
-      navigate("/institutions");
     });
 
   return (
@@ -438,16 +446,24 @@ export function UpdateInstitutionForm({
   const institutionStyles = useDetailsStyles();
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
+
   const updateData = async (data?: FormInstitutionType) => {
     try {
       const response = await axios.put<FormInstitutionType>(
         "http://localhost:8080/institution",
         data
       );
-      queryClient.invalidateQueries("institutions");
-      queryClient.invalidateQueries("institution");
+      if (response.status === 200) {
+        queryClient.invalidateQueries("institutions");
+        queryClient.invalidateQueries("institution");
+        setMessage("Erfolgreich aktualisiert.");
+      }
+      return response;
     } catch (error) {
-      console.log(error);
+      setMessage(error.response.data.message);
+      throw error;
+    } finally {
+      setSnackbarOpen(true);
     }
   };
   const toggleLabel = (
@@ -461,13 +477,15 @@ export function UpdateInstitutionForm({
           control={
             <Switch
               checked={!disabled}
-              onChange={() => {
+              onChange={async () => {
                 if (!disabled) {
-                  updateData(getValues());
-                  setMessage("Erfolgreich aktualisiert.");
-                  setSnackbarOpen(true);
-                }
-                setDisabled((value) => !value);
+                  try {
+                    await updateData(getValues());
+                    setDisabled(true);
+                  } catch (error) {
+                    setDisabled(false);
+                  }
+                } else setDisabled((value) => !value);
               }}
               name="toggleDisabled"
               color="primary"
@@ -484,11 +502,14 @@ export function UpdateInstitutionForm({
 
   return (
     <InstitutionForm
-      onSubmit={(data) => {
-        updateData(data);
-        navigate("/institutions");
-        setMessage("Erfolgreich aktualisiert.");
-        setSnackbarOpen(true);
+      onSubmit={async (data) => {
+        try {
+          const response = await updateData(data);
+          navigate("/institutions");
+          return response;
+        } catch (error) {
+          throw error;
+        }
       }}
       defaultValues={data}
       toggleLabel={toggleLabel}
@@ -504,7 +525,10 @@ export function InstitutionForm({
   defaultDisabled = false,
 }: {
   defaultValues?: RecursivePartial<FormInstitutionType>;
-  onSubmit: (data: FormInstitutionType, event?: BaseSyntheticEvent) => void;
+  onSubmit: (
+    data: FormInstitutionType,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<FormInstitutionType | Array<FormInstitutionType>>>;
   toggleLabel?: (
     disabled: boolean,
     setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
@@ -576,18 +600,12 @@ export function InstitutionForm({
       event.preventDefault();
       trigger();
       if (isValid) {
-        try {
-          await axios.post<FormInstitutionType>(
-            "http://localhost:8080/institution",
-            getValues()
-          );
-          navigate("/institutions");
-        } catch (error) {
-          console.log(error);
-        }
+        onSubmit(getValues());
       }
     }
   };
+
+  useEventListener("keydown", onKeyDown);
 
   const inputs = [
     toggleLabel ? toggleLabel(disabled, setDisabled, getValues) : <></>,
@@ -622,6 +640,10 @@ export function InstitutionForm({
         required: "Telefonnummer muss angegeben werden",
         icon: faVoicemail,
         autoComplete: "tel",
+        pattern: {
+          value: /^[0-9]+([-\s][0-9]+)*$/,
+          message: "Telefonnummer ist ungültig",
+        },
         disabled,
         formState,
       })}
@@ -645,6 +667,11 @@ export function InstitutionForm({
         required: "Hausnummer muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "address-line2",
+        pattern: {
+          value:
+            /^[0-9]+[a-zA-ZäöüÄÖÜß]*((-[0-9]+[a-zA-ZäöüÄÖÜß]*)|(-[a-zA-ZäöüÄÖÜß]))?$/,
+          message: "Hausnummer ist ungültig",
+        },
         disabled,
         formState,
       })}
@@ -667,6 +694,10 @@ export function InstitutionForm({
         required: "Postleitzahl muss angegeben werden",
         icon: faMapMarkerAlt,
         autoComplete: "postal-code",
+        pattern: {
+          value: /^[0-9]{5}$/,
+          message: "Postleitzahl ist ungültig",
+        },
         disabled,
         formState,
       })}
@@ -722,14 +753,17 @@ export function InstitutionForm({
       }
       inputs={inputs}
       maxWidth="200ch"
-      onSubmit={handleSubmit((data, event) => {
+      onSubmit={handleSubmit(async (data, event) => {
         setIsLoading(true);
         try {
-          onSubmit(data, event);
+          const response = await onSubmit(data, event);
+          if (response.status === 200) {
+            setMessage("Erfolgreich gespeichert.");
+            setSnackbarOpen(true);
+          }
         } catch (error) {
-          setMessage("Fehler beim Speichern.");
+          setMessage(error.response.data.message);
           setSnackbarOpen(true);
-          console.error(error);
         } finally {
           setIsLoading(false);
         }

@@ -3,6 +3,7 @@ package de.llggiessen.mke.controller;
 import de.llggiessen.mke.repository.InstitutionRepository;
 import de.llggiessen.mke.schema.Customer;
 import de.llggiessen.mke.schema.Institution;
+import de.llggiessen.mke.utils.FormValidation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,12 +52,14 @@ public class InstitutionController {
     }
 
     @PostMapping(value = "")
-    public Institution newInstitution(@RequestBody Institution newInstitution) {
-        if (repository.existsById(newInstitution.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id already exists.");
+    public Institution createInstitution(@RequestBody Institution institution) {
+        FormValidation.validateInstitution(institution);
+
+        if (repository.existsById(institution.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dieser INST Code existiert bereits.");
         } else {
             try {
-                return repository.save(newInstitution);
+                return repository.save(institution);
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not save institution.");
             }
@@ -64,12 +67,14 @@ public class InstitutionController {
     }
 
     @PutMapping(value = "")
-    public Institution updateInstitution(@RequestBody Institution newInstitution) {
-        if (!repository.existsById(newInstitution.getId()))
+    public Institution updateInstitution(@RequestBody Institution institution) {
+        FormValidation.validateInstitution(institution);
+
+        if (!repository.existsById(institution.getId()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "There is no institution with this id. Maybe you meant to create a new institution using a POST request.");
         try {
-            return repository.save(newInstitution);
+            return repository.save(institution);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not update institution.");
         }
