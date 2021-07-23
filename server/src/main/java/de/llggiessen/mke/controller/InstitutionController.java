@@ -20,11 +20,12 @@ public class InstitutionController {
     @GetMapping("")
     public Iterable<Institution> filterInstitutions(@RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "id", defaultValue = "") String id,
-            @RequestParam(value = "schoolAdministrativeDistrict", defaultValue = "-1") int svb) {
+            @RequestParam(value = "schoolAdministrativeDistrict", defaultValue = "-1") int svb,
+            @RequestParam(value = "address.street", defaultValue = "") String street) {
         if (svb == -1)
-            return repository.findInstitutionsByAttributes(name, id);
+            return repository.findInstitutionsByAttributes(name, id, street);
         else
-            return repository.filterInstitutions(name, id, svb == 1 ? true : false);
+            return repository.filterInstitutions(name, id, svb == 1 ? true : false, street);
     }
 
     @GetMapping(value = "{id}")
