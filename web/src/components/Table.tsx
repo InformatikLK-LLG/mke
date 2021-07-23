@@ -1,5 +1,12 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Table as BetterTable,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  InputAdornment,
   TableBody,
   TableCell,
   TableContainer,
@@ -12,14 +19,19 @@ import {
 } from "@material-ui/core";
 import {
   IconDefinition,
+  faFilter,
   faSortDown,
   faSortUp,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { Fragment, useState } from "react";
+import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
 
 import Button from "./Button";
 import Delayed from "./Delayed";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HomeRounded } from "@material-ui/icons";
 import { InstitutionsSearchParams } from "../hooks/useInstitutions";
 import Loading from "./Loading";
 import flower from "../resources/blume.jpg";
@@ -91,6 +103,17 @@ const useStyles = makeStyles({
       backdropFilter: "brightness(120%)",
     },
   },
+  buttonHover: {
+    "&:hover": {
+      color: "var(--highlighting)",
+    },
+    color: "var(--border)",
+  },
+  clearSearchIcon: {
+    cursor: "pointer",
+    fontSize: "1.2em",
+    padding: "6px",
+  },
 });
 
 export function accessNestedValues(path: string, object: {}) {
@@ -128,8 +151,8 @@ interface TableProps<T extends SimplestItem, K> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
   sort?: Array<string>;
-  search?: (parameter: keyof K, query: string) => void;
-  searchParams?: Array<keyof K>;
+  search?: (parameter?: keyof K, query?: string) => void;
+  searchParams?: Array<{ [key in keyof K]: "number" | "string" }>;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
@@ -220,6 +243,27 @@ export default function Table<T extends SimplestItem, K>({
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
+  const [searchValues, setSearchValues] = useState<
+    { [key in keyof K]: string } | undefined
+  >(() => {
+    if (!searchParams || searchParams.length === 0) return undefined;
+
+    const tempSearchParams = searchParams.map(
+      (searchParam) => Object.keys(searchParam)[0] as keyof K
+    );
+    const searchArray = tempSearchParams.map((value) => {
+      return {
+        [value]:
+          searchParams[tempSearchParams.indexOf(value)][value] === "number"
+            ? "-1"
+            : "",
+      } as { [key in keyof K]: string };
+    });
+    return searchArray.reduce((prev, curr) => {
+      return { ...prev, ...curr };
+    });
+  });
+
   const classes = useStyles();
   const [accessKeys, setAccessKeys] = useState<Array<Leaves<T>>>([]);
   let keyThing = 0;
@@ -273,7 +317,6 @@ export default function Table<T extends SimplestItem, K>({
   function RenderRow(row: T) {
     return (
       <TableRow
-        // hover
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
         className={`${classes.row} ${onRowClick && classes.clickable} ${
@@ -393,26 +436,176 @@ export default function Table<T extends SimplestItem, K>({
 
   return (
     <>
-      <div className={classes.searchParams}>
-        {searchParams.map(
-          (searchParam) =>
-            search && (
-              <TextField
-                size="small"
-                key={searchParam as string}
-                id={searchParam as string}
-                label="Suche"
-                variant="outlined"
-                onChange={(e) => {
-                  setPage(0);
-                  search(searchParam, e.target.value);
-                  e.target.value === "blume" && setIsBlume(true);
-                  e.target.value === "wtf" && setIsBlume(false);
-                }}
-              />
-            )
-        )}
-      </div>
+      {searchValues && (
+        <Accordion
+          style={{
+            width: "100%",
+            boxShadow: "none",
+            marginBottom: "1.5em",
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            Filter
+          </AccordionSummary>
+          <AccordionDetails>
+            {search && (
+              <Grid container spacing={2} alignItems="center">
+                {searchParams.map((searchParam) => {
+                  const parameter = Object.keys(searchParam)[0] as keyof K;
+                  return searchParam[parameter] === "number" ? (
+                    <Grid
+                      container
+                      item
+                      key={parameter as string}
+                      xs
+                      alignItems="center"
+                      wrap="nowrap"
+                    >
+                      <Grid item key={`${parameter}-checkbox`}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              id={parameter as string}
+                              onChange={(e) => {
+                                setPage(0);
+                                setSearchValues((values) => {
+                                  return (
+                                    values && {
+                                      ...values,
+                                      [parameter]:
+                                        e.target.value === "-1"
+                                          ? "1"
+                                          : String(Number(e.target.checked)),
+                                    }
+                                  );
+                                });
+                                search(
+                                  parameter,
+                                  e.target.value === "-1"
+                                    ? "1"
+                                    : String(Number(e.target.checked))
+                                );
+                              }}
+                              value={searchValues[parameter]}
+                              checked={searchValues[parameter] === "1"}
+                              indeterminate={searchValues[parameter] === "-1"}
+                              indeterminateIcon={
+                                <FontAwesomeIcon
+                                  icon={faSquare}
+                                  style={{ color: "var(--input)" }}
+                                />
+                              }
+                              icon={<FontAwesomeIcon icon={faSquare} />}
+                              checkedIcon={
+                                <FontAwesomeIcon icon={faCheckSquare} />
+                              }
+                              color="primary"
+                            />
+                          }
+                          label={
+                            (
+                              accessNestedValues(
+                                String(parameter),
+                                tableHeaders
+                              ) as Header
+                            ).label
+                          }
+                        />
+                      </Grid>
+                      <Grid item key={`${parameter}-icon`}>
+                        <FontAwesomeIcon
+                          className={`inputIcon ${classes.buttonHover} ${classes.clickable}`}
+                          icon={faTimes}
+                          tabIndex={0}
+                          onClick={() => {
+                            setPage(0);
+                            setSearchValues((values) => {
+                              return (
+                                values && {
+                                  ...values,
+                                  [parameter]: "-1",
+                                }
+                              );
+                            });
+                            search(parameter as keyof K, "-1");
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  ) : (
+                    <Grid item key={parameter as string}>
+                      <TextField
+                        size="small"
+                        id={parameter as string}
+                        label={
+                          (
+                            accessNestedValues(
+                              String(parameter),
+                              tableHeaders
+                            ) as Header
+                          ).label
+                        }
+                        variant="outlined"
+                        onChange={(e) => {
+                          setPage(0);
+                          setSearchValues((values) => {
+                            return (
+                              values && {
+                                ...values,
+                                [parameter]: e.target.value,
+                              }
+                            );
+                          });
+                          search(parameter as keyof K, e.target.value);
+                          e.target.value === "blume" && setIsBlume(true);
+                          e.target.value === "wtf" && setIsBlume(false);
+                        }}
+                        value={searchValues[parameter]}
+                      />
+                    </Grid>
+                  );
+                })}
+                <Grid container item xs justify="flex-end" alignItems="center">
+                  <Grid item>
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      className={`${classes.clearSearchIcon} ${classes.buttonHover} ${classes.clickable}`}
+                      onClick={() => {
+                        const tempSearchParams = searchParams.map(
+                          (searchParam) =>
+                            Object.keys(searchParam)[0] as keyof K
+                        );
+                        const searchArray = tempSearchParams.map((value) => {
+                          return {
+                            [value]:
+                              searchParams[tempSearchParams.indexOf(value)][
+                                value
+                              ] === "number"
+                                ? "-1"
+                                : "",
+                          } as { [key in keyof K]: string };
+                        });
+                        setSearchValues(
+                          searchArray.reduce((prev, curr) => {
+                            return { ...prev, ...curr };
+                          })
+                        );
+                        search();
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+          </AccordionDetails>
+        </Accordion>
+      )}
+      <Grid
+        container
+        alignItems="flex-start"
+        direction="row"
+        spacing={2}
+      ></Grid>
       <TableContainer className={classes.tableContainer}>
         <BetterTable className={classes.table}>
           <colgroup>

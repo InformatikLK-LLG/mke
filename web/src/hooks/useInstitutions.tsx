@@ -5,12 +5,15 @@ import { useState } from "react";
 
 export type InstitutionsSearchParams = {
   id?: string;
-  svb?: boolean;
+  schoolAdministrativeDistrict?: number;
   name?: string;
+  "address.street"?: string;
 };
 
 const useInstitutions = () => {
-  const [searchParams, setSearchParams] = useState<InstitutionsSearchParams>();
+  const [searchParams, setSearchParams] = useState<
+    InstitutionsSearchParams | undefined
+  >();
   return {
     ...useQuery(["institutions", searchParams], () =>
       axios.get<Array<FormInstitutionType>>(

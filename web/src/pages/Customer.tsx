@@ -84,9 +84,17 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
   };
   const { data, isLoading, setSearchParams } = useCustomers(instCode);
   const navigate = useNavigate();
-  const search = (searchParam: keyof CustomerSearchParams, query: string) => {
-    setSearchParams({ [searchParam]: query });
+  const search = (searchParam?: keyof CustomerSearchParams, query?: string) => {
+    setSearchParams(
+      (value) =>
+        searchParam &&
+        (value ? { ...value, [searchParam]: query } : { [searchParam]: query })
+    );
   };
+
+  const searchParams: Array<
+    { [key in keyof CustomerSearchParams]: "string" | "number" }
+  > = [{ firstName: "string" }, { lastName: "string" }];
 
   return (
     <Table
@@ -96,7 +104,7 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
       onRowClick={(row) => navigate(`/customers/${row.id}`)}
       isLoading={isLoading}
       search={search}
-      searchParams={["firstName", "lastName"]}
+      searchParams={searchParams}
     />
   );
 }

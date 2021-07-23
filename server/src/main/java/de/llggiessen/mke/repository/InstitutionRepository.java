@@ -11,9 +11,17 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(exported = false)
 public interface InstitutionRepository extends CrudRepository<Institution, String> {
 
-    @Query(value = "SELECT * FROM institution WHERE institution.svb = :svb", nativeQuery = true)
-    Iterable<Institution> findInstitutionsBySvb(@Param("svb") boolean svb);
+        @Query(value = "SELECT * FROM institution WHERE institution.svb = :svb", nativeQuery = true)
+        Iterable<Institution> findInstitutionsBySvb(@Param("svb") boolean svb);
 
-    @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name%", nativeQuery = true)
-    Iterable<Institution> findInstitutions(@Param("name") String name);
+        @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name%", nativeQuery = true)
+        Iterable<Institution> findInstitutions(@Param("name") String name);
+
+        @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name% AND institution.id LIKE %:id% AND institution.address.street LIKE %:street%", nativeQuery = true)
+        Iterable<Institution> findInstitutionsByAttributes(@Param("name") String name, @Param("id") String id,
+                        @Param("street") String street);
+
+        @Query(value = "SELECT * FROM institution WHERE institution.name LIKE %:name% AND institution.id LIKE %:id% AND institution.school_administrative_district = :svb AND institution.address.street LIKE %:street%", nativeQuery = true)
+        Iterable<Institution> filterInstitutions(@Param("name") String name, @Param("id") String id,
+                        @Param("svb") boolean svb, @Param("street") String street);
 }

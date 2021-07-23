@@ -10,7 +10,9 @@ export type CustomerSearchParams = {
 };
 
 const useCustomers = (instCode?: string) => {
-  const [searchParams, setSearchParams] = useState<CustomerSearchParams>();
+  const [searchParams, setSearchParams] = useState<
+    CustomerSearchParams | undefined
+  >();
   return {
     ...useQuery(["customers", searchParams], () =>
       axios.get<Array<CustomerType>>(
