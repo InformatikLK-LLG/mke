@@ -790,11 +790,24 @@ export function Institutions() {
   useEventListener("keydown", onKeyDown);
 
   async function search(
-    parameter: keyof InstitutionsSearchParams,
-    query: string
+    parameter?: keyof InstitutionsSearchParams,
+    query?: string
   ) {
-    setSearchParams({ [parameter]: query });
+    setSearchParams(
+      (value) =>
+        parameter &&
+        (value ? { ...value, [parameter]: query } : { [parameter]: query })
+    );
   }
+
+  const searchParams: Array<
+    { [key in keyof InstitutionsSearchParams]: "string" | "number" }
+  > = [
+    { id: "string" },
+    { name: "string" },
+    { "address.street": "string" },
+    { schoolAdministrativeDistrict: "number" },
+  ];
 
   return (
     <div className="container">
@@ -805,7 +818,7 @@ export function Institutions() {
         sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
         onRowClick={(row) => navigate(`./${row.id}`)}
         search={search}
-        searchParams={["name"]}
+        searchParams={searchParams}
         isLoading={isLoading}
       />
     </div>

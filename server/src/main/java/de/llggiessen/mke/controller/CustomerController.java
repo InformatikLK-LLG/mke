@@ -30,8 +30,8 @@ public class CustomerController {
         return repository.findAllByAttributes(email, firstName, lastName);
     }
 
-    @GetMapping(value = "", params = { "id" })
-    public Customer getCustomerByID(@RequestParam long id) {
+    @GetMapping(value = "{id}")
+    public Customer getCustomerByID(@PathVariable long id) {
         return repository.findById(id).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no customer with this id.");
         });

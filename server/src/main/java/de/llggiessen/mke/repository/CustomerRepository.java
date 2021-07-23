@@ -30,4 +30,5 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
     @Query(value = "SELECT * FROM customer WHERE customer.business_phone LIKE %:businessPhone%", nativeQuery = true)
     Iterable<Customer> findAllByBusinessPhone(@Param("businessPhone") String businessPhone);
+
 }
