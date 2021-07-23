@@ -89,6 +89,12 @@ export function LoginForm() {
         type: "password",
         placeholder: "Passwort",
         required: "Passwort muss angegeben werden",
+        pattern: {
+          value:
+            /^(?=.*[a-zäöüß])(?=.*[A-ZÄÖÜ])(?=.*\d)(?=.*[@$!%*?&'_;-])[A-Za-zäöüÄÖÜß\d@$!%*?&'_; -]{8,}$/,
+          message:
+            "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
+        },
         icon: faKey,
         formState,
       })}
@@ -373,7 +379,8 @@ export function RegisterForm3() {
         autoComplete: "new-password",
         required: "Passwort muss angegeben werden ",
         pattern: {
-          value: /\w{8}/,
+          value:
+            /^(?=.*[a-zäöüß])(?=.*[A-ZÄÖÜ])(?=.*\d)(?=.*[@$!%*?&'_;-])[A-Za-zäöüÄÖÜß\d@$!%*?&'_; -]{8,}$/,
           message:
             "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
         },
