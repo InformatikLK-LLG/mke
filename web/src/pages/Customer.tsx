@@ -92,6 +92,10 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
     );
   };
 
+  const searchParams: Array<
+    { [key in keyof CustomerSearchParams]: "string" | "number" }
+  > = [{ firstName: "string" }, { lastName: "string" }];
+
   return (
     <Table
       tableHeaders={tableHeaders}
@@ -100,7 +104,7 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
       onRowClick={(row) => navigate(`/customers/${row.id}`)}
       isLoading={isLoading}
       search={search}
-      searchParams={[{ firstName: "string" }, { lastName: "string" }]}
+      searchParams={searchParams}
     />
   );
 }

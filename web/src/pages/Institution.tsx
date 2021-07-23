@@ -741,7 +741,7 @@ export function InstitutionForm({
 
 export function Institutions() {
   const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
-  const { data, isLoading, setSearchParams, searchParams } = useInstitutions();
+  const { data, isLoading, setSearchParams } = useInstitutions();
   const navigate = useNavigate();
   const formInput = useInputStyles();
   const queryClient = useQueryClient();
@@ -766,6 +766,15 @@ export function Institutions() {
     );
   }
 
+  const searchParams: Array<
+    { [key in keyof InstitutionsSearchParams]: "string" | "number" }
+  > = [
+    { id: "string" },
+    { name: "string" },
+    { "address.street": "string" },
+    { schoolAdministrativeDistrict: "number" },
+  ];
+
   return (
     <div className="container">
       {/* <div className={formInput.tableContainer}> */}
@@ -775,11 +784,7 @@ export function Institutions() {
         sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
         onRowClick={(row) => navigate(`./${row.id}`)}
         search={search}
-        searchParams={[
-          { id: "string" },
-          { name: "string" },
-          { schoolAdministrativeDistrict: "number" },
-        ]}
+        searchParams={searchParams}
         isLoading={isLoading}
       />
     </div>

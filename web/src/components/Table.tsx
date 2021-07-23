@@ -152,7 +152,7 @@ interface TableProps<T extends SimplestItem, K> {
   rows: T[];
   sort?: Array<string>;
   search?: (parameter?: keyof K, query?: string) => void;
-  searchParams?: Array<{ [key in keyof T]?: "number" | "string" }>;
+  searchParams?: Array<{ [key in keyof K]: "number" | "string" }>;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
@@ -244,12 +244,12 @@ export default function Table<T extends SimplestItem, K>({
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const [searchValues, setSearchValues] = useState<
-    { [key in keyof T]: string } | undefined
+    { [key in keyof K]: string } | undefined
   >(() => {
     if (!searchParams || searchParams.length === 0) return undefined;
 
     const tempSearchParams = searchParams.map(
-      (searchParam) => Object.keys(searchParam)[0] as keyof T
+      (searchParam) => Object.keys(searchParam)[0] as keyof K
     );
     const searchArray = tempSearchParams.map((value) => {
       return {
@@ -257,7 +257,7 @@ export default function Table<T extends SimplestItem, K>({
           searchParams[tempSearchParams.indexOf(value)][value] === "number"
             ? "-1"
             : "",
-      } as { [key in keyof T]: string };
+      } as { [key in keyof K]: string };
     });
     return searchArray.reduce((prev, curr) => {
       return { ...prev, ...curr };
@@ -451,7 +451,7 @@ export default function Table<T extends SimplestItem, K>({
             {search && (
               <Grid container spacing={2} alignItems="center">
                 {searchParams.map((searchParam) => {
-                  const parameter = Object.keys(searchParam)[0] as keyof T;
+                  const parameter = Object.keys(searchParam)[0] as keyof K;
                   return searchParam[parameter] === "number" ? (
                     <Grid
                       container
@@ -459,6 +459,7 @@ export default function Table<T extends SimplestItem, K>({
                       key={parameter as string}
                       xs
                       alignItems="center"
+                      wrap="nowrap"
                     >
                       <Grid item key={`${parameter}-checkbox`}>
                         <FormControlLabel
@@ -479,7 +480,7 @@ export default function Table<T extends SimplestItem, K>({
                                   );
                                 });
                                 search(
-                                  parameter as keyof K,
+                                  parameter,
                                   e.target.value === "-1"
                                     ? "1"
                                     : String(Number(e.target.checked))
@@ -572,7 +573,7 @@ export default function Table<T extends SimplestItem, K>({
                       onClick={() => {
                         const tempSearchParams = searchParams.map(
                           (searchParam) =>
-                            Object.keys(searchParam)[0] as keyof T
+                            Object.keys(searchParam)[0] as keyof K
                         );
                         const searchArray = tempSearchParams.map((value) => {
                           return {
@@ -582,7 +583,7 @@ export default function Table<T extends SimplestItem, K>({
                               ] === "number"
                                 ? "-1"
                                 : "",
-                          } as { [key in keyof T]: string };
+                          } as { [key in keyof K]: string };
                         });
                         setSearchValues(
                           searchArray.reduce((prev, curr) => {

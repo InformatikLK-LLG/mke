@@ -5,8 +5,9 @@ import { useState } from "react";
 
 export type InstitutionsSearchParams = {
   id?: string;
-  svb?: number;
+  schoolAdministrativeDistrict?: number;
   name?: string;
+  "address.street"?: string;
 };
 
 const useInstitutions = () => {
