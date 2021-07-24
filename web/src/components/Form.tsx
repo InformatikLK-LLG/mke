@@ -91,7 +91,7 @@ export function LoginForm() {
         required: "Passwort muss angegeben werden",
         pattern: {
           value:
-            /^(?=.*[a-zäöüß])(?=.*[A-ZÄÖÜ])(?=.*\d)(?=.*[@$!%*?&'_;-])[A-Za-zäöüÄÖÜß\d@$!%*?&'_; -]{8,}$/,
+            /^(?=.*[a-zäöüß])(?=.*[A-ZÄÖÜ])(?=.*\d)(?=.*[@$!%*?&|<>'_;-])[A-Za-zäöüÄÖÜß\d@$!%*?&'|<>_; -]{8,}$/,
           message:
             "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
         },
@@ -380,7 +380,7 @@ export function RegisterForm3() {
         required: "Passwort muss angegeben werden ",
         pattern: {
           value:
-            /^(?=.*[a-zäöüß])(?=.*[A-ZÄÖÜ])(?=.*\d)(?=.*[@$!%*?&'_;-])[A-Za-zäöüÄÖÜß\d@$!%*?&'_; -]{8,}$/,
+            /^(?=.*[a-zäöüß])(?=.*[A-ZÄÖÜ])(?=.*\d)(?=.*[@$!%*?&|<>'_;-])[A-Za-zäöüÄÖÜß\d@$!%*?&'|<>_; -]{8,}$/,
           message:
             "Passwort muss aus mindestens acht Zeichen bestehen; inklusive Sonderzeichen",
         },
