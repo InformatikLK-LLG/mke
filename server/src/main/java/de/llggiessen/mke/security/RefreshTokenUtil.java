@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import de.llggiessen.mke.repository.RefreshTokenRepository;
@@ -22,10 +23,7 @@ public class RefreshTokenUtil {
     RefreshTokenRepository refreshTokenRepository;
 
     public RefreshToken createRefreshToken(User user) {
-        RefreshToken refreshToken = new RefreshToken();
-
-        refreshToken.setUser(user);
-        refreshToken.setToken(UUID.randomUUID().toString());
+        RefreshToken refreshToken = new RefreshToken(user, UUID.randomUUID().toString());
 
         refreshToken = refreshTokenRepository.save(refreshToken);
         return refreshToken;
@@ -33,7 +31,7 @@ public class RefreshTokenUtil {
 
     public boolean isExpired(RefreshToken token) {
         long expirationTimeZeugs = 1000 * 60 * 60 * 24 * 7;
-        return ((token.getIssuedAt().getTime() + expirationTimeZeugs) > new Date().getTime());
+        return ((token.getIssuedAt().getTime() + expirationTimeZeugs) < new Date().getTime());
     }
 
     public RefreshToken handleExpiration(RefreshToken token) {
@@ -59,6 +57,11 @@ public class RefreshTokenUtil {
         return false;
     }
 
+    public User getUser(String token) {
+        return refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)).getUser();
+    }
+
     @ResponseStatus(HttpStatus.FORBIDDEN)
     private class TokenRefreshException extends RuntimeException {
 
@@ -66,4 +69,5 @@ public class RefreshTokenUtil {
             super(String.format("Failed for [%s]: %s", token, message));
         }
     }
+
 }

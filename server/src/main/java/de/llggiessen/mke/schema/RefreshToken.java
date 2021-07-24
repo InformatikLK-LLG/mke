@@ -7,13 +7,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import org.springframework.data.annotation.CreatedDate;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class RefreshToken {
 
     @Id
@@ -26,6 +28,13 @@ public class RefreshToken {
     @Column(unique = true)
     private String token;
 
-    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
     private Date issuedAt;
+
+    public RefreshToken(User user, String token) {
+        this.user = user;
+        this.token = token;
+        this.issuedAt = new Date();
+    }
+
 }

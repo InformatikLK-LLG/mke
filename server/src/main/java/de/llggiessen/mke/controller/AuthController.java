@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +48,16 @@ public class AuthController {
             String refreshToken = refreshTokenUtil.createRefreshToken(user).getToken();
 
             Cookie cookie = new Cookie("auth", accessToken);
-            cookie.setSecure(true);
+            // cookie.setSecure(true);
             cookie.setHttpOnly(true);
             cookie.setMaxAge(5 * 60);
             cookie.setPath("/");
 
             Cookie refreshCookie = new Cookie("refresh", refreshToken);
-            refreshCookie.setSecure(true);
+            // refreshCookie.setSecure(true);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setMaxAge(7 * 24 * 60 * 60);
-            refreshCookie.setPath("/");
+            refreshCookie.setPath("/refreshToken");
 
             response.addCookie(cookie);
             response.addCookie(refreshCookie);
@@ -65,6 +66,26 @@ public class AuthController {
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/refreshToken")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+
+        if (request.getCookies() != null)
+            for (Cookie cookie : request.getCookies())
+                if ((cookie.getName().equals("refresh")) && refreshTokenUtil.validate(cookie.getValue())) {
+                    User user = refreshTokenUtil.getUser(cookie.getValue());
+                    String accessToken = jwtTokenUtil.generateAccessToken(user);
+
+                    Cookie newCookie = new Cookie("auth", accessToken);
+                    // newCookie.setSecure(true);
+                    newCookie.setHttpOnly(true);
+                    newCookie.setMaxAge(5 * 60);
+                    newCookie.setPath("/");
+
+                    response.addCookie(newCookie);
+                    return;
+                }
     }
 
 }
