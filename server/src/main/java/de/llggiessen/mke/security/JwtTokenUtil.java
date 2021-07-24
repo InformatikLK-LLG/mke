@@ -27,7 +27,7 @@ public class JwtTokenUtil {
 
     public String generateAccessToken(User user) {
         return Jwts.builder().setSubject(String.format("%s,%s", user.getId(), user.getUsername())).setIssuer(JWT_ISSUER)
-                .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000))
+                .setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 5 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
     }
 
