@@ -16,6 +16,7 @@ type Invite = { inviteCode: string; code: number; email: string } | undefined;
 
 type Auth = {
   user: User;
+  isLoading: boolean;
   signin: (email: string, password: string) => Promise<User>;
   signout: () => void;
   validateInviteCode: (code: number) => boolean;
@@ -35,6 +36,7 @@ type Auth = {
 
 const defaultAuth: Auth = {
   user: undefined,
+  isLoading: true,
   signin: () => {
     return new Promise(() => undefined);
   },
@@ -68,6 +70,7 @@ export const useAuth = () => {
 
 function useProvideAuth(): Auth {
   const [user, setUser] = useState<User>();
+  const [isLoading, setIsLoading] = useState(true);
 
   const signin = async (email: string, password: string) => {
     try {
@@ -143,11 +146,53 @@ function useProvideAuth(): Auth {
   };
 
   useEffect(() => {
-    // TODO logic to fetch user on mount
-  });
+    async function fetchUser() {
+      try {
+        const response = await axios.post<User>(
+          "http://localhost:8080/signin",
+          {},
+          { withCredentials: true }
+        );
+        setUser(response.data);
+        console.log(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async function fetchNewJWT() {
+      try {
+        await axios.post(
+          "http://localhost:8080/refreshToken",
+          {},
+          { withCredentials: true }
+        );
+        fetchUser();
+      } catch (error) {
+        setUser(undefined);
+        console.error(error);
+        setIsLoading(false);
+      }
+    }
+
+    async function doMagic() {
+      setIsLoading(true);
+      try {
+        await fetchUser();
+      } catch (error) {
+        fetchNewJWT();
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    doMagic();
+  }, []);
 
   return {
     user,
+    isLoading,
     signin,
     signout,
     verifyRegistrationEligibility,

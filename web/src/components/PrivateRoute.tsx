@@ -3,7 +3,7 @@ import { Navigate, Route } from "react-router-dom";
 import { RouteProps } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
-type privateRouteProps = {
+type PrivateRouteProps = {
   path: string;
   element: JSX.Element;
   rest?: RouteProps;
@@ -15,16 +15,16 @@ export default function PrivateRoute({
   element,
   rest,
   children,
-}: privateRouteProps) {
+}: PrivateRouteProps) {
   const auth = useAuth();
 
-  return (
-    <Route
-      {...rest}
-      path={path}
-      element={auth.user ? element : <Navigate to="/login" />}
-    >
+  if (auth.isLoading) return <></>;
+
+  return auth.user ? (
+    <Route {...rest} path={path} element={element}>
       {children}
     </Route>
+  ) : (
+    <Navigate to="/login" />
   );
 }
