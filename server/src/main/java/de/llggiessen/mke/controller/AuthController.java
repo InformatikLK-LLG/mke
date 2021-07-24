@@ -57,12 +57,26 @@ public class AuthController {
             // refreshCookie.setSecure(true);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setMaxAge(7 * 24 * 60 * 60);
-            refreshCookie.setPath("/refreshToken");
+            refreshCookie.setPath("/");
 
             response.addCookie(cookie);
             response.addCookie(refreshCookie);
 
             return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken).body(user);
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/signin")
+    public User signInUser(HttpServletRequest request) {
+        if (request.getCookies() == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("auth") && jwtTokenUtil.validate(cookie.getValue())) {
+                return userRepository.findById(jwtTokenUtil.getUserId(cookie.getValue()))
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+            }
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -86,6 +100,8 @@ public class AuthController {
                     response.addCookie(newCookie);
                     return;
                 }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
 }

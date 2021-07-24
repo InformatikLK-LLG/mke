@@ -31,10 +31,10 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
     }
 
-    public String getUserId(String token) {
+    public long getUserId(String token) {
         Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token).getBody();
 
-        return claims.getSubject().split(",")[0];
+        return Long.parseLong(claims.getSubject().split(",")[0]);
     }
 
     public String getUsername(String token) {
