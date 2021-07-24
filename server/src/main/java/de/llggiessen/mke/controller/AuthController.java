@@ -3,9 +3,6 @@ package de.llggiessen.mke.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.UUID;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,28 +13,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-import de.llggiessen.mke.repository.RefreshTokenRepository;
 import de.llggiessen.mke.repository.UserRepository;
-import de.llggiessen.mke.schema.RefreshToken;
 import de.llggiessen.mke.schema.User;
 import de.llggiessen.mke.schema.UserCredentials;
 import de.llggiessen.mke.security.JwtTokenUtil;
+import de.llggiessen.mke.security.RefreshTokenUtil;
 
 @RestController
 public class AuthController {
 
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    private PasswordEncoder passwordEncoder;
+    private RefreshTokenUtil refreshTokenUtil;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthController(UserRepository userRepository, JwtTokenUtil jwtTokenUtil, PasswordEncoder passwordEncoder,
+            RefreshTokenUtil refreshTokenUtil) {
+        this.userRepository = userRepository;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.passwordEncoder = passwordEncoder;
+        this.refreshTokenUtil = refreshTokenUtil;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<User> loginUser(@RequestBody UserCredentials userCredentials, HttpServletResponse response) {
@@ -46,7 +44,7 @@ public class AuthController {
 
         if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword())) {
             String accessToken = jwtTokenUtil.generateAccessToken(user);
-            String refreshToken = createRefreshToken(user).getToken();
+            String refreshToken = refreshTokenUtil.createRefreshToken(user).getToken();
 
             Cookie cookie = new Cookie("auth", accessToken);
             cookie.setSecure(true);
@@ -69,35 +67,4 @@ public class AuthController {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
-    public RefreshToken createRefreshToken(User user) {
-        RefreshToken refreshToken = new RefreshToken();
-
-        refreshToken.setUser(user);
-        refreshToken.setToken(UUID.randomUUID().toString());
-
-        refreshToken = refreshTokenRepository.save(refreshToken);
-        return refreshToken;
-    }
-
-    public boolean isExpired(RefreshToken token) {
-        long expirationTimeZeugs = 1000 * 60 * 60 * 24 * 7;
-        return ((token.getIssuedAt().getTime() + expirationTimeZeugs) > new Date().getTime());
-    }
-
-    public RefreshToken handleExpiration(RefreshToken token) {
-        if (isExpired(token)) {
-            refreshTokenRepository.delete(token);
-            throw new TokenRefreshException(token.getToken(),
-                    "Refresh token was expired. Please make a new login request.");
-        }
-        return token;
-    }
-
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    private class TokenRefreshException extends RuntimeException {
-
-        public TokenRefreshException(String token, String message) {
-            super(String.format("Failed for [%s]: %s", token, message));
-        }
-    }
 }
