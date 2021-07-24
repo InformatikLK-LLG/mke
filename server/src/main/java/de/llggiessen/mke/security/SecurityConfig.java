@@ -44,9 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("content-type");
         config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
 
         return new CorsFilter(source);

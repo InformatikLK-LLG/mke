@@ -20,7 +20,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 @RequiredArgsConstructor
 public class JwtTokenUtil {
 
-    private static final String JWT_SECRET = "jfoisejosepöjg0au987u30j4ozu8to9per";
+    private static final String JWT_SECRET = "jfoisejosepjg0au987u30j4ozu8to9per";
     private static final String JWT_ISSUER = "llg-giessen.de";
 
     private final Logger log = LoggerFactory.getLogger(JwtTokenUtil.class);

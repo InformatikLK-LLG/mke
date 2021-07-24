@@ -71,10 +71,14 @@ function useProvideAuth(): Auth {
 
   const signin = async (email: string, password: string) => {
     try {
-      const response = await axios.post<User>("http://localhost:8080/login", {
-        email,
-        password,
-      });
+      const response = await axios.post<User>(
+        "http://localhost:8080/login",
+        {
+          email,
+          password,
+        },
+        { withCredentials: true }
+      );
       setUser(response.data);
       return response.data;
     } catch (error) {
