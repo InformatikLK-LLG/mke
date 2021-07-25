@@ -28,6 +28,8 @@ import de.llggiessen.mke.mail.Mail;
 import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Invite;
+import de.llggiessen.mke.schema.InviteRequestModel;
+import de.llggiessen.mke.schema.User;
 
 @RestController
 @RequestMapping(path = "/invite")
@@ -74,25 +76,35 @@ public class InviteController {
     }
 
     @PostMapping("")
-    public Invite createInvite(@RequestBody Invite invite) {
-        if (userRepository.findExactByEmail(invite.getEmail()).isPresent())
+    public Invite createInvite(@RequestBody InviteRequestModel inviteRequest) {
+        if (userRepository.findExactByEmail(inviteRequest.getEmail()).isPresent())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already exists");
 
+        Invite invite = new Invite();
+
         while (true) {
+            // extend expiration time (by updating invite) if invite already exists
             Optional<Invite> inviteFromDb = inviteRepository
-                    .findById(invite.getInviteCode() == null ? "" : invite.getInviteCode());
+                    .findById(inviteRequest.getInviteCode() == null ? "" : inviteRequest.getInviteCode());
             if (inviteFromDb.isPresent()) {
                 invite.setEmail(inviteFromDb.get().getEmail());
+                invite.setInviteCode(inviteRequest.getInviteCode());
             } else {
                 SecureRandom random = new SecureRandom();
 
                 // inviteCode should be six digits long and always positive
                 int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
 
+                User user = userRepository.findExactByEmail(inviteRequest.getEmail())
+                        .orElse(userRepository.save(new User(inviteRequest.getEmail(), inviteRequest.getRoles())));
+
+                invite.setUser(user);
                 invite.setInviteCode(String.valueOf(inviteCode));
+
                 String encodedInviteCode = passwordEncoder.encode(String.valueOf(inviteCode) + invite.getEmail());
-                if (!inviteRepository.findByEncodedInviteCode(encodedInviteCode).isPresent())
+                if (!inviteRepository.findByEncodedInviteCode(encodedInviteCode).isPresent()) {
                     invite.setEncodedInviteCode(encodedInviteCode);
+                }
             }
 
             try {
@@ -116,10 +128,14 @@ public class InviteController {
 
                 return finalInvite;
             } catch (Exception e) {
-                if (e.getCause().getClass().equals(ConstraintViolationException.class))
+                if (e.getCause().getClass().equals(ConstraintViolationException.class)) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already invited");
-                if (e.getCause().getClass().equals(IdentifierGenerationException.class))
+                }
+                if (e.getCause().getClass().equals(IdentifierGenerationException.class)) {
                     log.info("inviteCode already in use. Retrying.");
+                } else {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
             }
         }
 

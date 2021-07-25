@@ -2,34 +2,47 @@ package de.llggiessen.mke.schema;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import java.util.Set;
+
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
 public class Invite {
 
     @Id
     private String inviteCode;
     private String encodedInviteCode;
-    @Column(unique = true)
-    private String email;
     @UpdateTimestamp
     @JsonProperty(access = Access.WRITE_ONLY)
     private LocalDateTime creationDate;
 
-    public Invite(String email) {
-        this.email = email;
+    @OneToOne
+    private User user;
+
+    public Invite() {
+        this.user = new User();
+    }
+
+    public Invite(String email, Set<Role> roles) {
+        this.user = new User(email, roles);
+    }
+
+    public String getEmail() {
+        return this.user.getEmail();
+    }
+
+    public void setEmail(String email) {
+        this.user.setEmail(email);
     }
 
 }

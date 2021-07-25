@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Set;
 import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -26,10 +27,15 @@ public class User {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
     public User() {
+    }
+
+    public User(String email, Set<Role> roles) {
+        this.email = email;
+        this.roles = roles;
     }
 
     public User(String firstName, String lastName, String email, String password) {
