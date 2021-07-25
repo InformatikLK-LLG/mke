@@ -25,8 +25,8 @@ public class BookingController {
     }
 
     @GetMapping(value = "", params = { "id" })
-    public Optional<Booking> getBookingByID(@RequestParam long id) {
-        return repository.findByID(id);
+    public Optional<Booking> getBookingById(@RequestParam long id) {
+        return repository.findById(id);
     }
 
     @GetMapping(value = "", params = { "year" })
