@@ -1,10 +1,4 @@
-import {
-  BaseSyntheticEvent,
-  FormEventHandler,
-  Fragment,
-  useEffect,
-  useState,
-} from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import {
   Control,
   Controller,
@@ -58,7 +52,7 @@ import {
 import useInstitutions, {
   InstitutionsSearchParams,
 } from "../hooks/useInstitutions";
-import { useQuery, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 
 import { AnimatePresence } from "framer-motion";
 import { AutocompleteRenderInputParams } from "@material-ui/lab";
@@ -69,11 +63,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
-import { Theme } from "@material-ui/core/styles";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
 import { useSnackbar } from "../Wrapper";
-import useViewport from "../hooks/useViewport";
 
 type Address = {
   street: string;
@@ -569,8 +561,6 @@ export function InstitutionForm({
   const formButton = useButtonStyles();
   const [isLoading, setIsLoading] = useState(false);
   const [disabled, setDisabled] = useState(defaultDisabled);
-  const width = useViewport();
-  const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
 
   const zipCode = watch("address.zipCode");
@@ -774,11 +764,8 @@ export function InstitutionForm({
 }
 
 export function Institutions() {
-  const [institutions, setInstitutions] = useState<Array<InstitutionType>>([]);
   const { data, isLoading, setSearchParams } = useInstitutions();
   const navigate = useNavigate();
-  const formInput = useInputStyles();
-  const queryClient = useQueryClient();
 
   const onKeyDown = async (event: KeyboardEvent) => {
     if (event.key === "n" && event.altKey) {
@@ -811,7 +798,6 @@ export function Institutions() {
 
   return (
     <div className="container">
-      {/* <div className={formInput.tableContainer}> */}
       <Table
         tableHeaders={tableHeaders}
         rows={data?.data || []}
@@ -828,10 +814,6 @@ export function Institutions() {
 export function ViewInstitutionDetails() {
   const { instCode } = useParams();
   const { data, isLoading } = useInstitution(instCode);
-  // GET and stuff
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
   return isLoading ? (
     <Loading />
   ) : (

@@ -160,7 +160,7 @@ export default function Wrapper() {
     currentRoute?.heading && header.setHeader(currentRoute.heading);
     if (currentRoute?.name && typeof currentRoute.name === "string")
       document.title = currentRoute.name;
-  }, [currentRoute]);
+  }, [currentRoute, header]);
 
   return (
     <div className={`wrapper ${currentRoute ? "hasNavBar" : ""}`}>

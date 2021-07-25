@@ -10,10 +10,7 @@ import usePlacesAutocomplete, { getDetails } from "use-places-autocomplete";
 
 import { Autocomplete } from "@material-ui/lab";
 import { Autocomplete as AutocompleteType } from "../pages/Institution";
-import { FormInstitutionType } from "../pages/Institution";
 import { InputProps } from "@material-ui/core";
-import { Loader } from "@googlemaps/js-api-loader";
-import useOnclickOutside from "react-cool-onclickoutside";
 
 // const loader = new Loader({
 //   apiKey: API_KEY,
@@ -51,7 +48,7 @@ export default function PlacesAutocomplete<
 }) {
   const types = searchFor === "address" ? ["geocode"] : ["establishment"];
   const {
-    suggestions: { status, data },
+    suggestions: { data },
     value,
     setValue,
     clearSuggestions,
@@ -145,27 +142,9 @@ export default function PlacesAutocomplete<
       }
     };
 
-  const renderSuggestions = () =>
-    data.map((suggestion) => {
-      const data = suggestion;
-      return (
-        <li key={data.place_id} onClick={handleSelect(suggestion)}>
-          <strong>{data.structured_formatting.main_text}</strong>{" "}
-          <small>{data.structured_formatting.secondary_text}</small>
-        </li>
-      );
-    });
-
   useEffect(() => {
     setValue(params.value as string);
   }, [params.value, setValue]);
-
-  // useEffect(() => {
-  //   async function load() {
-  //     await loader.load();
-  //   }
-  //   load();
-  // }, []);
 
   return (
     <Autocomplete

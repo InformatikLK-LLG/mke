@@ -17,7 +17,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import NoTrespassing from "./components/NoTrespassing";
-import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import ProvideAuth from "./hooks/useAuth";
 import { ThemeProvider } from "@material-ui/styles";
