@@ -14,19 +14,19 @@ import de.llggiessen.mke.schema.Invite;
 
 @Repository
 @RepositoryRestResource(exported = false)
+@Transactional
 public interface InviteRepository extends CrudRepository<Invite, String> {
 
-    @Query(value = "SELECT * FROM invite WHERE invite.email = :email", nativeQuery = true)
+    @Query("SELECT invite FROM Invite invite WHERE invite.user.email = :email")
     Optional<Invite> findByEmail(@Param("email") String email);
 
-    @Query(value = "SELECT * FROM invite WHERE invite.invite_code = :code AND invite.email = :email", nativeQuery = true)
+    @Query("SELECT invite FROM Invite invite WHERE invite.inviteCode = :code AND invite.user.email = :email")
     Optional<Invite> findByAttributes(@Param("code") String code, @Param("email") String email);
 
-    @Query(value = "SELECT * FROM invite WHERE invite.encoded_invite_code = :code", nativeQuery = true)
+    @Query("SELECT invite FROM Invite invite WHERE invite.encodedInviteCode = :code")
     Optional<Invite> findByEncodedInviteCode(@Param("code") String code);
 
     @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM invite WHERE invite.email = :email", nativeQuery = true)
+    @Query("DELETE Invite invite WHERE invite.user.email = :email")
     void deleteByEmail(@Param("email") String email);
 }
