@@ -1,46 +1,16 @@
-import { Controller, useForm } from "react-hook-form";
+import { Divider, makeStyles } from "@material-ui/core";
 import {
-  CreateInstitution,
   FormInstitutionType,
-  FormState,
-  RenderInput,
   UpdateInstitutionForm,
-  useButtonStyles,
-  useInputStyles,
 } from "../pages/Institution";
-import {
-  Divider,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
-  Switch,
-  makeStyles,
-  useTheme,
-} from "@material-ui/core";
-import axios, { AxiosResponse } from "axios";
-import {
-  faMapMarkerAlt,
-  faQuestion,
-  faUniversity,
-  faVoicemail,
-} from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
 
-import Button from "./Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Form from "./Form";
-import Loading from "./Loading";
+import { AxiosResponse } from "axios";
 import Table from "./Table";
-import { faKeyboard } from "@fortawesome/free-regular-svg-icons";
 import useCustomers from "../hooks/useCustomers";
-import useEventListener from "@use-it/event-listener";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useHeader } from "../Wrapper";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "react-query";
 
 export const useDetailsStyles = makeStyles({
   toggleLabel: {
@@ -81,26 +51,13 @@ export function InstitutionOverlay({
         address: { street: "", streetNumber: "", town: "", zipCode: "" },
       };
 
-  const {
-    handleSubmit,
-    setValue,
-    control,
-    watch,
-    getValues,
-    formState: { errors, isValid },
-    clearErrors,
-    reset,
-    trigger,
-  } = useForm<FormInstitutionType>({
+  const { setValue, watch, getValues } = useForm<FormInstitutionType>({
     mode: "onChange",
     defaultValues,
   });
   const navigate = useNavigate();
   const header = useHeader();
 
-  const [disabled, setDisabled] = useState(true);
-
-  const formInput = useInputStyles();
   const detailsStyles = useDetailsStyles();
 
   const zipCode = watch("address.zipCode");
@@ -116,37 +73,9 @@ export function InstitutionOverlay({
     // eslint-disable-next-line
   }, [zipCode]);
 
-  const queryClient = useQueryClient();
   const { data: customers, isLoading: customersIsLoading } = useCustomers(
     getValues("id")
   );
-
-  const updateData = async (data?: FormInstitutionType) => {
-    const values = data ? data : getValues();
-    try {
-      const response = await axios.put<FormInstitutionType>(
-        "http://localhost:8080/institution",
-        values
-      );
-      // queryClient.invalidateQueries("institution");
-      queryClient.invalidateQueries("institutions");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "s" && event.altKey && !disabled) {
-      event.preventDefault();
-      trigger();
-      if (isValid) {
-        updateData();
-        navigate("/institutions");
-      }
-    }
-  };
-
-  useEventListener("keydown", onKeyDown);
 
   return (
     <div className={detailsStyles.enclosure}>

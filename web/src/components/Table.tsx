@@ -6,7 +6,6 @@ import {
   Checkbox,
   FormControlLabel,
   Grid,
-  InputAdornment,
   TableBody,
   TableCell,
   TableContainer,
@@ -19,7 +18,6 @@ import {
 } from "@material-ui/core";
 import {
   IconDefinition,
-  faFilter,
   faSortDown,
   faSortUp,
   faTimes,
@@ -31,12 +29,9 @@ import Button from "./Button";
 import Delayed from "./Delayed";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { HomeRounded } from "@material-ui/icons";
-import { InstitutionsSearchParams } from "../hooks/useInstitutions";
 import Loading from "./Loading";
 import flower from "../resources/blume.jpg";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({
   headerIcon: {
@@ -240,7 +235,6 @@ export default function Table<T extends SimplestItem, K>({
   onRowClick,
   isLoading,
 }: TableProps<T, K>) {
-  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<Leaves<T>>("id" as Leaves<T>);
   const [direction, setDirection] = useState<"asc" | "desc">("asc");
   const [searchValues, setSearchValues] = useState<

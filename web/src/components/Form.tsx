@@ -1,13 +1,6 @@
 import "../styles/Form.css";
 
-import {
-  FieldError,
-  Path,
-  UseFormClearErrors,
-  UseFormRegister,
-  useForm,
-} from "react-hook-form";
-import { FormEventHandler, Fragment, useEffect } from "react";
+import { FormEventHandler, Fragment } from "react";
 import { FormState, RenderInput, useInputStyles } from "../pages/Institution";
 import {
   Grid,
@@ -15,23 +8,18 @@ import {
   GridItemsAlignment,
   GridJustification,
   GridSpacing,
-  InputAdornment,
-  TextField,
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import { Link, Prompt, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Path, useForm } from "react-hook-form";
 import {
   faEdit,
   faEnvelope,
   faKeyboard,
-  faUser,
 } from "@fortawesome/free-regular-svg-icons";
 
-import { AnimatePresence } from "framer-motion";
 import Button from "./Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import FormErrorMessage from "./FormErrorMessage";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../hooks/useAuth";
 import useViewport from "../hooks/useViewport";
@@ -40,12 +28,6 @@ const useButtonStyles = makeStyles({
   button: {
     display: "flex",
     justifyContent: "center",
-  },
-});
-
-const useFormStyles = makeStyles({
-  form: {
-    width: "40%",
   },
 });
 
@@ -58,7 +40,6 @@ export function LoginForm() {
   const formButton = useButtonStyles();
   const formInput = useInputStyles();
   const {
-    register,
     handleSubmit,
     clearErrors,
     control,
@@ -138,7 +119,6 @@ export function ForgotPasswordForm() {
   const formButton = useButtonStyles();
   const formInput = useInputStyles();
   const {
-    register,
     handleSubmit,
     control,
     getValues,
@@ -189,7 +169,6 @@ export function RegisterForm1() {
   const formButton = useButtonStyles();
   const formInput = useInputStyles();
   const {
-    register,
     handleSubmit,
     setError,
     clearErrors,
@@ -259,7 +238,6 @@ export function RegisterForm2() {
   const formButton = useButtonStyles();
   const formInput = useInputStyles();
   const {
-    register,
     handleSubmit,
     getValues,
     clearErrors,
@@ -341,7 +319,6 @@ export function RegisterForm3() {
   const formButton = useButtonStyles();
   const formInput = useInputStyles();
   const {
-    register,
     handleSubmit,
     setError,
     getValues,
@@ -463,7 +440,7 @@ export type OrderType = {
   xl?: number[];
 };
 
-export default function Form<T>({
+export default function Form({
   inputs,
   button,
   onSubmit,

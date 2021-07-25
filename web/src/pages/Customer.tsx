@@ -1,8 +1,6 @@
-import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { Controller, UseFormGetValues, useForm } from "react-hook-form";
 import {
-  CreateInstitution,
   CreateInstitutionForm,
   FormInstitutionType,
   FormState,
@@ -17,24 +15,19 @@ import {
   DialogTitle,
   FormControlLabel,
   Grid,
-  InputAdornment,
-  Snackbar,
   Switch,
-  TextField,
   Theme,
   makeStyles,
   useTheme,
 } from "@material-ui/core";
 import Form, { EmailInputField, OrderType } from "../components/Form";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 import axios, { AxiosResponse } from "axios";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 
-import { AnimatePresence } from "framer-motion";
+import { Autocomplete } from "@material-ui/lab";
 import Button from "../components/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
@@ -284,16 +277,10 @@ export function CustomerForm({
 
   const formInput = useInputStyles();
   const formButton = useButtonStyles();
-  const navigate = useNavigate();
-  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [disabled, setDisabled] = useState(defaultDisabled);
   const [options, setOptions] =
     useState<Array<{ name: string; id?: string }>>();
-  const [selectedOption, setSelectedOption] = useState<{
-    name: string;
-    id?: string;
-  }>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { setSnackbarOpen, setMessage } = useSnackbar();
 
@@ -407,7 +394,6 @@ export function CustomerForm({
                 setIsDialogOpen(true);
               } else setValue("institution.id", option.id);
               setValue("institution.name", option.name);
-              setSelectedOption(option);
             }}
             disabled={disabled}
             renderInput={(params) =>
