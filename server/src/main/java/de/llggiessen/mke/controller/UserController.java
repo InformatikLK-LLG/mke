@@ -31,8 +31,8 @@ public class UserController {
     }
 
     @DeleteMapping("")
-    public User deleteByEmail(@RequestParam(value = "email") String email) {
-        return repository.deleteByEmail(email);
+    public void deleteByEmail(@RequestParam(value = "email") String email) {
+        repository.deleteByEmail(email);
     }
 
     @PostMapping("")

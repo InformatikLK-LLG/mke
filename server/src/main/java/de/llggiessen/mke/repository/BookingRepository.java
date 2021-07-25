@@ -11,15 +11,16 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 @Repository
 @RepositoryRestResource(exported = false)
+@Transactional
 public interface BookingRepository extends CrudRepository<Booking, Long> {
 
-    @Query(value = "SELECT * FROM booking WHERE booking.year LIKE %:year%", nativeQuery = true)
-    Iterable<Booking> findAllByYear(@Param("year") String year);
+    Iterable<Booking> findAllByYear(String year);
 
-    @Query(value = "SELECT * FROM booking WHERE booking.id LIKE %:id%", nativeQuery = true)
-    Optional<Booking> findByID(@Param("id") long id);
+    Optional<Booking> findById(long id);
 
     @Query(value = "SELECT * FROM booking WHERE booking.retrieval_date LIKE %:retrievalDate%", nativeQuery = true)
     Iterable<Booking> findAllByRetrievalBoatDate(@Param("retrievalDate") String retrievalDate);
@@ -34,6 +35,6 @@ public interface BookingRepository extends CrudRepository<Booking, Long> {
     Iterable<Booking> findAllInRange(@Param("retrievalDate") Date retrievalDate, @Param("returnDate") Date returnDate);
 
     @Modifying
-    @Query(value = "DELETE FROM booking WHERE booking.id = :id", nativeQuery = true)
+    @Query(value = "DELETE Booking booking WHERE booking.id = :id", nativeQuery = true)
     void deleteById(@Param("id") long id);
 }
