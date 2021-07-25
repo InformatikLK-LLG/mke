@@ -5,7 +5,10 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import App from "./App";
 import React from "react";
 import ReactDOM from "react-dom";
+import axios from "axios";
 import reportWebVitals from "./reportWebVitals";
+
+axios.defaults.withCredentials = true;
 
 ReactDOM.render(
   <React.StrictMode>

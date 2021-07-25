@@ -19,6 +19,7 @@ type Auth = {
   isLoading: boolean;
   signin: (email: string, password: string) => Promise<User>;
   signout: () => void;
+  revokeAll: () => void;
   validateInviteCode: (code: number) => boolean;
   verifyRegistrationEligibility: (
     code: number,
@@ -41,6 +42,9 @@ const defaultAuth: Auth = {
     return new Promise(() => undefined);
   },
   signout: () => {
+    return;
+  },
+  revokeAll: () => {
     return;
   },
   verifyRegistrationEligibility: () => {
@@ -74,14 +78,10 @@ function useProvideAuth(): Auth {
 
   const signin = async (email: string, password: string) => {
     try {
-      const response = await axios.post<User>(
-        "http://localhost:8080/login",
-        {
-          email,
-          password,
-        },
-        { withCredentials: true }
-      );
+      const response = await axios.post<User>("http://localhost:8080/login", {
+        email,
+        password,
+      });
       setUser(response.data);
       return response.data;
     } catch (error) {
@@ -89,9 +89,22 @@ function useProvideAuth(): Auth {
     }
   };
 
-  const signout = () => {
-    // TODO implement logic for signout
-    setUser(undefined);
+  const signout = async () => {
+    try {
+      await axios.delete("http://localhost:8080/profile/logout");
+      setUser(undefined);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const revokeAll = async () => {
+    try {
+      await axios.delete("http://localhost:8080/profile/revokeAll");
+      setUser(undefined);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const validateInviteCode = (code: number) => {
@@ -148,13 +161,8 @@ function useProvideAuth(): Auth {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const response = await axios.post<User>(
-          "http://localhost:8080/signin",
-          {},
-          { withCredentials: true }
-        );
+        const response = await axios.post<User>("http://localhost:8080/signin");
         setUser(response.data);
-        console.log(response.data);
         setIsLoading(false);
       } catch (error) {
         throw error;
@@ -163,11 +171,7 @@ function useProvideAuth(): Auth {
 
     async function fetchNewJWT() {
       try {
-        await axios.post(
-          "http://localhost:8080/refreshToken",
-          {},
-          { withCredentials: true }
-        );
+        await axios.post("http://localhost:8080/profile/refreshToken");
         fetchUser();
       } catch (error) {
         setUser(undefined);
@@ -193,6 +197,7 @@ function useProvideAuth(): Auth {
     isLoading,
     signin,
     signout,
+    revokeAll,
     verifyRegistrationEligibility,
     validateInviteCode,
     register,

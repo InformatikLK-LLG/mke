@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -57,7 +58,7 @@ public class AuthController {
             // refreshCookie.setSecure(true);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setMaxAge(7 * 24 * 60 * 60);
-            refreshCookie.setPath("/");
+            refreshCookie.setPath("/profile");
 
             response.addCookie(cookie);
             response.addCookie(refreshCookie);
@@ -82,7 +83,59 @@ public class AuthController {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/refreshToken")
+    @DeleteMapping("/profile/logout")
+    public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        for (Cookie cookie : request.getCookies())
+            if (cookie.getName().equals("refresh") && refreshTokenUtil.validate(cookie.getValue())) {
+                refreshTokenUtil.revokeToken(cookie.getValue());
+
+                Cookie newCookie = new Cookie("auth", "");
+                // cookie.setSecure(true);
+                newCookie.setHttpOnly(true);
+                newCookie.setMaxAge(0);
+                newCookie.setPath("/");
+
+                Cookie refreshCookie = new Cookie("refresh", "");
+                // refreshCookie.setSecure(true);
+                refreshCookie.setHttpOnly(true);
+                refreshCookie.setMaxAge(0);
+                refreshCookie.setPath("/profile");
+
+                response.addCookie(newCookie);
+                response.addCookie(refreshCookie);
+                return;
+            }
+    }
+
+    @DeleteMapping("/profile/revokeAll")
+    public void revokeAllSessions(HttpServletRequest request, HttpServletResponse response) {
+        if (request.getCookies() == null)
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        for (Cookie cookie : request.getCookies())
+            if (cookie.getName().equals("auth") && jwtTokenUtil.validate(cookie.getValue())) {
+                refreshTokenUtil.revokeTokensOfUser(jwtTokenUtil.getUserId(cookie.getValue()));
+
+                Cookie newCookie = new Cookie("auth", "");
+                // cookie.setSecure(true);
+                newCookie.setHttpOnly(true);
+                newCookie.setMaxAge(0);
+                newCookie.setPath("/");
+
+                Cookie refreshCookie = new Cookie("refresh", "");
+                // refreshCookie.setSecure(true);
+                refreshCookie.setHttpOnly(true);
+                refreshCookie.setMaxAge(0);
+                refreshCookie.setPath("/profile");
+
+                response.addCookie(newCookie);
+                response.addCookie(refreshCookie);
+                return;
+            }
+    }
+
+    @PostMapping("/profile/refreshToken")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
 
         if (request.getCookies() != null)

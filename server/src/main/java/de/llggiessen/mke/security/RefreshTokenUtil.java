@@ -57,6 +57,14 @@ public class RefreshTokenUtil {
         return false;
     }
 
+    public void revokeToken(String token) {
+        refreshTokenRepository.deleteByToken(token);
+    }
+
+    public void revokeTokensOfUser(long userId) {
+        refreshTokenRepository.deleteByUserId(userId);
+    }
+
     public User getUser(String token) {
         return refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED)).getUser();
