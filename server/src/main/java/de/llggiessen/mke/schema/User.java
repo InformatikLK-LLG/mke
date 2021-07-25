@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Set;
+import javax.persistence.ManyToMany;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -23,6 +25,9 @@ public class User {
     private String email;
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
+
+    @ManyToMany
+    private Set<Role> roles;
 
     public User() {
     }

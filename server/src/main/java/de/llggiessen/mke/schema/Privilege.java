@@ -1,10 +1,7 @@
 package de.llggiessen.mke.schema;
 
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -16,14 +13,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role implements GrantedAuthority {
+public class Privilege implements GrantedAuthority {
 
     @Id
     private String id;
 
-    @ManyToMany
-    private Set<Privilege> privileges;
-
+    @Override
     public String getAuthority() {
         return this.id;
     }
