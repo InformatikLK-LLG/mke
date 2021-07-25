@@ -52,7 +52,6 @@ import {
 import useInstitutions, {
   InstitutionsSearchParams,
 } from "../hooks/useInstitutions";
-import { useQueryClient } from "react-query";
 
 import { AnimatePresence } from "framer-motion";
 import { AutocompleteRenderInputParams } from "@material-ui/lab";
@@ -65,6 +64,7 @@ import Loading from "../components/Loading";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
+import { useQueryClient } from "react-query";
 import { useSnackbar } from "../Wrapper";
 
 type Address = {
