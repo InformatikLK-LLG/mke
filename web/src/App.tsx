@@ -12,6 +12,7 @@ import Institution, {
 import { QueryClient, QueryClientProvider } from "react-query";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
 
+import AuthenticationRoute from "./components/AuthenticationRoute";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -42,13 +43,16 @@ function App() {
               <Routes>
                 <Route element={<Wrapper />}>
                   <PrivateRoute path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/forgotpassword" element={<ForgotPassword />} />
-                  <Route path="/register" element={<Register />}>
+                  <AuthenticationRoute path="/login" element={<Login />} />
+                  <AuthenticationRoute
+                    path="/forgotpassword"
+                    element={<ForgotPassword />}
+                  />
+                  <AuthenticationRoute path="/register" element={<Register />}>
                     <Route path="/" element={<Register1 />} />
                     <NoTrespassing path="1" element={<Register2 />} />
                     <NoTrespassing path="2" element={<Register3 />} />
-                  </Route>
+                  </AuthenticationRoute>
                   <PrivateRoute path="/logout" element={<Logout />} />
                   <PrivateRoute path="/institutions" element={<Institution />}>
                     <PrivateRoute path="/" element={<Institutions />} />

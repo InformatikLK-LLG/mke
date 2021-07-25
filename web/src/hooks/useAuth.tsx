@@ -182,8 +182,6 @@ function useProvideAuth(): Auth {
         await fetchUser();
       } catch (error) {
         fetchNewJWT();
-      } finally {
-        setIsLoading(false);
       }
     }
 
