@@ -16,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class InstitutionController {
 
     @Autowired
-    InstitutionRepository repository;
+    private InstitutionRepository repository;
 
     @GetMapping("")
     public Iterable<Institution> filterInstitutions(@RequestParam(value = "name", defaultValue = "") String name,

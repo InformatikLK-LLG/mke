@@ -14,8 +14,8 @@ import org.hibernate.id.IdentifierGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,22 +38,23 @@ import de.llggiessen.mke.schema.User;
 @RequestMapping(path = "/invite")
 public class InviteController {
 
-    @Autowired
-    InviteRepository inviteRepository;
+    private InviteRepository inviteRepository;
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
+    private EmailService emailService;
+    private Environment env;
+
+    private static final Logger log = LoggerFactory.getLogger(InviteController.class);
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    EmailService emailService;
-
-    @Autowired
-    private org.springframework.core.env.Environment env;
-
-    static final Logger log = LoggerFactory.getLogger(InviteController.class);
+    public InviteController(InviteRepository inviteRepository, UserRepository userRepository,
+            PasswordEncoder passwordEncoder, EmailService emailService, Environment env) {
+        this.inviteRepository = inviteRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
+        this.env = env;
+    }
 
     @GetMapping("")
     public Iterable<Invite> getInvites() {
@@ -79,19 +80,19 @@ public class InviteController {
     }
 
     @PutMapping("")
-    public ResponseEntity<Invite> extendInvite(@RequestParam("inviteCode") String inviteCode) {
+    public Invite extendInvite(@RequestParam("inviteCode") String inviteCode) {
         Optional<Invite> invite = inviteRepository.findById(inviteCode);
         if (invite.isPresent()) {
             invite.get().setCreationDate(LocalDateTime.now());
-            return ResponseEntity.ok(inviteRepository.save(invite.get()));
+            return inviteRepository.save(invite.get());
         }
-        return ResponseEntity.badRequest().build();
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No invite with this code.");
     }
 
     @PostMapping("")
     public Invite createInvite(@RequestBody InviteRequestModel inviteRequest) {
         if (userRepository.findExactByEmail(inviteRequest.getEmail()).isPresent())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with email already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this email already exists.");
 
         Invite invite = new Invite();
 

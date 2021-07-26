@@ -17,7 +17,7 @@ import java.util.Optional;
 public class BookingController {
 
     @Autowired
-    BookingRepository repository;
+    private BookingRepository repository;
 
     @GetMapping("")
     public Iterable<Booking> getBookings() {

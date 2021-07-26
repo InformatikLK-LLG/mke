@@ -17,10 +17,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class CustomerController {
 
     @Autowired
-    CustomerRepository repository;
+    private CustomerRepository repository;
 
     @Autowired
-    InstitutionRepository institutionRepository;
+    private InstitutionRepository institutionRepository;
 
     @GetMapping("")
     public Iterable<Customer> getCustomers(

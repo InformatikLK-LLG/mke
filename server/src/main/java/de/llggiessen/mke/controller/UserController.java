@@ -11,26 +11,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.User;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
 @RestController
 @RequestMapping(path = "/user")
 public class UserController {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    InviteRepository inviteRepository;
-
-    @Autowired
+    private UserRepository userRepository;
+    private InviteRepository inviteRepository;
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserController(UserRepository userRepository, InviteRepository inviteRepository,
+            PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.inviteRepository = inviteRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     static final Logger log = LoggerFactory.getLogger(UserController.class);
 
