@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 import javax.mail.internet.InternetAddress;
 
@@ -14,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,6 +78,16 @@ public class InviteController {
         }
     }
 
+    @PutMapping("")
+    public ResponseEntity<Invite> extendInvite(@RequestParam("inviteCode") String inviteCode) {
+        Optional<Invite> invite = inviteRepository.findById(inviteCode);
+        if (invite.isPresent()) {
+            invite.get().setCreationDate(LocalDateTime.now());
+            return ResponseEntity.ok(inviteRepository.save(invite.get()));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     @PostMapping("")
     public Invite createInvite(@RequestBody InviteRequestModel inviteRequest) {
         if (userRepository.findExactByEmail(inviteRequest.getEmail()).isPresent())
@@ -83,28 +96,20 @@ public class InviteController {
         Invite invite = new Invite();
 
         while (true) {
-            // extend expiration time (by updating invite) if invite already exists
-            Optional<Invite> inviteFromDb = inviteRepository
-                    .findById(inviteRequest.getInviteCode() == null ? "" : inviteRequest.getInviteCode());
-            if (inviteFromDb.isPresent()) {
-                invite.setEmail(inviteFromDb.get().getEmail());
-                invite.setInviteCode(inviteRequest.getInviteCode());
-            } else {
-                SecureRandom random = new SecureRandom();
+            SecureRandom random = new SecureRandom();
 
-                // inviteCode should be six digits long and always positive
-                int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
+            // inviteCode should be six digits long and always positive
+            int inviteCode = 100000 + (random.nextInt() % 900000 + 900000) % 900000;
 
-                User user = userRepository.findExactByEmail(inviteRequest.getEmail())
-                        .orElse(userRepository.save(new User(inviteRequest.getEmail(), inviteRequest.getRoles())));
+            User user = userRepository.findExactByEmail(inviteRequest.getEmail())
+                    .orElse(userRepository.save(new User(inviteRequest.getEmail(), inviteRequest.getRoles())));
 
-                invite.setUser(user);
-                invite.setInviteCode(String.valueOf(inviteCode));
+            invite.setUser(user);
+            invite.setInviteCode(String.valueOf(inviteCode));
 
-                String encodedInviteCode = passwordEncoder.encode(String.valueOf(inviteCode) + invite.getEmail());
-                if (!inviteRepository.findByEncodedInviteCode(encodedInviteCode).isPresent()) {
-                    invite.setEncodedInviteCode(encodedInviteCode);
-                }
+            String encodedInviteCode = passwordEncoder.encode(String.valueOf(inviteCode) + invite.getEmail());
+            if (!inviteRepository.findByEncodedInviteCode(encodedInviteCode).isPresent()) {
+                invite.setEncodedInviteCode(encodedInviteCode);
             }
 
             try {
