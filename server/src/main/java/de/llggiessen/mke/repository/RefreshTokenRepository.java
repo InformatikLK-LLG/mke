@@ -12,9 +12,10 @@ public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Lon
 
     Optional<RefreshToken> findByToken(String token);
 
-    @Query(value = "DELETE FROM refresh_token WHERE user_id = :userId", nativeQuery = true)
+    @Query(value = "DELETE RefreshToken refreshToken WHERE refreshToken.userId = :userId")
     void deleteByUserId(@Param("userId") long userId);
 
-    @Query(value = "DELETE FROM refresh_token where token = :token", nativeQuery = true)
+    @Query(value = "DELETE RefreshToken refreshToken WHERE refreshToken.token = :token")
     void deleteByToken(@Param("token") String token);
+
 }
