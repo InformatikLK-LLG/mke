@@ -20,7 +20,7 @@ public class Privilege implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return "PRIVILEGE_" + this.id;
+        return this.id;
     }
 
 }

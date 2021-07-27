@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.ManyToMany;
 import javax.persistence.FetchType;
@@ -43,7 +44,7 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        // this.roles = Set.of()
+        this.roles = new HashSet<>();
     }
 
     public User(String firstName, String lastName, String email, String password, Set<Role> roles) {
