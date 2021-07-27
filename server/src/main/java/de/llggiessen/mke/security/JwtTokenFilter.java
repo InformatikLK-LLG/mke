@@ -51,6 +51,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 Set<Privilege> privileges = new HashSet<>();
 
+                if (userDetails == null) {
+                    chain.doFilter(request, response);
+                    return;
+                }
+
                 for (Role role : userDetails.getRoles()) {
                     privileges.addAll(role.getPrivileges());
                 }
