@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.repository.InviteRepository;
+import de.llggiessen.mke.repository.RefreshTokenRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.User;
 
@@ -20,13 +21,15 @@ public class UserController {
     private UserRepository userRepository;
     private InviteRepository inviteRepository;
     private PasswordEncoder passwordEncoder;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     public UserController(UserRepository userRepository, InviteRepository inviteRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -43,7 +46,10 @@ public class UserController {
     @DeleteMapping("")
     @PreAuthorize("hasAuthority('USER_WRITE')")
     public void deleteByEmail(@RequestParam(value = "email") String email) {
-        userRepository.deleteByEmail(email);
+        User user = userRepository.findExactByEmail(email).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find user with this email."));
+        refreshTokenRepository.deleteByUserId(user.getId());
+        userRepository.deleteById(user.getId());
     }
 
     @PostMapping("")
@@ -55,10 +61,12 @@ public class UserController {
 
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            inviteRepository.deleteByEmail(user.getEmail());
+            inviteRepository.deleteByUserEmail(user.getEmail());
+            User foo = userRepository.findExactByEmail(user.getEmail()).get();
+            user.setId(foo.getId());
             return userRepository.save(user);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
         }
     }
 
