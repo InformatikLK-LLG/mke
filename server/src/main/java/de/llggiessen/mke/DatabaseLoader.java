@@ -52,6 +52,7 @@ public class DatabaseLoader implements CommandLineRunner {
         createPrivilegeIfNotFound("INVENTORY_WRITE");
         createPrivilegeIfNotFound("INVITE_READ");
         createPrivilegeIfNotFound("INVITE_WRITE");
+        createPrivilegeIfNotFound("ROLE_WRITE");
 
         createUserIfNotFound("Super", "Admin", "mail@mail.com", password, Set.of(createAdminRole()));
 
