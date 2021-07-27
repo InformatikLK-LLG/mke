@@ -17,13 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.mail.EmailService;
@@ -57,11 +52,13 @@ public class InviteController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('INVITE_READ')")
     public Iterable<Invite> getInvites() {
         return inviteRepository.findAll();
     }
 
     @GetMapping(value = "", params = { "code", "email" })
+    @PreAuthorize("hasAuthority('INVITE_READ')")
     public Invite isInvite(@RequestParam String code, @RequestParam String email) {
         for (Invite invite : inviteRepository.findAll()) {
             if (passwordEncoder.matches(code + email, invite.getEncodedInviteCode()))
@@ -71,6 +68,7 @@ public class InviteController {
     }
 
     @GetMapping(value = "", params = { "inviteCode" })
+    @PreAuthorize("hasAuthority('INVITE_READ')")
     public Invite isInvite(@RequestParam String inviteCode) {
         try {
             return inviteRepository.findByEncodedInviteCode(new String(Base64.decodeBase64(inviteCode))).orElse(null);
@@ -80,6 +78,7 @@ public class InviteController {
     }
 
     @PutMapping("")
+    @PreAuthorize("hasAuthority('INVITE_WRITE')")
     public Invite extendInvite(@RequestParam("inviteCode") String inviteCode) {
         Optional<Invite> invite = inviteRepository.findById(inviteCode);
         if (invite.isPresent()) {
@@ -90,6 +89,7 @@ public class InviteController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAuthority('INVITE_WRITE')")
     public Invite createInvite(@RequestBody InviteRequestModel inviteRequest) {
         if (userRepository.findExactByEmail(inviteRequest.getEmail()).isPresent())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this email already exists.");

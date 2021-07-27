@@ -5,13 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.repository.InviteRepository;
@@ -37,6 +32,7 @@ public class UserController {
     static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('USER_READ')")
     public Iterable<User> getUsers(@RequestParam(value = "email", required = false, defaultValue = "") String email,
             @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
             @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName) {
@@ -45,11 +41,13 @@ public class UserController {
     }
 
     @DeleteMapping("")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
     public void deleteByEmail(@RequestParam(value = "email") String email) {
         userRepository.deleteByEmail(email);
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
     public User createUser(@RequestBody User user) {
         if (user.getEmail() == null || user.getFirstName() == null || user.getLastName() == null
                 || user.getPassword() == null || !inviteRepository.findByEmail(user.getEmail()).isPresent())

@@ -8,6 +8,7 @@ import de.llggiessen.mke.utils.FormValidation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,6 +24,7 @@ public class CustomerController {
     private InstitutionRepository institutionRepository;
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('CUSTOMER_READ')")
     public Iterable<Customer> getCustomers(
             @RequestParam(value = "email", required = false, defaultValue = "") String email,
             @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
@@ -31,6 +33,7 @@ public class CustomerController {
     }
 
     @GetMapping(value = "{id}")
+    @PreAuthorize("hasAuthority('CUSTOMER_READ')")
     public Customer getCustomerByID(@PathVariable long id) {
         return repository.findById(id).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no customer with this id.");
@@ -38,16 +41,19 @@ public class CustomerController {
     }
 
     @DeleteMapping(value = "", params = { "email" })
+    @PreAuthorize("hasAuthority('CUSTOMER_WRITE')")
     public void deleteByEmail(@RequestParam String email) {
         repository.deleteByEmail(email);
     }
 
     @DeleteMapping(value = "", params = { "id" })
+    @PreAuthorize("hasAuthority('CUSTOMER_WRITE')")
     public void deleteById(@RequestParam long id) {
         repository.deleteById(id);
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAuthority('CUSTOMER_WRITE')")
     public Customer createCustomer(@RequestBody Customer customer) {
         FormValidation.validateCustomer(customer);
 
@@ -68,6 +74,7 @@ public class CustomerController {
     }
 
     @PutMapping("")
+    @PreAuthorize("hasAuthority('CUSTOMER_WRITE')")
     public Customer updateCustomer(@RequestBody Customer customer) {
         FormValidation.validateCustomer(customer);
 

@@ -7,6 +7,7 @@ import de.llggiessen.mke.utils.FormValidation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +20,7 @@ public class InstitutionController {
     private InstitutionRepository repository;
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('INSTITUTION_READ')")
     public Iterable<Institution> filterInstitutions(@RequestParam(value = "name", defaultValue = "") String name,
             @RequestParam(value = "id", defaultValue = "") String id,
             @RequestParam(value = "schoolAdministrativeDistrict", defaultValue = "-1") int svb,
@@ -30,6 +32,7 @@ public class InstitutionController {
     }
 
     @GetMapping(value = "{id}")
+    @PreAuthorize("hasAuthority('INSTITUTION_READ')")
     public Institution getInstitutionByID(@PathVariable String id) {
         return repository.findById(id).orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find Institution");
@@ -37,12 +40,14 @@ public class InstitutionController {
     }
 
     @GetMapping(value = "{instCode}/customer")
+    @PreAuthorize("hasAuthority('INSTITUTION_READ')")
     public Iterable<Customer> getCustomersOfInstitution(@PathVariable String instCode) {
         return repository.findById(instCode).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Could not find an institution with this id.")).getCustomers();
     }
 
     @DeleteMapping(value = "", params = { "id" })
+    @PreAuthorize("hasAuthority('INSTITUTION_WRITE')")
     public void deleteInstitutionByID(@RequestParam String id) {
         try {
             repository.deleteById(id);
@@ -52,6 +57,7 @@ public class InstitutionController {
     }
 
     @PostMapping(value = "")
+    @PreAuthorize("hasAuthority('INSTITUTION_WRITE')")
     public Institution createInstitution(@RequestBody Institution institution) {
         FormValidation.validateInstitution(institution);
 
@@ -67,6 +73,7 @@ public class InstitutionController {
     }
 
     @PutMapping(value = "")
+    @PreAuthorize("hasAuthority('INSTITUTION_WRITE')")
     public Institution updateInstitution(@RequestBody Institution institution) {
         FormValidation.validateInstitution(institution);
 

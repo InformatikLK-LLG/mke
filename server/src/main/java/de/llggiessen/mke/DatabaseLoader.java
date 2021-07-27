@@ -40,14 +40,25 @@ public class DatabaseLoader implements CommandLineRunner {
     public void run(String... strings) throws Exception {
         String password = passwordEncoder.encode("password");
 
-        Privilege instRead = createPrivilegeIfNotFound("INSTITUTION_READ");
-        Privilege instWrite = createPrivilegeIfNotFound("INSTITUTION_WRITE");
-        Role admin = createRoleIfNotFound("ADMIN", Set.of(instRead, instWrite));
-        log.info(Set.of(instRead, instWrite).toString());
-        log.info(admin.toString());
+        createPrivilegeIfNotFound("INSTITUTION_READ");
+        createPrivilegeIfNotFound("INSTITUTION_WRITE");
+        createPrivilegeIfNotFound("CUSTOMER_READ");
+        createPrivilegeIfNotFound("CUSTOMER_WRITE");
+        createPrivilegeIfNotFound("USER_READ");
+        createPrivilegeIfNotFound("USER_WRITE");
+        createPrivilegeIfNotFound("BOOKING_READ");
+        createPrivilegeIfNotFound("BOOKING_WRITE");
+        createPrivilegeIfNotFound("INVENTORY_READ");
+        createPrivilegeIfNotFound("INVENTORY_WRITE");
+        createPrivilegeIfNotFound("INVITE_READ");
+        createPrivilegeIfNotFound("INVITE_WRITE");
 
-        createUserIfNotFound("Super", "Admin", "mail@mail.com", password, Set.of(admin));
+        createUserIfNotFound("Super", "Admin", "mail@mail.com", password, Set.of(createAdminRole()));
 
+    }
+
+    public Role createAdminRole() {
+        return createRoleIfNotFound("ADMIN", privilegeRepository.findAll());
     }
 
     public Role createRoleIfNotFound(String name, Set<Privilege> privileges) {
