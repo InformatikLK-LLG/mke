@@ -2,7 +2,6 @@ package de.llggiessen.mke.repository;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -26,7 +25,6 @@ public interface InviteRepository extends CrudRepository<Invite, String> {
     @Query("SELECT invite FROM Invite invite WHERE invite.encodedInviteCode = :code")
     Optional<Invite> findByEncodedInviteCode(@Param("code") String code);
 
-    @Modifying
-    @Query("DELETE Invite invite WHERE invite.user.email = :email")
-    void deleteByEmail(@Param("email") String email);
+    void deleteByUserEmail(@Param("email") String email);
+
 }

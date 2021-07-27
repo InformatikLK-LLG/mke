@@ -43,7 +43,7 @@ public class RoleController {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
 
-        if (privileges.containsAll(role.getPrivileges()))
+        if (!privileges.containsAll(role.getPrivileges()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 

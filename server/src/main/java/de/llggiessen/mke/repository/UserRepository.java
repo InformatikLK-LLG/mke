@@ -18,10 +18,6 @@ import de.llggiessen.mke.schema.User;
 @Transactional
 public interface UserRepository extends CrudRepository<User, Long> {
 
-    @Modifying
-    @Query("DELETE User user WHERE user.email = :email")
-    void deleteByEmail(@Param("email") String email);
-
     @Query("SELECT user FROM User user WHERE user.email LIKE %:email%")
     Iterable<User> findAllByEmail(@Param("email") String email);
 

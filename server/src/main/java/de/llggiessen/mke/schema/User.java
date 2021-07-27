@@ -3,6 +3,7 @@ package de.llggiessen.mke.schema;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.CascadeType;
 import javax.persistence.Id;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +12,6 @@ import javax.persistence.FetchType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-
 import lombok.Data;
 
 @Entity
@@ -28,7 +28,7 @@ public class User {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private Set<Role> roles;
 
     public User() {

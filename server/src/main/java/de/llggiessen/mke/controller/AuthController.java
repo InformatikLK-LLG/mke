@@ -42,7 +42,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<User> loginUser(@RequestBody UserCredentials userCredentials, HttpServletResponse response) {
         User user = userRepository.findExactByEmail(userCredentials.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credentials are bad."));
 
         if (passwordEncoder.matches(userCredentials.getPassword(), user.getPassword())) {
             String accessToken = jwtTokenUtil.generateAccessToken(user);
@@ -66,7 +66,7 @@ public class AuthController {
             return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken).body(user);
         }
 
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credentials are bad.");
     }
 
     @PostMapping("/signin")
