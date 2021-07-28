@@ -47,7 +47,7 @@ public class RoleController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
         }
 
-        if (!roleUtils.isInUsersScope(role))
+        if (!roleUtils.isInUsersScope(role.getId()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 
@@ -73,7 +73,7 @@ public class RoleController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
         }
 
-        if (!roleUtils.isInUsersScope(role))
+        if (!roleUtils.isInUsersScope(role.getId()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 

@@ -93,7 +93,7 @@ public class UserController {
                 break;
             }
 
-            if (!roleUtils.isInUsersScope(role)) {
+            if (!roleUtils.isInUsersScope(role.getId())) {
                 isInUsersScope = false;
                 break;
             }
@@ -115,6 +115,23 @@ public class UserController {
         }
 
         return userRepository.save(user);
+    }
+
+    @DeleteMapping("/{userId}/role")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    public void revokeRole(@PathVariable long userId, @RequestParam("roleId") String roleId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user with this id."));
+
+        if (!roleUtils.isInUsersScope(roleId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You are not allowed to manage privileges you do not have yourself");
+
+        if (!user.getRoles().removeIf((role) -> role.getId().equals(roleId)))
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "User has no role with this id");
+
+        userRepository.save(user);
     }
 
 }

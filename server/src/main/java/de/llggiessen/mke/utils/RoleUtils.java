@@ -26,11 +26,11 @@ public class RoleUtils {
         return (roles.size() > 0 && !roleRepository.findById(role.getId()).isPresent());
     }
 
-    public boolean isInUsersScope(Role role) {
+    public boolean isInUsersScope(String roleId) {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
 
-        return (privileges.containsAll(roleRepository.findById(role.getId()).get().getPrivileges()));
+        return (privileges.containsAll(roleRepository.findById(roleId).get().getPrivileges()));
     }
 
     public boolean isPresent(Role role) {
