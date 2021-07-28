@@ -57,6 +57,11 @@ public class RoleController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role createRole(@RequestBody Role role) {
+
+        if (role.getPrivileges() == null || role.getPrivileges().size() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
+        }
+
         if (!isInUsersScope(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
@@ -75,6 +80,11 @@ public class RoleController {
     @PutMapping("")
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role updateRole(@RequestBody Role role) {
+
+        if (role.getPrivileges() == null || role.getPrivileges().size() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
+        }
+
         if (isInUsersScope(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
