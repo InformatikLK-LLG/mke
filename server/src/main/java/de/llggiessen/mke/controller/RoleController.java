@@ -41,7 +41,7 @@ public class RoleController {
         // role left, the role is a duplicate
         roles.removeIf((value) -> !value.getPrivileges().equals(role.getPrivileges()));
 
-        return roles.size() > 0;
+        return (roles.size() > 0 && !roleRepository.findById(role.getId()).isPresent());
     }
 
     public boolean isInUsersScope(Role role) {
@@ -81,20 +81,20 @@ public class RoleController {
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role updateRole(@RequestBody Role role) {
 
+        if (!isPresent(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no role with this name.");
+
         if (role.getPrivileges() == null || role.getPrivileges().size() == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
         }
 
-        if (isInUsersScope(role))
+        if (!isInUsersScope(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 
         if (isSuperfluous(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Rolle mit gleichen Berechtigungen existiert bereits.");
-
-        if (!isPresent(role))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no role with this name.");
 
         return roleRepository.save(role);
     }
