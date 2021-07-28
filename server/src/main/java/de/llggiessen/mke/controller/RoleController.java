@@ -34,25 +34,36 @@ public class RoleController {
         return roles;
     }
 
-    @PostMapping("")
-    @PreAuthorize("hasAuthority('ROLE_WRITE')")
-    public Role createRole(@RequestBody Role role) {
-        if (roleRepository.findById(role.getId()).isPresent())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rolle mit diesem Namen existiert bereits.");
-
-        Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
-                .getAuthorities();
-
-        if (!privileges.containsAll(role.getPrivileges()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "You are not allowed to assign privileges you do not have yourself.");
-
+    public boolean isSuperfluous(Role role) {
         Set<Role> roles = roleRepository.findAll();
         // Deletes all roles which have not equal privileges such that, if there is a
         // role left, the role is a duplicate
         roles.removeIf((value) -> !value.getPrivileges().equals(role.getPrivileges()));
 
-        if (roles.size() > 0)
+        return roles.size() > 0;
+    }
+
+    public boolean isInUsersScope(Role role) {
+        Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities();
+        return (!privileges.containsAll(role.getPrivileges()));
+    }
+
+    public boolean isDuplicateName(Role role) {
+        return roleRepository.findById(role.getId()).isPresent();
+    }
+
+    @PostMapping("")
+    @PreAuthorize("hasAuthority('ROLE_WRITE')")
+    public Role createRole(@RequestBody Role role) {
+        if (isDuplicateName(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rolle mit diesem Namen existiert bereits.");
+
+        if (isInUsersScope(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You are not allowed to assign privileges you do not have yourself.");
+
+        if (isSuperfluous(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Rolle mit gleichen Berechtigungen existiert bereits.");
 
