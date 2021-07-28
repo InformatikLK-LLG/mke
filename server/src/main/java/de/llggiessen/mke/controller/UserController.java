@@ -68,8 +68,8 @@ public class UserController {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             inviteRepository.deleteByUserEmail(user.getEmail());
-            User foo = userRepository.findExactByEmail(user.getEmail()).get();
-            user.setId(foo.getId());
+            User userFromDb = userRepository.findExactByEmail(user.getEmail()).get();
+            user.setId(userFromDb.getId());
             return userRepository.save(user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
