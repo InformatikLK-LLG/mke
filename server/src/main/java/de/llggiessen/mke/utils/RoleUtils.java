@@ -29,7 +29,8 @@ public class RoleUtils {
     public boolean isInUsersScope(Role role) {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
-        return (privileges.containsAll(role.getPrivileges()));
+
+        return (privileges.containsAll(roleRepository.findById(role.getId()).get().getPrivileges()));
     }
 
     public boolean isPresent(Role role) {

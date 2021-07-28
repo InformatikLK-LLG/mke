@@ -16,6 +16,7 @@ import de.llggiessen.mke.repository.RefreshTokenRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Role;
 import de.llggiessen.mke.schema.User;
+import de.llggiessen.mke.utils.RoleUtils;
 
 @RestController
 @RequestMapping(path = "/user")
@@ -25,14 +26,16 @@ public class UserController {
     private InviteRepository inviteRepository;
     private PasswordEncoder passwordEncoder;
     private RefreshTokenRepository refreshTokenRepository;
+    private RoleUtils roleUtils;
 
     @Autowired
     public UserController(UserRepository userRepository, InviteRepository inviteRepository,
-            PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository) {
+            PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository, RoleUtils roleUtils) {
         this.userRepository = userRepository;
         this.inviteRepository = inviteRepository;
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.roleUtils = roleUtils;
     }
 
     static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -75,9 +78,33 @@ public class UserController {
 
     @PutMapping("/{userId}")
     @PreAuthorize("hasAuthority('USER_WRITE')")
-    public User assignRoles(@RequestBody Set<Role> roles, @PathVariable long userId) {
+    public User assignRoles(@PathVariable long userId, @RequestBody Set<Role> roles) {
+
+        boolean isInUsersScope = true;
+        boolean isValid = true;
+
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no user with this id."));
+
+        for (Role role : roles) {
+            if (!roleUtils.isPresent(role)) {
+                isValid = false;
+                break;
+            }
+
+            if (!roleUtils.isInUsersScope(role)) {
+                isInUsersScope = false;
+                break;
+            }
+        }
+
+        if (!isInUsersScope)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You are not allowed to assign privileges you do not have yourself.");
+
+        if (!isValid)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid set of roles.");
+
         user.setRoles(roles);
         return userRepository.save(user);
     }
