@@ -643,7 +643,7 @@ export default function Table<T extends SimplestItem, K>({
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
+          onPageChange={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
           className={classes.pagination}
         />
