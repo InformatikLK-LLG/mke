@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,19 +47,34 @@ public class RoleController {
     public boolean isInUsersScope(Role role) {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
-        return (!privileges.containsAll(role.getPrivileges()));
+        return (privileges.containsAll(role.getPrivileges()));
     }
 
-    public boolean isDuplicateName(Role role) {
+    public boolean isPresent(Role role) {
         return roleRepository.findById(role.getId()).isPresent();
     }
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role createRole(@RequestBody Role role) {
-        if (isDuplicateName(role))
+        if (!isInUsersScope(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "You are not allowed to assign privileges you do not have yourself.");
+
+        if (isPresent(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rolle mit diesem Namen existiert bereits.");
 
+        if (isSuperfluous(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Rolle mit gleichen Berechtigungen existiert bereits.");
+
+        role.setId(role.getId().toUpperCase());
+        return roleRepository.save(role);
+    }
+
+    @PutMapping("")
+    @PreAuthorize("hasAuthority('ROLE_WRITE')")
+    public Role updateRole(@RequestBody Role role) {
         if (isInUsersScope(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
@@ -67,7 +83,9 @@ public class RoleController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Rolle mit gleichen Berechtigungen existiert bereits.");
 
-        role.setId(role.getId().toUpperCase());
+        if (!isPresent(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no role with this name.");
+
         return roleRepository.save(role);
     }
 
