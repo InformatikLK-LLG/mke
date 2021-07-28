@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.repository.RoleRepository;
 import de.llggiessen.mke.schema.Role;
+import de.llggiessen.mke.utils.RoleUtils;
 
 @RestController
 @RequestMapping("/role")
@@ -25,6 +26,9 @@ public class RoleController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    RoleUtils roleUtils;
 
     @GetMapping("")
     public Iterable<Role> getRoles() {
@@ -35,25 +39,6 @@ public class RoleController {
         return roles;
     }
 
-    public boolean isSuperfluous(Role role) {
-        Set<Role> roles = roleRepository.findAll();
-        // Deletes all roles which have not equal privileges such that, if there is a
-        // role left, the role is a duplicate
-        roles.removeIf((value) -> !value.getPrivileges().equals(role.getPrivileges()));
-
-        return (roles.size() > 0 && !roleRepository.findById(role.getId()).isPresent());
-    }
-
-    public boolean isInUsersScope(Role role) {
-        Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
-                .getAuthorities();
-        return (privileges.containsAll(role.getPrivileges()));
-    }
-
-    public boolean isPresent(Role role) {
-        return roleRepository.findById(role.getId()).isPresent();
-    }
-
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role createRole(@RequestBody Role role) {
@@ -62,14 +47,14 @@ public class RoleController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
         }
 
-        if (!isInUsersScope(role))
+        if (!roleUtils.isInUsersScope(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 
-        if (isPresent(role))
+        if (roleUtils.isPresent(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rolle mit diesem Namen existiert bereits.");
 
-        if (isSuperfluous(role))
+        if (roleUtils.isSuperfluous(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Rolle mit gleichen Berechtigungen existiert bereits.");
 
@@ -81,18 +66,18 @@ public class RoleController {
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role updateRole(@RequestBody Role role) {
 
-        if (!isPresent(role))
+        if (!roleUtils.isPresent(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no role with this name.");
 
         if (role.getPrivileges() == null || role.getPrivileges().size() == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
         }
 
-        if (!isInUsersScope(role))
+        if (!roleUtils.isInUsersScope(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 
-        if (isSuperfluous(role))
+        if (roleUtils.isSuperfluous(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Rolle mit gleichen Berechtigungen existiert bereits.");
 
