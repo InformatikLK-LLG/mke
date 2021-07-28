@@ -1,5 +1,7 @@
 package de.llggiessen.mke.controller;
 
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.RefreshTokenRepository;
 import de.llggiessen.mke.repository.UserRepository;
+import de.llggiessen.mke.schema.Role;
 import de.llggiessen.mke.schema.User;
 
 @RestController
@@ -68,6 +71,15 @@ public class UserController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
         }
+    }
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    public User assignRoles(@RequestBody Set<Role> roles, @PathVariable long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no user with this id."));
+        user.setRoles(roles);
+        return userRepository.save(user);
     }
 
 }
