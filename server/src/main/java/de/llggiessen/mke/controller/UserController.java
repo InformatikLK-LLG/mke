@@ -76,9 +76,10 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/{userId}/role")
     @PreAuthorize("hasAuthority('USER_WRITE')")
-    public User assignRoles(@PathVariable long userId, @RequestBody Set<Role> roles) {
+    public User setRoles(@PathVariable long userId, @RequestBody Set<Role> roles,
+            @RequestParam(value = "shouldOverride", defaultValue = "true") boolean shouldOverride) {
 
         boolean isInUsersScope = true;
         boolean isValid = true;
@@ -105,7 +106,14 @@ public class UserController {
         if (!isValid)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid set of roles.");
 
-        user.setRoles(roles);
+        if (shouldOverride) {
+            user.setRoles(roles);
+        } else {
+            Set<Role> newRoles = user.getRoles();
+            newRoles.addAll(roles);
+            user.setRoles(newRoles);
+        }
+
         return userRepository.save(user);
     }
 
