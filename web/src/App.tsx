@@ -11,6 +11,7 @@ import Institution, {
 } from "./pages/Institution";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
+import User, { Users } from "./pages/User";
 
 import AuthenticationRoute from "./components/AuthenticationRoute";
 import { ForgotPassword } from "./pages/ForgotPassword";
@@ -89,6 +90,13 @@ function App() {
                     />
                   </PrivateRoute>
                   <Route path="*" element={<PageNotFound />} />
+                  <PrivateRoute
+                    path="/users"
+                    element={<User />}
+                    requiredPrivilege="USER_READ"
+                  >
+                    <PrivateRoute path="/" element={<Users />} />
+                  </PrivateRoute>
                 </Route>
               </Routes>
             </BrowserRouter>

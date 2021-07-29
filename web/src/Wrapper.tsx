@@ -117,6 +117,12 @@ export default function Wrapper() {
       ],
     },
     {
+      path: "/users",
+      name: "Nutzer*innen",
+      heading: "Nutzer*innen",
+      privileges: "USER_READ",
+    },
+    {
       path: "/profile",
       name: <FontAwesomeIcon icon={faUser} />,
       heading: `Hallo ${auth.user?.email}`,

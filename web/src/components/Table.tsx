@@ -136,6 +136,8 @@ interface Header {
 export type TableHeaders<T extends SimplestItem> = AllTableHeaders<T>;
 export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
   ? never
+  : T extends Array<infer ElementType>
+  ? Header
   : T extends object
   ? {
       [K in keyof T]?: K extends string ? AllTableHeaders<T[K]> : never;
