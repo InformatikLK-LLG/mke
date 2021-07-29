@@ -58,7 +58,6 @@ public class InviteController {
     }
 
     @GetMapping(value = "", params = { "code", "email" })
-    @PreAuthorize("hasAuthority('INVITE_READ')")
     public Invite isInvite(@RequestParam String code, @RequestParam String email) {
         for (Invite invite : inviteRepository.findAll()) {
             if (passwordEncoder.matches(code + email, invite.getEncodedInviteCode()))
@@ -68,7 +67,6 @@ public class InviteController {
     }
 
     @GetMapping(value = "", params = { "inviteCode" })
-    @PreAuthorize("hasAuthority('INVITE_READ')")
     public Invite isInvite(@RequestParam String inviteCode) {
         try {
             return inviteRepository.findByEncodedInviteCode(new String(Base64.decodeBase64(inviteCode))).orElse(null);
