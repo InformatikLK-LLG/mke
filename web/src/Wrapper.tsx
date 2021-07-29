@@ -84,11 +84,13 @@ export default function Wrapper() {
       path: "/institutions",
       name: "Institutionen",
       heading: "Institutionen",
+      privileges: "INSTITUTION_READ",
       subroutes: [
         {
           path: "/institutions/create",
           name: "Erstellen",
           heading: "Institution erstellen",
+          privileges: "INSTITUTION_WRITE",
         },
         {
           path: "/institutions/:instCode",
@@ -100,11 +102,13 @@ export default function Wrapper() {
       path: "/customers",
       name: "Kundinnen",
       heading: "Kundinnen",
+      privileges: "CUSTOMER_READ",
       subroutes: [
         {
           path: "/customers/create",
           name: "Erstellen",
           heading: "Kundin erstellen",
+          privileges: "CUSTOMER_WRITE",
         },
         {
           path: "/customers/:id",
