@@ -53,20 +53,33 @@ function App() {
                     <NoTrespassing path="2" element={<Register3 />} />
                   </AuthenticationRoute>
                   <PrivateRoute path="/logout" element={<Logout />} />
-                  <PrivateRoute path="/institutions" element={<Institution />}>
+                  <PrivateRoute
+                    path="/institutions"
+                    element={<Institution />}
+                    requiredPrivilege="INSTITUTION_READ"
+                  >
                     <PrivateRoute path="/" element={<Institutions />} />
                     <PrivateRoute
                       path="/create"
                       element={<CreateInstitution />}
+                      requiredPrivilege="INSTITUTION_WRITE"
                     />
                     <PrivateRoute
                       path="/:instCode"
                       element={<ViewInstitutionDetails />}
                     />
                   </PrivateRoute>
-                  <PrivateRoute path="/customers" element={<Customer />}>
+                  <PrivateRoute
+                    path="/customers"
+                    element={<Customer />}
+                    requiredPrivilege="CUSTOMER_READ"
+                  >
                     <PrivateRoute path="/" element={<Customers />} />
-                    <PrivateRoute path="/create" element={<CreateCustomer />} />
+                    <PrivateRoute
+                      path="/create"
+                      element={<CreateCustomer />}
+                      requiredPrivilege="CUSTOMER_WRITE"
+                    />
                     <PrivateRoute
                       path="/:id"
                       element={<ViewCustomerDetails />}
