@@ -231,6 +231,11 @@ export type RegisterForm2Inputs = {
 export function RegisterForm2() {
   const formButton = useButtonStyles();
   const formInput = useInputStyles();
+  const location = useLocation();
+  const {
+    registerState: { code, email },
+  } = location.state as { registerState: { email?: string; code: number } };
+
   const {
     handleSubmit,
     getValues,
@@ -238,7 +243,10 @@ export function RegisterForm2() {
     setValue,
     control,
     formState: { errors },
-  } = useForm<RegisterForm2Inputs>({ mode: "onChange" });
+  } = useForm<RegisterForm2Inputs>({
+    mode: "onChange",
+    defaultValues: { email },
+  });
   const formState: FormState<RegisterForm2Inputs> = {
     clearErrors,
     control,
@@ -248,10 +256,6 @@ export function RegisterForm2() {
     setValue,
   };
   const navigate = useNavigate();
-  const location = useLocation();
-  const {
-    registerState: { code },
-  } = location.state as { registerState: { code: number } };
   const theme = useTheme();
   const inputs = [
     <Grid item xs={12}>

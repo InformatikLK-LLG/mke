@@ -25,7 +25,11 @@ export default function Register() {
       if (inviteCode) {
         const invite = await auth.skipFirstRegisterStep(inviteCode);
         if (invite)
-          navigate("./1", { state: { _register_1: { email: invite.email } } });
+          navigate("./1", {
+            state: {
+              registerState: { email: invite.email, code: invite.inviteCode },
+            },
+          });
       }
     }
 

@@ -35,7 +35,9 @@ type User =
     }
   | undefined;
 
-type Invite = { inviteCode: string; code: number; email: string } | undefined;
+type Invite =
+  | { inviteCode: string; encodedInviteCode: number; email: string }
+  | undefined;
 
 type Auth = {
   user: User;
@@ -174,12 +176,16 @@ function useProvideAuth(): Auth {
     password: string
   ) => {
     try {
-      const response = await axios.post<User>("http://localhost:8080/user", {
-        firstName,
-        lastName,
-        email,
-        password,
-      });
+      const response = await axios.post<User>(
+        "http://localhost:8080/register",
+        {
+          code,
+          firstName,
+          lastName,
+          email,
+          password,
+        }
+      );
       setUser(response.data);
       return response.data;
     } catch (error) {
