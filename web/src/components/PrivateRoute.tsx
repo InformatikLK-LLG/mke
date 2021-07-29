@@ -25,11 +25,15 @@ export default function PrivateRoute({
   return auth.user ? (
     !requiredPrivilege ||
     auth.user.roles.some((role) =>
-      role.privileges.some(
-        (privilege) =>
-          privilege.id === requiredPrivilege ||
-          requiredPrivilege.includes(privilege.id)
-      )
+      typeof requiredPrivilege === "string"
+        ? role.privileges.find(
+            (privilege) => privilege.id === requiredPrivilege
+          )
+        : requiredPrivilege.every((requiredPrivilege) =>
+            role.privileges.find(
+              (privilege) => privilege.id === requiredPrivilege
+            )
+          )
     ) ? (
       <Route {...rest} path={path} element={element}>
         {children}

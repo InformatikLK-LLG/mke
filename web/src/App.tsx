@@ -18,18 +18,19 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import NoTrespassing from "./components/NoTrespassing";
+import PageNotFound from "./pages/PageNotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import ProvideAuth from "./hooks/useAuth";
 import { ThemeProvider } from "@material-ui/styles";
 import Wrapper from "./Wrapper";
-import { createMuiTheme } from "@material-ui/core";
+import { createTheme } from "@material-ui/core";
 
 function App() {
   const queryClient = new QueryClient();
   return (
     <ProvideAuth>
       <ThemeProvider
-        theme={createMuiTheme({
+        theme={createTheme({
           palette: {
             primary: { main: "#74C7CD" },
             secondary: { main: "#F0F0F0" },
@@ -67,6 +68,7 @@ function App() {
                     <PrivateRoute
                       path="/:instCode"
                       element={<ViewInstitutionDetails />}
+                      requiredPrivilege={["INSTITUTION_READ", "CUSTOMER_READ"]}
                     />
                   </PrivateRoute>
                   <PrivateRoute
@@ -83,8 +85,10 @@ function App() {
                     <PrivateRoute
                       path="/:id"
                       element={<ViewCustomerDetails />}
+                      requiredPrivilege={["CUSTOMER_READ", "INSTITUTION_READ"]}
                     />
                   </PrivateRoute>
+                  <Route path="*" element={<PageNotFound />} />
                 </Route>
               </Routes>
             </BrowserRouter>
