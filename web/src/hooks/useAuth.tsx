@@ -2,6 +2,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 
+export type Privilege = {
+  id: string;
+};
+
+export type Role = {
+  id: string;
+  privileges: Array<Privilege>;
+};
+
 type User =
   | {
       firstName: string;
@@ -9,6 +18,7 @@ type User =
       email: string;
       username: string;
       password: string;
+      roles: Array<Role>;
     }
   | undefined;
 
