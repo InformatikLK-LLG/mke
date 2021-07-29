@@ -15,19 +15,22 @@ export interface NavBarType extends Array<NavBarItem> {}
 
 type NavBarProps = { routes: NavBarType };
 
+export const userCanAccessRoute = (
+  userPrivileges: Array<Role>,
+  route: NavBarItem
+) =>
+  userPrivileges.some((role) =>
+    role.privileges.some(
+      (privilege) =>
+        privilege.id === route.privileges ||
+        route.privileges?.includes(privilege.id)
+    )
+  );
+
 export default function NavBar({ routes }: NavBarProps) {
   const { user } = useAuth();
   // user is always defined since navbar only gets rendered when there is an authenticated user
   const userPrivileges = user?.roles;
-
-  const userCanAccessRoute = (userPrivileges: Array<Role>, route: NavBarItem) =>
-    userPrivileges.some((role) =>
-      role.privileges.some(
-        (privilege) =>
-          privilege.id === route.privileges ||
-          route.privileges?.includes(privilege.id)
-      )
-    );
 
   return (
     <nav className="navBar">

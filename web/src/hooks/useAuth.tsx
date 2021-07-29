@@ -58,6 +58,12 @@ type Auth = {
   skipFirstRegisterStep: (inviteCode: string) => Promise<Invite>;
 };
 
+export const hasInstitutionWrite = (user: User) => {
+  return user?.roles.some((role) =>
+    role.privileges.some((privilege) => privilege.id === "INSTITUTION_WRITE")
+  );
+};
+
 const defaultAuth: Auth = {
   user: undefined,
   isLoading: true,
