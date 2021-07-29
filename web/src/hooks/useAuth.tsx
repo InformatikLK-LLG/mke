@@ -3,7 +3,20 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 export type Privilege = {
-  id: string;
+  id:
+    | "INSTITUTION_READ"
+    | "INSTITUTION_WRITE"
+    | "CUSTOMER_READ"
+    | "CUSTOMER_WRITE"
+    | "USER_READ"
+    | "USER_WRITE"
+    | "BOOKING_READ"
+    | "BOOKING_WRITE"
+    | "INVENTORY_READ"
+    | "INVENTORY_WRITE"
+    | "INVITE_READ"
+    | "INVITE_WRITE"
+    | "ROLE_WRITE";
 };
 
 export type Role = {
