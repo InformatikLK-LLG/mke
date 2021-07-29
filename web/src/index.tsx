@@ -2,13 +2,22 @@ import "./styles/index.css";
 
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
+import axios, { AxiosError } from "axios";
+
 import App from "./App";
 import React from "react";
 import ReactDOM from "react-dom";
-import axios from "axios";
 import reportWebVitals from "./reportWebVitals";
 
 axios.defaults.withCredentials = true;
+axios.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    error.response!.status === 401 &&
+      axios.post("http://localhost:8080/profile/refreshToken");
+    return Promise.reject(error);
+  }
+);
 
 ReactDOM.render(
   <React.StrictMode>

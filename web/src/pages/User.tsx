@@ -2,6 +2,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 
 import { Role } from "../hooks/useAuth";
+import axios from "axios";
+import { useEffect } from "react";
 import useUsers from "../hooks/useUsers";
 
 export type User = {
@@ -17,7 +19,7 @@ export default function User() {
 }
 
 export function Users() {
-  const { data, isLoading, setSearchParams } = useUsers();
+  const { data, isLoading, setSearchParams, error } = useUsers();
   const navigate = useNavigate();
   const tableHeaders: TableHeaders<User> = {
     firstName: { label: "Vorname", width: 1 },
