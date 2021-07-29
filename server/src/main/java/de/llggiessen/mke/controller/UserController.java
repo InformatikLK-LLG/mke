@@ -6,12 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.RefreshTokenRepository;
 import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Role;
@@ -23,17 +21,13 @@ import de.llggiessen.mke.utils.RoleUtils;
 public class UserController {
 
     private UserRepository userRepository;
-    private InviteRepository inviteRepository;
-    private PasswordEncoder passwordEncoder;
     private RefreshTokenRepository refreshTokenRepository;
     private RoleUtils roleUtils;
 
     @Autowired
-    public UserController(UserRepository userRepository, InviteRepository inviteRepository,
-            PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository, RoleUtils roleUtils) {
+    public UserController(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository,
+            RoleUtils roleUtils) {
         this.userRepository = userRepository;
-        this.inviteRepository = inviteRepository;
-        this.passwordEncoder = passwordEncoder;
         this.refreshTokenRepository = refreshTokenRepository;
         this.roleUtils = roleUtils;
     }
@@ -56,24 +50,6 @@ public class UserController {
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find user with this email."));
         refreshTokenRepository.deleteByUserId(user.getId());
         userRepository.deleteById(user.getId());
-    }
-
-    @PostMapping("")
-    @PreAuthorize("hasAuthority('USER_WRITE')")
-    public User createUser(@RequestBody User user) {
-        if (user.getEmail() == null || user.getFirstName() == null || user.getLastName() == null
-                || user.getPassword() == null || !inviteRepository.findByEmail(user.getEmail()).isPresent())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            inviteRepository.deleteByUserEmail(user.getEmail());
-            User userFromDb = userRepository.findExactByEmail(user.getEmail()).get();
-            user.setId(userFromDb.getId());
-            return userRepository.save(user);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
-        }
     }
 
     @PutMapping("/{userId}/role")

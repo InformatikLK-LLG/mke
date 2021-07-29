@@ -3,6 +3,8 @@ package de.llggiessen.mke.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import de.llggiessen.mke.repository.InviteRepository;
 import de.llggiessen.mke.repository.UserRepository;
+import de.llggiessen.mke.schema.Invite;
 import de.llggiessen.mke.schema.User;
 import de.llggiessen.mke.schema.UserCredentials;
+import de.llggiessen.mke.schema.UserRequestModel;
 import de.llggiessen.mke.security.JwtTokenUtil;
 import de.llggiessen.mke.security.RefreshTokenUtil;
 
@@ -29,14 +34,16 @@ public class AuthController {
     private JwtTokenUtil jwtTokenUtil;
     private PasswordEncoder passwordEncoder;
     private RefreshTokenUtil refreshTokenUtil;
+    private InviteRepository inviteRepository;
 
     @Autowired
     public AuthController(UserRepository userRepository, JwtTokenUtil jwtTokenUtil, PasswordEncoder passwordEncoder,
-            RefreshTokenUtil refreshTokenUtil) {
+            RefreshTokenUtil refreshTokenUtil, InviteRepository inviteRepository) {
         this.userRepository = userRepository;
         this.jwtTokenUtil = jwtTokenUtil;
         this.passwordEncoder = passwordEncoder;
         this.refreshTokenUtil = refreshTokenUtil;
+        this.inviteRepository = inviteRepository;
     }
 
     @PostMapping("/login")
@@ -81,6 +88,30 @@ public class AuthController {
         }
 
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/register")
+    public User createUser(@RequestBody UserRequestModel user) {
+        if (user.getEmail() == null || user.getFirstName() == null || user.getLastName() == null
+                || user.getPassword() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        Optional<Invite> invite = inviteRepository.findById(user.getCode());
+
+        if (!invite.isPresent() || !invite.get().getEmail().equals(user.getEmail()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        User actualUser = new User(user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword());
+
+        try {
+            actualUser.setPassword(passwordEncoder.encode(actualUser.getPassword()));
+            inviteRepository.deleteByUserEmail(actualUser.getEmail());
+            User userFromDb = userRepository.findExactByEmail(actualUser.getEmail()).get();
+            actualUser.setId(userFromDb.getId());
+            return userRepository.save(actualUser);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getCause().getMessage());
+        }
     }
 
     @DeleteMapping("/profile/logout")
