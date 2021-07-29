@@ -24,11 +24,13 @@ import Form, { EmailInputField, OrderType } from "../components/Form";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 import axios, { AxiosResponse } from "axios";
+import { hasInstitutionWrite, useAuth } from "../hooks/useAuth";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 
 import { Autocomplete } from "@material-ui/lab";
 import Button from "../components/Button";
 import Loading from "../components/Loading";
+import PageNotFound from "./PageNotFound";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
 import useCustomer from "../hooks/useCustomer";
@@ -283,6 +285,7 @@ export function CustomerForm({
     useState<Array<{ name: string; id?: string }>>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { setSnackbarOpen, setMessage } = useSnackbar();
+  const { user } = useAuth();
 
   const institution = watch("institution");
   const formState: FormState<CustomerType> = {
@@ -384,6 +387,7 @@ export function CustomerForm({
               );
               field.value &&
                 field.value !== "" &&
+                hasInstitutionWrite(user) &&
                 filtered.push({
                   name: field.value,
                 });
@@ -518,5 +522,11 @@ export function ViewCustomerDetails() {
   // useEffect(() => {
   //   console.log(data);
   // }, [data]);
-  return isLoading ? <Loading /> : <CustomerDetails data={data?.data} />;
+  return isLoading ? (
+    <Loading />
+  ) : data ? (
+    <CustomerDetails data={data?.data} />
+  ) : (
+    <PageNotFound />
+  );
 }

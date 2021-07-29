@@ -61,6 +61,7 @@ import { CustomerType } from "./Customer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
+import PageNotFound from "./PageNotFound";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
@@ -816,7 +817,9 @@ export function ViewInstitutionDetails() {
   const { data, isLoading } = useInstitution(instCode);
   return isLoading ? (
     <Loading />
-  ) : (
+  ) : data ? (
     <InstitutionOverlay instCode={instCode} data={data} />
+  ) : (
+    <PageNotFound />
   );
 }
