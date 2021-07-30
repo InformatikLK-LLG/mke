@@ -25,6 +25,7 @@ import {
 import React, { Fragment, useState } from "react";
 import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
 
+import Autocomplete from "./Autocomplete";
 import Button from "./Button";
 import Delayed from "./Delayed";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -149,7 +150,9 @@ interface TableProps<T extends SimplestItem, K> {
   rows: T[];
   sort?: Array<string>;
   search?: (parameter?: keyof K, query?: string) => void;
-  searchParams?: Array<{ [key in keyof K]: "number" | "string" }>;
+  searchParams?: Array<
+    { [key in keyof K]: "number" | "string" | Array<string> }
+  >;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
@@ -451,7 +454,8 @@ export default function Table<T extends SimplestItem, K>({
               <Grid container spacing={2} alignItems="center">
                 {searchParams.map((searchParam) => {
                   const parameter = Object.keys(searchParam)[0] as keyof K;
-                  return searchParam[parameter] === "number" ? (
+                  const value = searchParam[parameter];
+                  return value === "number" ? (
                     <Grid
                       container
                       item
@@ -530,6 +534,43 @@ export default function Table<T extends SimplestItem, K>({
                           }}
                         />
                       </Grid>
+                    </Grid>
+                  ) : Array.isArray(value) ? (
+                    <Grid item key={parameter as string} xs>
+                      <Autocomplete
+                        data={value}
+                        onChange={(event, values) => {
+                          setPage(0);
+                          setSearchValues(
+                            (searchValues) =>
+                              searchValues && {
+                                ...searchValues,
+                                [parameter]: values.join(","),
+                              }
+                          );
+                          search(parameter as keyof K, values.join(","));
+                        }}
+                        value={
+                          searchValues[parameter].length !== 0
+                            ? searchValues[parameter].split(",")
+                            : undefined
+                        }
+                        inputField={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            label={
+                              (
+                                accessNestedValues(
+                                  String(parameter),
+                                  tableHeaders
+                                ) as Header
+                              ).label
+                            }
+                            variant="outlined"
+                          />
+                        )}
+                      />
                     </Grid>
                   ) : (
                     <Grid item key={parameter as string}>
