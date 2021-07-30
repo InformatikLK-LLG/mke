@@ -40,6 +40,7 @@ export function Users() {
   };
 
   async function search(parameter?: keyof UserSearchParams, query?: string) {
+    query = parameter === "roles" ? query?.replaceAll(/\s/g, "") : query;
     setSearchParams(
       (value) =>
         parameter &&
