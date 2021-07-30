@@ -1,9 +1,10 @@
 import { IconButton, Snackbar } from "@material-ui/core";
 import NavBar, { NavBarItem } from "./components/NavBar";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
@@ -73,6 +74,30 @@ export default function Wrapper() {
   const auth = useAuth();
   const header = useProvideHeader();
   const snackbar = useProvideSnackbar();
+  const navigate = useNavigate();
+
+  axios.defaults.withCredentials = true;
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+      if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        await axios.post("http://localhost:8080/profile/refreshToken");
+        return axios(originalRequest);
+      }
+      if (
+        error.response.status === 418 &&
+        !originalRequest._retry &&
+        location.pathname !== "/login"
+      ) {
+        originalRequest._retry = true;
+        auth.signout();
+        return axios(originalRequest);
+      }
+      return Promise.reject(error);
+    }
+  );
 
   const routes: RouteType = [
     {

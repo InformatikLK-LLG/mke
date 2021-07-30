@@ -123,9 +123,10 @@ function useProvideAuth(): Auth {
   const signout = async () => {
     try {
       await axios.delete("http://localhost:8080/profile/logout");
-      setUser(undefined);
     } catch (error) {
       console.error(error);
+    } finally {
+      setUser(undefined);
     }
   };
 
