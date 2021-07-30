@@ -200,6 +200,9 @@ function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
   if (!isNaN(newA) && !isNaN(newB)) {
     newA = parseInt(newA);
     newB = parseInt(newB);
+  } else if (Array.isArray(newA)) {
+    newA = newA.sort().join().toLowerCase();
+    newB = newB.sort().join().toLowerCase();
   } else {
     newA = newA.toLowerCase();
     newB = newB.toLowerCase();
