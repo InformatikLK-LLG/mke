@@ -117,7 +117,7 @@ public class AuthController {
     @DeleteMapping("/profile/logout")
     public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
         if (request.getCookies() == null)
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         for (Cookie cookie : request.getCookies())
             if (cookie.getName().equals("refresh") && refreshTokenUtil.validate(cookie.getValue())) {
                 refreshTokenUtil.revokeToken(cookie.getValue());
@@ -185,7 +185,7 @@ public class AuthController {
                     return;
                 }
 
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        throw new ResponseStatusException(HttpStatus.I_AM_A_TEAPOT);
     }
 
 }
