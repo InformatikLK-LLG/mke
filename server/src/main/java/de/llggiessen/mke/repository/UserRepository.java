@@ -1,6 +1,7 @@
 package de.llggiessen.mke.repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -29,7 +30,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Query("SELECT user FROM User user WHERE user.lastName LIKE %:lastName%")
     Iterable<User> findAllByLastName(@Param("lastName") String lastName);
 
-    @Query("SELECT user FROM User user WHERE user.email LIKE %:email% AND user.firstName LIKE %:firstName% AND user.lastName LIKE %:lastName%")
-    Iterable<User> findAllByAttributes(@Param("email") String email, @Param("firstName") String firstName,
-            @Param("lastName") String lastName);
+    Iterable<User> findDistinctByEmailContainingAndFirstNameContainingAndLastNameContainingAndRolesIdIn(String email,
+            String firstName, String lastName, Set<String> roles);
 }

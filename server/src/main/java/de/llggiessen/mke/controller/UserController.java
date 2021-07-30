@@ -38,9 +38,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER_READ')")
     public Iterable<User> getUsers(@RequestParam(value = "email", required = false, defaultValue = "") String email,
             @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
-            @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName) {
+            @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName,
+            @RequestParam(value = "roles", required = false, defaultValue = "") String roles) {
 
-        return userRepository.findAllByAttributes(email, firstName, lastName);
+        Set<String> rolesSet = Set.of(roles.split(","));
+        System.out.println(rolesSet);
+
+        return userRepository.findDistinctByEmailContainingAndFirstNameContainingAndLastNameContainingAndRolesIdIn(
+                email, firstName, lastName, rolesSet);
     }
 
     @DeleteMapping("")
