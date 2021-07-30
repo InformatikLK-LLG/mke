@@ -1,10 +1,10 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
+import useUsers, { UserSearchParams } from "../hooks/useUsers";
 
 import { Role } from "../hooks/useAuth";
 import axios from "axios";
 import { useEffect } from "react";
-import useUsers from "../hooks/useUsers";
 
 export type User = {
   id: number;
@@ -29,10 +29,32 @@ export function Users() {
       label: "Rollen",
       width: 1,
       format: (value: Array<Role>) => (
-        <>{value.map((role) => role.id).join(", ")}</>
+        <>
+          {value
+            .map((role) => role.id)
+            .sort()
+            .join(", ")}
+        </>
       ),
     },
   };
+
+  async function search(parameter?: keyof UserSearchParams, query?: string) {
+    setSearchParams(
+      (value) =>
+        parameter &&
+        (value ? { ...value, [parameter]: query } : { [parameter]: query })
+    );
+  }
+
+  const searchParams: Array<
+    { [key in keyof UserSearchParams]: "string" | "number" }
+  > = [
+    { firstName: "string" },
+    { lastName: "string" },
+    { email: "string" },
+    { roles: "string" },
+  ];
 
   return (
     <div className="container">
@@ -41,6 +63,9 @@ export function Users() {
         tableHeaders={tableHeaders}
         isLoading={isLoading}
         onRowClick={(row) => navigate(`./${row.id}`)}
+        sort={["Vorname", "Nachname", "Email", "Rollen"]}
+        search={search}
+        searchParams={searchParams}
       />
     </div>
   );

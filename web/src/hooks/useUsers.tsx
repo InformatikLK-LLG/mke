@@ -3,18 +3,19 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import { useState } from "react";
 
-export type UsersSearchParams = {
+export type UserSearchParams = {
   firstName?: string;
   lastName?: string;
   email?: string;
+  roles?: string;
 };
 
 const useUsers = () => {
   const [searchParams, setSearchParams] = useState<
-    UsersSearchParams | undefined
+    UserSearchParams | undefined
   >();
   return {
-    ...useQuery(["users"], () =>
+    ...useQuery(["users", searchParams], () =>
       axios.get<Array<User>>("http://localhost:8080/user", {
         params: searchParams,
       })
