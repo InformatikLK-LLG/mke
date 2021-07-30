@@ -36,16 +36,18 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('USER_READ')")
-    public Iterable<User> getUsers(@RequestParam(value = "email", required = false, defaultValue = "") String email,
-            @RequestParam(value = "firstName", required = false, defaultValue = "") String firstName,
-            @RequestParam(value = "lastName", required = false, defaultValue = "") String lastName,
-            @RequestParam(value = "roles", required = false, defaultValue = "") String roles) {
+    public Iterable<User> getUsers(@RequestParam(value = "email", defaultValue = "") String email,
+            @RequestParam(value = "firstName", defaultValue = "") String firstName,
+            @RequestParam(value = "lastName", defaultValue = "") String lastName,
+            @RequestParam(value = "roles", defaultValue = "") String roles) {
 
         Set<String> rolesSet = Set.of(roles.split(","));
-        System.out.println(rolesSet);
 
-        return userRepository.findDistinctByEmailContainingAndFirstNameContainingAndLastNameContainingAndRolesIdIn(
-                email, firstName, lastName, rolesSet);
+        return roles.equals("")
+                ? userRepository.findDistinctByEmailContainingAndFirstNameContainingAndLastNameContaining(email,
+                        firstName, lastName)
+                : userRepository.findDistinctByEmailContainingAndFirstNameContainingAndLastNameContainingAndRolesIdIn(
+                        email, firstName, lastName, rolesSet);
     }
 
     @DeleteMapping("")

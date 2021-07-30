@@ -32,4 +32,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     Iterable<User> findDistinctByEmailContainingAndFirstNameContainingAndLastNameContainingAndRolesIdIn(String email,
             String firstName, String lastName, Set<String> roles);
+
+    Iterable<User> findDistinctByEmailContainingAndFirstNameContainingAndLastNameContaining(String email,
+            String firstName, String lastName);
 }
