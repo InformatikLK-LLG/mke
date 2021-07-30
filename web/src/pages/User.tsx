@@ -5,6 +5,7 @@ import useUsers, { UserSearchParams } from "../hooks/useUsers";
 import { Role } from "../hooks/useAuth";
 import axios from "axios";
 import { useEffect } from "react";
+import useRoles from "../hooks/useRoles";
 
 export type User = {
   id: number;
@@ -19,7 +20,13 @@ export default function User() {
 }
 
 export function Users() {
-  const { data, isLoading, setSearchParams, error } = useUsers();
+  const {
+    data: userData,
+    isLoading: userIsLoading,
+    setSearchParams: setUserSearchParams,
+    error: userErrors,
+  } = useUsers();
+  const { data: roleData, isLoading: roleIsLoading } = useRoles();
   const navigate = useNavigate();
   const tableHeaders: TableHeaders<User> = {
     firstName: { label: "Vorname", width: 1 },
@@ -40,8 +47,7 @@ export function Users() {
   };
 
   async function search(parameter?: keyof UserSearchParams, query?: string) {
-    query = parameter === "roles" ? query?.replaceAll(/\s/g, "") : query;
-    setSearchParams(
+    setUserSearchParams(
       (value) =>
         parameter &&
         (value ? { ...value, [parameter]: query } : { [parameter]: query })
@@ -49,20 +55,20 @@ export function Users() {
   }
 
   const searchParams: Array<
-    { [key in keyof UserSearchParams]: "string" | "number" }
+    { [key in keyof UserSearchParams]: "string" | "number" | Array<string> }
   > = [
     { firstName: "string" },
     { lastName: "string" },
     { email: "string" },
-    { roles: "string" },
+    { roles: roleData?.data.map((role) => role.id) },
   ];
 
   return (
     <div className="container">
       <Table
-        rows={data?.data || []}
+        rows={userData?.data || []}
         tableHeaders={tableHeaders}
-        isLoading={isLoading}
+        isLoading={userIsLoading}
         onRowClick={(row) => navigate(`./${row.id}`)}
         sort={["Vorname", "Nachname", "Email", "Rollen"]}
         search={search}
