@@ -2,6 +2,7 @@ import {
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   AutocompleteRenderInputParams,
+  AutocompleteRenderOptionState,
   Autocomplete as MuiAutocomplete,
 } from "@material-ui/lab";
 import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
@@ -10,11 +11,15 @@ import { Checkbox } from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment } from "react";
 
-export default function Autocomplete<T extends string>({
+export default function Autocomplete<T>({
   data,
   inputField,
   onChange,
   value,
+  loading,
+  loadingText,
+  renderText = (option) => option as unknown as string,
+  disabled,
 }: {
   data: Array<T>;
   inputField: (params: AutocompleteRenderInputParams) => JSX.Element;
@@ -25,6 +30,10 @@ export default function Autocomplete<T extends string>({
     details?: AutocompleteChangeDetails<T>
   ) => void;
   value: Array<T> | undefined;
+  loading?: boolean;
+  loadingText?: React.ReactNode;
+  renderText?: (option: T) => string;
+  disabled?: boolean;
 }) {
   return (
     <MuiAutocomplete
@@ -34,6 +43,10 @@ export default function Autocomplete<T extends string>({
       renderInput={inputField}
       onChange={onChange}
       value={value}
+      loading={loading}
+      loadingText={loadingText}
+      getOptionLabel={renderText}
+      disabled={disabled}
       renderOption={(option, { selected }) => (
         <Fragment>
           <Checkbox
@@ -41,7 +54,7 @@ export default function Autocomplete<T extends string>({
             checkedIcon={<FontAwesomeIcon icon={faCheckSquare} />}
             checked={selected}
           />
-          {option}
+          {renderText(option)}
         </Fragment>
       )}
     />
