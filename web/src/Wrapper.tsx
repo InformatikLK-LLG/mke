@@ -136,7 +136,7 @@ export default function Wrapper() {
           privileges: "CUSTOMER_WRITE",
         },
         {
-          path: "/customers/:id",
+          path: "/customers/:customerId",
           heading: "",
         },
       ],
@@ -146,6 +146,18 @@ export default function Wrapper() {
       name: "Nutzer*innen",
       heading: "Nutzer*innen",
       privileges: "USER_READ",
+      subroutes: [
+        {
+          path: "/users/create",
+          name: "Erstellen",
+          heading: "Nutzer:in erstellen",
+          privileges: "USER_WRITE",
+        },
+        {
+          path: "/users/:userId",
+          heading: "",
+        },
+      ],
     },
     {
       path: "/profile",
