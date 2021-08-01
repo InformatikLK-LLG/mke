@@ -4,12 +4,17 @@ import {
   AccordionSummary,
   Checkbox,
   FormControlLabel,
+  Grid,
+  InputAdornment,
   makeStyles,
 } from "@material-ui/core";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Privilege } from "../hooks/useAuth";
 import { User } from "./User";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
 import usePrivileges from "../hooks/usePrivileges";
 
 const useStyles = makeStyles({
@@ -52,7 +57,33 @@ export function CreateRole({ user }: { user: User }) {
       {categories.map((category) => (
         <Accordion square className={classes.accordion}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
+            <Grid container item xs>
+              <Grid item>
+                {category.name.charAt(0).toUpperCase() + category.name.slice(1)}
+              </Grid>
+              <Grid
+                item
+                container
+                justifyContent="flex-end"
+                alignItems="center"
+                xs
+              >
+                {category.read && (
+                  <Grid item>
+                    <InputAdornment position="end">
+                      <FontAwesomeIcon icon={faEye} />
+                    </InputAdornment>
+                  </Grid>
+                )}
+                {category.write && (
+                  <Grid item>
+                    <InputAdornment position="end">
+                      <FontAwesomeIcon icon={faPen} />
+                    </InputAdornment>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
           </AccordionSummary>
           <AccordionDetails>
             <FormControlLabel
