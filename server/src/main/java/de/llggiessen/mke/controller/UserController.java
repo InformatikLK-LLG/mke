@@ -1,5 +1,6 @@
 package de.llggiessen.mke.controller;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -68,11 +69,13 @@ public class UserController {
     @PutMapping("/{userId}")
     @PreAuthorize("hasAuthority('USER_WRITE')")
     public User updateUser(@PathVariable long userId, @RequestBody User user) {
+        Optional<User> userFromDb = userRepository.findById(userId);
 
-        if (!userRepository.existsById(userId))
+        if (!userFromDb.isPresent())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "There is no customer with this id. Maybe you meant to create a new customer using a POST request.");
         try {
+            user.setPassword(userFromDb.get().getPassword());
             return userRepository.save(user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not update customer.");
