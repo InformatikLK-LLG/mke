@@ -148,12 +148,6 @@ export default function Wrapper() {
       privileges: "USER_READ",
       subroutes: [
         {
-          path: "/users/create",
-          name: "Erstellen",
-          heading: "Nutzer:in erstellen",
-          privileges: "USER_WRITE",
-        },
-        {
           path: "/users/:userId",
           heading: "",
         },

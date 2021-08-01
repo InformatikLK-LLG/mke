@@ -117,14 +117,6 @@ export function Users() {
   );
 }
 
-export function CreateUser() {
-  return (
-    <div className="container">
-      <CreateUserForm />
-    </div>
-  );
-}
-
 export function UserDetails({ data }: { data: User }) {
   return (
     <div className="container">
@@ -143,44 +135,6 @@ export function ViewUserDetails() {
   ) : (
     <PageNotFound />
   );
-}
-
-export function CreateUserForm({
-  defaultUser,
-  onSubmit,
-}: {
-  defaultUser?: RecursivePartial<User>;
-  onSubmit?: (
-    data: User,
-    event?: BaseSyntheticEvent
-  ) => Promise<AxiosResponse<User | Array<User>>>;
-}) {
-  const navigate = useNavigate();
-  const { setMessage, setSnackbarOpen } = useSnackbar();
-
-  const submit: (
-    data: User,
-    event?: BaseSyntheticEvent
-  ) => Promise<AxiosResponse<User | Array<User>>> =
-    onSubmit ||
-    (async (data, event) => {
-      try {
-        const response = await axios.post<User>(
-          `http://localhost:8080/user/${data.id}`,
-          data
-        );
-        if (response.status === 200) {
-          setMessage("Erfolgreich gespeichert.");
-          setSnackbarOpen(true);
-          navigate("/users");
-        }
-        return response;
-      } catch (error) {
-        throw error;
-      }
-    });
-
-  return <UserForm onSubmit={submit} defaultValues={defaultUser} />;
 }
 
 export function UpdateUserForm({ data }: { data?: User }) {
