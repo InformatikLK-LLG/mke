@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
 import flower from "../resources/blume.jpg";
 import { useEffect } from "react";
+import { useInputStyles } from "../pages/Institution";
 
 const useStyles = makeStyles({
   headerIcon: {
@@ -541,7 +542,7 @@ export default function Table<T extends SimplestItem, K>({
                       </Grid>
                     </Grid>
                   ) : typeof value !== "string" ? (
-                    <Grid item key={parameter as string} xs>
+                    <Grid item key={parameter as string}>
                       <Autocomplete
                         data={value.data || []}
                         loading={value.isLoading}
@@ -575,6 +576,7 @@ export default function Table<T extends SimplestItem, K>({
                               ).label
                             }
                             variant="outlined"
+                            InputProps={{ ...params.InputProps, className: "" }}
                           />
                         )}
                       />

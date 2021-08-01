@@ -294,9 +294,9 @@ export function UserForm({
   };
 
   const order: OrderType = {
-    xs: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-    md: [1, 2, 3, 5, 6, 7, 8, 4, 9],
-    lg: [1, 2, 3, 5, 6, 4, 7, 8, 9],
+    xs: [1, 2, 3, 4, 5],
+    md: [1, 2, 3, 4, 5],
+    lg: [1, 2, 3, 4, 5],
   };
 
   const onKeyDown = async (event: KeyboardEvent) => {
@@ -339,7 +339,7 @@ export function UserForm({
     <Grid item xs={12} md={6} lg={6}>
       {<EmailInputField formState={formState} disabled={disabled} />}
     </Grid>,
-    <Grid item xs={12} md={6} lg={4}>
+    <Grid item xs={12} md={6} lg={6}>
       <Controller
         control={control}
         name="roles"
@@ -362,7 +362,9 @@ export function UserForm({
                       {params.InputProps.startAdornment}
                     </>
                   ),
+                  className: "",
                 }}
+                className={formInput.input}
                 size="small"
                 label="Rollen"
               />
