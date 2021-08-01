@@ -1,5 +1,6 @@
 package de.llggiessen.mke.controller;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import de.llggiessen.mke.repository.RefreshTokenRepository;
 import de.llggiessen.mke.repository.UserRepository;
+import de.llggiessen.mke.schema.Privilege;
 import de.llggiessen.mke.schema.Role;
 import de.llggiessen.mke.schema.User;
 import de.llggiessen.mke.utils.RoleUtils;
@@ -55,6 +57,16 @@ public class UserController {
     @PreAuthorize("hasAuthority('USER_READ')")
     public User getUser(@PathVariable long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    }
+
+    @GetMapping("/{userId}/privileges")
+    public Iterable<Privilege> getPrivileges(@PathVariable long userId) {
+        Set<Privilege> privileges = new HashSet<>();
+        Set<Role> roles = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user with this id."))
+                .getRoles();
+        roles.forEach((role) -> privileges.addAll(role.getPrivileges()));
+        return privileges;
     }
 
     @DeleteMapping("")
