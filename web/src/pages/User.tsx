@@ -1,14 +1,43 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
+import { Controller, UseFormGetValues, useForm } from "react-hook-form";
+import Form, { EmailInputField, OrderType } from "../components/Form";
+import {
+  FormControlLabel,
+  Grid,
+  InputAdornment,
+  Switch,
+  TextField,
+  useTheme,
+} from "@material-ui/core";
+import {
+  FormState,
+  RecursivePartial,
+  RenderInput,
+  useButtonStyles,
+  useInputStyles,
+} from "./Institution";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
+import axios, { AxiosResponse } from "axios";
 import useUsers, { UserSearchParams } from "../hooks/useUsers";
 
+import Autocomplete from "../components/Autocomplete";
+import Button from "../components/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Loading from "../components/Loading";
+import PageNotFound from "./PageNotFound";
 import { Role } from "../hooks/useAuth";
-import axios from "axios";
-import { useEffect } from "react";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { faUserTag } from "@fortawesome/free-solid-svg-icons";
+import { useDetailsStyles } from "../components/InstitutionDetails";
+import useEventListener from "@use-it/event-listener";
+import { useQueryClient } from "react-query";
 import useRoles from "../hooks/useRoles";
+import { useSnackbar } from "../Wrapper";
+import useUser from "../hooks/useUser";
 
 export type User = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -55,12 +84,22 @@ export function Users() {
   }
 
   const searchParams: Array<
-    { [key in keyof UserSearchParams]: "string" | "number" | Array<string> }
+    {
+      [key in keyof UserSearchParams]:
+        | "string"
+        | "number"
+        | { data: Array<string> | undefined; isLoading: boolean };
+    }
   > = [
     { firstName: "string" },
     { lastName: "string" },
     { email: "string" },
-    { roles: roleData?.data.map((role) => role.id) },
+    {
+      roles: {
+        data: roleData?.data.map((role) => role.id),
+        isLoading: roleIsLoading,
+      },
+    },
   ];
 
   return (
@@ -75,5 +114,324 @@ export function Users() {
         searchParams={searchParams}
       />
     </div>
+  );
+}
+
+export function CreateUser() {
+  return (
+    <div className="container">
+      <CreateUserForm />
+    </div>
+  );
+}
+
+export function UserDetails({ data }: { data: User }) {
+  return (
+    <div className="container">
+      <UpdateUserForm data={data} />
+    </div>
+  );
+}
+
+export function ViewUserDetails() {
+  const { userId } = useParams();
+  const { data, isLoading } = useUser(userId);
+  return isLoading ? (
+    <Loading />
+  ) : data ? (
+    <UserDetails data={data.data} />
+  ) : (
+    <PageNotFound />
+  );
+}
+
+export function CreateUserForm({
+  defaultUser,
+  onSubmit,
+}: {
+  defaultUser?: RecursivePartial<User>;
+  onSubmit?: (
+    data: User,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<User | Array<User>>>;
+}) {
+  const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
+
+  const submit: (
+    data: User,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<User | Array<User>>> =
+    onSubmit ||
+    (async (data, event) => {
+      try {
+        const response = await axios.post<User>(
+          `http://localhost:8080/user/${data.id}`,
+          data
+        );
+        if (response.status === 200) {
+          setMessage("Erfolgreich gespeichert.");
+          setSnackbarOpen(true);
+          navigate("/users");
+        }
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    });
+
+  return <UserForm onSubmit={submit} defaultValues={defaultUser} />;
+}
+
+export function UpdateUserForm({ data }: { data?: User }) {
+  const queryClient = useQueryClient();
+  const userStyles = useDetailsStyles();
+  const navigate = useNavigate();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
+
+  const updateData = async (data?: User) => {
+    try {
+      const response = await axios.put<User>(
+        `http://localhost:8080/user/${data?.id}`,
+        data
+      );
+      if (response.status === 200) {
+        queryClient.invalidateQueries("users");
+        queryClient.invalidateQueries("user");
+        setMessage("Erfolgreich aktualisiert.");
+      }
+      return response;
+    } catch (error) {
+      setMessage(error.response.data.message);
+      throw error;
+    } finally {
+      setSnackbarOpen(true);
+    }
+  };
+  const toggleLabel = (
+    disabled: boolean,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
+    getValues: UseFormGetValues<User>
+  ) => {
+    const editableToggle = (
+      <Grid item container xs={12} justify="flex-end">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!disabled}
+              onChange={async () => {
+                if (!disabled) {
+                  try {
+                    await updateData(getValues());
+                    setDisabled(true);
+                  } catch (error) {
+                    setDisabled(false);
+                  }
+                } else setDisabled((value) => !value);
+              }}
+              name="toggleDisabled"
+              color="primary"
+            />
+          }
+          label="Bearbeiten"
+          labelPlacement="start"
+          className={userStyles.toggleLabel}
+        />
+      </Grid>
+    );
+    return editableToggle;
+  };
+
+  return (
+    <UserForm
+      onSubmit={async (data) => {
+        try {
+          const response = await updateData(data);
+          navigate("/users");
+          return response;
+        } catch (error) {
+          throw error;
+        }
+      }}
+      defaultValues={data}
+      toggleLabel={toggleLabel}
+      defaultDisabled
+    />
+  );
+}
+
+export function UserForm({
+  defaultValues,
+  onSubmit,
+  toggleLabel,
+  defaultDisabled = false,
+}: {
+  defaultValues?: RecursivePartial<User>;
+  onSubmit: (
+    data: User,
+    event?: BaseSyntheticEvent
+  ) => Promise<AxiosResponse<User | Array<User>>>;
+  toggleLabel?: (
+    disabled: boolean,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
+    getValues: UseFormGetValues<User>
+  ) => JSX.Element;
+  defaultDisabled?: boolean;
+}) {
+  const defaultUser: User = {
+    id: defaultValues?.id || "",
+    firstName: defaultValues?.firstName || "",
+    lastName: defaultValues?.lastName || "",
+    email: defaultValues?.email || "",
+    roles: defaultValues?.roles || [],
+  };
+
+  const {
+    handleSubmit,
+    setValue,
+    control,
+    watch,
+    getValues,
+    formState: { errors, isValid },
+    clearErrors,
+    trigger,
+  } = useForm<User>({
+    mode: "onChange",
+    defaultValues: defaultUser,
+  });
+
+  const theme = useTheme();
+  const formInput = useInputStyles();
+  const formButton = useButtonStyles();
+  const [isLoading, setIsLoading] = useState(false);
+  const [disabled, setDisabled] = useState(defaultDisabled);
+  const { setMessage, setSnackbarOpen } = useSnackbar();
+  const { data: availableRoles, isLoading: roleIsLoading } = useRoles();
+
+  const formState: FormState<User> = {
+    clearErrors,
+    control,
+    errors,
+    formInput,
+    getValues,
+    setValue,
+  };
+
+  const order: OrderType = {
+    xs: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    md: [1, 2, 3, 5, 6, 7, 8, 4, 9],
+    lg: [1, 2, 3, 5, 6, 4, 7, 8, 9],
+  };
+
+  const onKeyDown = async (event: KeyboardEvent) => {
+    if (event.key === "s" && event.altKey) {
+      event.preventDefault();
+      trigger();
+      if (isValid) {
+        onSubmit(getValues());
+      }
+    }
+  };
+
+  useEventListener("keydown", onKeyDown);
+
+  const inputs = [
+    toggleLabel ? toggleLabel(disabled, setDisabled, getValues) : <></>,
+    <Grid item xs={12} md={6} lg={6}>
+      {RenderInput({
+        name: "firstName",
+        placeholder: "Vorname",
+        required: "Vorname muss angegeben werden",
+        autofocus: true,
+        icon: faUser,
+        autoComplete: "given-name",
+        disabled,
+        formState,
+      })}
+    </Grid>,
+    <Grid item xs={12} md={6} lg={6}>
+      {RenderInput({
+        name: "lastName",
+        placeholder: "Nachname",
+        required: "Nachname muss angegeben werden",
+        icon: faUser,
+        autoComplete: "family-name",
+        disabled,
+        formState,
+      })}
+    </Grid>,
+    <Grid item xs={12} md={6} lg={6}>
+      {<EmailInputField formState={formState} disabled={disabled} />}
+    </Grid>,
+    <Grid item xs={12} md={6} lg={4}>
+      <Controller
+        control={control}
+        name="roles"
+        render={({ field }) => (
+          <Autocomplete
+            data={availableRoles?.data || []}
+            onChange={(event, values) => {
+              field.onChange(values);
+            }}
+            inputField={(params) => (
+              <TextField
+                {...params}
+                InputProps={{
+                  ...params.InputProps,
+                  startAdornment: (
+                    <>
+                      <InputAdornment position="start">
+                        <FontAwesomeIcon icon={faUserTag} />
+                      </InputAdornment>
+                      {params.InputProps.startAdornment}
+                    </>
+                  ),
+                }}
+                size="small"
+                label="Rollen"
+              />
+            )}
+            disabled={disabled}
+            renderText={(option) => option.id}
+            value={field.value}
+            loading={isLoading}
+            loadingText="Lade Daten"
+          />
+        )}
+      />
+    </Grid>,
+  ];
+  return (
+    <Form
+      button={
+        <Button
+          type="submit"
+          label="Erstellen"
+          buttonStyle={formButton}
+          textColor="white"
+          backgroundColor={theme.palette.primary.main}
+          isLoading={isLoading}
+          disabled={disabled}
+        />
+      }
+      inputs={inputs}
+      maxWidth="200ch"
+      onSubmit={handleSubmit(async (data, event) => {
+        setIsLoading(true);
+        try {
+          const response = await onSubmit(data, event);
+          if (response.status === 200) {
+            setMessage("Erfolgreich gespeichert.");
+            setSnackbarOpen(true);
+          }
+        } catch (error) {
+          setMessage(error.response.data.message);
+          setSnackbarOpen(true);
+        } finally {
+          setIsLoading(false);
+        }
+      })}
+      order={order}
+    />
   );
 }
