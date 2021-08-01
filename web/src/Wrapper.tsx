@@ -143,8 +143,8 @@ export default function Wrapper() {
     },
     {
       path: "/users",
-      name: "Nutzer*innen",
-      heading: "Nutzer*innen",
+      name: "Nutzerinnen",
+      heading: "Nutzerinnen",
       privileges: "USER_READ",
       subroutes: [
         {

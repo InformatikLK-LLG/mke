@@ -1,14 +1,16 @@
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { Controller, UseFormGetValues, useForm } from "react-hook-form";
-import Form, { EmailInputField, OrderType } from "../components/Form";
 import {
+  Divider,
   FormControlLabel,
   Grid,
   InputAdornment,
   Switch,
   TextField,
+  makeStyles,
   useTheme,
 } from "@material-ui/core";
+import Form, { EmailInputField, OrderType } from "../components/Form";
 import {
   FormState,
   RecursivePartial,
@@ -19,10 +21,12 @@ import {
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
 import axios, { AxiosResponse } from "axios";
+import { useHeader, useSnackbar } from "../Wrapper";
 import useUsers, { UserSearchParams } from "../hooks/useUsers";
 
 import Autocomplete from "../components/Autocomplete";
 import Button from "../components/Button";
+import { CreateRole } from "./Role";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "../components/Loading";
 import PageNotFound from "./PageNotFound";
@@ -33,7 +37,6 @@ import { useDetailsStyles } from "../components/InstitutionDetails";
 import useEventListener from "@use-it/event-listener";
 import { useQueryClient } from "react-query";
 import useRoles from "../hooks/useRoles";
-import { useSnackbar } from "../Wrapper";
 import useUser from "../hooks/useUser";
 
 export type User = {
@@ -118,9 +121,28 @@ export function Users() {
 }
 
 export function UserDetails({ data }: { data: User }) {
+  const detailsStyles = useDetailsStyles();
+  const header = useHeader();
+
+  useEffect(() => {
+    header.setHeader(`${data.firstName} ${data.lastName}`);
+  }, [data, header]);
+
   return (
-    <div className="container">
-      <UpdateUserForm data={data} />
+    <div className={detailsStyles.enclosure}>
+      <div className={detailsStyles.section}>
+        <UpdateUserForm data={data} />
+      </div>
+      <Divider
+        style={{ width: "80%" }}
+        classes={{ root: detailsStyles.divider }}
+      />
+      <div className={detailsStyles.section}>
+        <h3
+          style={{ alignSelf: "flex-start" }}
+        >{`Rechte — ${data.firstName} ${data.lastName}`}</h3>
+        <CreateRole user={data} />
+      </div>
     </div>
   );
 }
