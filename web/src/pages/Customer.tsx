@@ -109,7 +109,7 @@ export function CreateCustomer() {
   return <CreateCustomerForm />;
 }
 
-export function CustomerDetails({ data }: { data?: CustomerType }) {
+export function CustomerDetails({ data }: { data: CustomerType }) {
   return (
     <div className="container">
       <UpdateCustomerForm data={data} />
@@ -525,7 +525,7 @@ export function ViewCustomerDetails() {
   return isLoading ? (
     <Loading />
   ) : data ? (
-    <CustomerDetails data={data?.data} />
+    <CustomerDetails data={data.data} />
   ) : (
     <PageNotFound />
   );

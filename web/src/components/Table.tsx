@@ -151,7 +151,12 @@ interface TableProps<T extends SimplestItem, K> {
   sort?: Array<string>;
   search?: (parameter?: keyof K, query?: string) => void;
   searchParams?: Array<
-    { [key in keyof K]: "number" | "string" | Array<string> }
+    {
+      [key in keyof K]:
+        | "number"
+        | "string"
+        | { data: Array<string> | undefined; isLoading: boolean };
+    }
   >;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
@@ -535,10 +540,12 @@ export default function Table<T extends SimplestItem, K>({
                         />
                       </Grid>
                     </Grid>
-                  ) : Array.isArray(value) ? (
+                  ) : typeof value !== "string" ? (
                     <Grid item key={parameter as string} xs>
                       <Autocomplete
-                        data={value}
+                        data={value.data || []}
+                        loading={value.isLoading}
+                        loadingText="Lade Daten"
                         onChange={(event, values) => {
                           setPage(0);
                           setSearchValues(
