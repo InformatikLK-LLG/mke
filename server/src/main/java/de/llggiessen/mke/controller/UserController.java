@@ -50,6 +50,12 @@ public class UserController {
                         email, firstName, lastName, rolesSet);
     }
 
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAuthority('USER_READ')")
+    public User getUser(@PathVariable long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    }
+
     @DeleteMapping("")
     @PreAuthorize("hasAuthority('USER_WRITE')")
     public void deleteByEmail(@RequestParam(value = "email") String email) {
@@ -57,6 +63,20 @@ public class UserController {
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not find user with this email."));
         refreshTokenRepository.deleteByUserId(user.getId());
         userRepository.deleteById(user.getId());
+    }
+
+    @PutMapping("/{userId}")
+    @PreAuthorize("hasAuthority('USER_WRITE')")
+    public User updateUser(@PathVariable long userId, @RequestBody User user) {
+
+        if (!userRepository.existsById(userId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "There is no customer with this id. Maybe you meant to create a new customer using a POST request.");
+        try {
+            return userRepository.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not update customer.");
+        }
     }
 
     @PutMapping("/{userId}/role")
