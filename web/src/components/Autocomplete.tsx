@@ -47,6 +47,9 @@ export default function Autocomplete<T>({
       loadingText={loadingText}
       getOptionLabel={renderText}
       disabled={disabled}
+      getOptionSelected={(option, value) =>
+        renderText(option) === renderText(value)
+      }
       renderOption={(option, { selected }) => (
         <Fragment>
           <Checkbox
