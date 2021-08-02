@@ -209,9 +209,18 @@ function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
   if (!isNaN(newA) && !isNaN(newB)) {
     newA = parseInt(newA);
     newB = parseInt(newB);
-  } else if (Array.isArray(newA)) {
-    newA = newA.sort().join().toLowerCase();
-    newB = newB.sort().join().toLowerCase();
+  } else if (Array.isArray(newA) && Array.isArray(newB)) {
+    // instead of assuming the value is in *.id one should replace this to use headers.format
+    newA = newA
+      .map((value) => value.id)
+      .sort()
+      .join()
+      .toLowerCase();
+    newB = newB
+      .map((value) => value.id)
+      .sort()
+      .join()
+      .toLowerCase();
   } else {
     newA = newA.toLowerCase();
     newB = newB.toLowerCase();
