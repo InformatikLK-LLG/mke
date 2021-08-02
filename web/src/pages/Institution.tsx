@@ -47,6 +47,8 @@ import axios, { AxiosResponse } from "axios";
 import {
   faCheckSquare,
   faEdit,
+  faEye,
+  faEyeSlash,
   faSquare,
 } from "@fortawesome/free-regular-svg-icons";
 import useInstitutions, {
@@ -107,7 +109,13 @@ export type FormState<T> = {
   clearErrors: UseFormClearErrors<T>;
   getValues: UseFormGetValues<T>;
   formInput: ClassNameMap<
-    "input" | "checkbox" | "select" | "menuItem" | "formControl" | "clearButton"
+    | "input"
+    | "checkbox"
+    | "select"
+    | "menuItem"
+    | "formControl"
+    | "clearButton"
+    | "clickable"
   >;
 };
 
@@ -206,6 +214,9 @@ export const useInputStyles = makeStyles({
   formControl: {
     marginTop: 0,
   },
+  clickable: {
+    "&:hover": { cursor: "pointer" },
+  },
   clearButton: {
     width: "1em",
     height: "1em",
@@ -263,6 +274,7 @@ export const RenderInput = <T,>({
       return () => clearTimeout(timer);
     }
   }, [error, name, clearErrors]);
+  const [showPassword, setShowPassword] = useState(false);
 
   const InputProps = {
     startAdornment: (
@@ -270,18 +282,31 @@ export const RenderInput = <T,>({
         <FontAwesomeIcon className="inputIcon" icon={icon} />
       </InputAdornment>
     ),
-    endAdornment: getValues(name) && !disabled && isModifiable && (
-      <InputAdornment position="end" className={formInput.clearButton}>
-        <FontAwesomeIcon
-          className={`inputIcon`}
-          icon={faTimes}
-          onClick={() =>
-            setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, {
-              shouldValidate: true,
-            })
-          }
-        />
-      </InputAdornment>
+    endAdornment: (
+      <>
+        {type === "password" && (
+          <InputAdornment position="end" className={formInput.clickable}>
+            <FontAwesomeIcon
+              className="inputIcon"
+              icon={showPassword ? faEyeSlash : faEye}
+              onClick={() => setShowPassword((value) => !value)}
+            />
+          </InputAdornment>
+        )}
+        {getValues(name) && !disabled && isModifiable && (
+          <InputAdornment position="end" className={formInput.clearButton}>
+            <FontAwesomeIcon
+              className="inputIcon"
+              icon={faTimes}
+              onClick={() =>
+                setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, {
+                  shouldValidate: true,
+                })
+              }
+            />
+          </InputAdornment>
+        )}
+      </>
     ),
   };
 
@@ -326,7 +351,7 @@ export const RenderInput = <T,>({
           ) : (
             <TextField
               placeholder={placeholder}
-              type={type}
+              type={type === "password" && showPassword ? "text" : type}
               className={formInput.input}
               {...field}
               value={field.value || ""}
