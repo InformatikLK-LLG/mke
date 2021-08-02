@@ -492,7 +492,7 @@ export default function Form({
         spacing={containerStyling.spacing}
         direction={containerStyling.direction}
         alignItems={containerStyling.alignItems}
-        justify={containerStyling.justify}
+        justifyContent={containerStyling.justify}
       >
         {otherElements?.start}
         {order && order["xs"]

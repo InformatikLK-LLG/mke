@@ -614,7 +614,13 @@ export default function Table<T extends SimplestItem, K>({
                     </Grid>
                   );
                 })}
-                <Grid container item xs justify="flex-end" alignItems="center">
+                <Grid
+                  container
+                  item
+                  xs
+                  justifyContent="flex-end"
+                  alignItems="center"
+                >
                   <Grid item>
                     <FontAwesomeIcon
                       icon={faTimes}
@@ -699,7 +705,7 @@ export default function Table<T extends SimplestItem, K>({
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
           className={classes.pagination}
         />
       )}

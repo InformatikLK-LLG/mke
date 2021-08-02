@@ -190,7 +190,7 @@ export function UpdateUserForm({ data }: { data?: User }) {
     getValues: UseFormGetValues<User>
   ) => {
     const editableToggle = (
-      <Grid item container xs={12} justify="flex-end">
+      <Grid item container xs={12} justifyContent="flex-end">
         <FormControlLabel
           control={
             <Switch
