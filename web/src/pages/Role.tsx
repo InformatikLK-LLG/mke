@@ -55,7 +55,7 @@ export function CreateRole({ user }: { user: User }) {
   return (
     <>
       {categories.map((category) => (
-        <Accordion square className={classes.accordion}>
+        <Accordion square className={classes.accordion} key={category.name}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Grid container item xs>
               <Grid item>
