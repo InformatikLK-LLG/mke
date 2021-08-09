@@ -293,7 +293,7 @@ export function CustomerForm({
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
 

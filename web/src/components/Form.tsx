@@ -14,13 +14,18 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Path, useForm } from "react-hook-form";
 import {
+  faChevronCircleLeft,
+  faChevronCircleRight,
+  faKey,
+} from "@fortawesome/free-solid-svg-icons";
+import {
   faEdit,
   faEnvelope,
   faKeyboard,
 } from "@fortawesome/free-regular-svg-icons";
 
 import Button from "./Button";
-import { faKey } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuth } from "../hooks/useAuth";
 import useViewport from "../hooks/useViewport";
 
@@ -43,7 +48,6 @@ export function LoginForm() {
     handleSubmit,
     clearErrors,
     control,
-    getValues,
     setValue,
     setError,
     watch,
@@ -57,12 +61,9 @@ export function LoginForm() {
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
-  // somehow necessary bc otherwise endAdornments won't properly re-render
-  // eslint-disable-next-line
-  const password = watch("password");
 
   const inputs = [
     <Grid item xs={12}>
@@ -119,9 +120,9 @@ export function ForgotPasswordForm() {
   const {
     handleSubmit,
     control,
-    getValues,
     setValue,
     clearErrors,
+    watch,
     formState: { errors },
   } = useForm<ForgotPasswordFormInputs>({ mode: "onChange" });
   const formState: FormState<ForgotPasswordFormInputs> = {
@@ -129,7 +130,7 @@ export function ForgotPasswordForm() {
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
   const navigate = useNavigate();
@@ -170,9 +171,9 @@ export function RegisterForm1() {
     handleSubmit,
     setError,
     clearErrors,
-    getValues,
     setValue,
     control,
+    watch,
     formState: { errors },
   } = useForm<RegisterForm1Inputs>({ mode: "onChange" });
   const formState: FormState<RegisterForm1Inputs> = {
@@ -180,7 +181,7 @@ export function RegisterForm1() {
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
   const navigate = useNavigate();
@@ -237,26 +238,37 @@ export function RegisterForm2() {
   const formInput = useInputStyles();
   const location = useLocation();
   const {
-    registerState: { code, email },
-  } = location.state as { registerState: { email?: string; code: number } };
+    registerState: { code, email, firstName, lastName },
+  } = location.state as {
+    registerState: {
+      email?: string;
+      code: number;
+      firstName?: string;
+      lastName?: string;
+    };
+  };
 
   const {
     handleSubmit,
-    getValues,
     clearErrors,
     setValue,
     control,
+    watch,
     formState: { errors },
   } = useForm<RegisterForm2Inputs>({
     mode: "onChange",
-    defaultValues: { email },
+    defaultValues: {
+      email,
+      firstName: firstName || "",
+      lastName: lastName || "",
+    },
   });
   const formState: FormState<RegisterForm2Inputs> = {
     clearErrors,
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
   const navigate = useNavigate();
@@ -288,15 +300,17 @@ export function RegisterForm2() {
     </Grid>,
   ];
 
+  const onSubmit = handleSubmit(({ firstName, lastName, email }) =>
+    navigate("../2", {
+      state: {
+        registerState: { code, firstName, lastName, email },
+      },
+    })
+  );
+
   return (
     <Form
-      onSubmit={handleSubmit(({ firstName, lastName, email }) =>
-        navigate("../2", {
-          state: {
-            registerState: { code, firstName, lastName, email },
-          },
-        })
-      )}
+      onSubmit={onSubmit}
       inputs={inputs}
       maxWidth="50ch"
       button={
@@ -306,6 +320,13 @@ export function RegisterForm2() {
           type="submit"
           label="Weiter"
           buttonStyle={formButton}
+        />
+      }
+      next={
+        <FontAwesomeIcon
+          icon={faChevronCircleRight}
+          type="submit"
+          onClick={onSubmit}
         />
       }
     />
@@ -323,10 +344,10 @@ export function RegisterForm3() {
   const {
     handleSubmit,
     setError,
-    getValues,
     setValue,
     control,
     clearErrors,
+    watch,
     formState: { errors },
   } = useForm<RegisterForm3Inputs>({ mode: "onChange" });
   const formState: FormState<RegisterForm3Inputs> = {
@@ -334,7 +355,7 @@ export function RegisterForm3() {
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
   const navigate = useNavigate();
@@ -381,23 +402,25 @@ export function RegisterForm3() {
     </Grid>,
   ];
 
+  const onSubmit = handleSubmit(async ({ password, passwordRepeated }) => {
+    if (password === passwordRepeated) {
+      await auth.register(
+        registerState.code,
+        registerState.firstName,
+        registerState.lastName,
+        registerState.email,
+        password
+      );
+      navigate("/");
+    } else
+      setError("password", {
+        message: "Passwörter stimmen nicht überein",
+      });
+  });
+
   return (
     <Form
-      onSubmit={handleSubmit(async ({ password, passwordRepeated }) => {
-        if (password === passwordRepeated) {
-          await auth.register(
-            registerState.code,
-            registerState.firstName,
-            registerState.lastName,
-            registerState.email,
-            password
-          );
-          navigate("/");
-        } else
-          setError("password", {
-            message: "Passwörter stimmen nicht überein",
-          });
-      })}
+      onSubmit={onSubmit}
       inputs={inputs}
       maxWidth="50ch"
       button={
@@ -407,6 +430,13 @@ export function RegisterForm3() {
           label="Weiter"
           buttonStyle={formButton}
           backgroundColor={theme.palette.primary.main}
+        />
+      }
+      next={<FontAwesomeIcon icon={faChevronCircleRight} onClick={onSubmit} />}
+      previous={
+        <FontAwesomeIcon
+          icon={faChevronCircleLeft}
+          onClick={() => navigate("../1", { state: { registerState } })}
         />
       }
     />
@@ -445,6 +475,8 @@ export type OrderType = {
 export default function Form({
   inputs,
   button,
+  next,
+  previous,
   onSubmit,
   order,
   width = "80%",
@@ -459,6 +491,8 @@ export default function Form({
 }: {
   inputs: Array<JSX.Element>;
   button: JSX.Element;
+  next?: JSX.Element;
+  previous?: JSX.Element;
   onSubmit: FormEventHandler<HTMLFormElement>;
   order?: OrderType;
   width?: string;
@@ -509,7 +543,16 @@ export default function Form({
             ))}
       </Grid>
       {otherElements?.middle}
-      {button}
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="baseline"
+        direction="row"
+      >
+        <Grid item>{previous}</Grid>
+        <Grid item>{button}</Grid>
+        <Grid item>{next}</Grid>
+      </Grid>
       {otherElements?.end}
     </form>
   );

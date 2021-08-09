@@ -11,6 +11,7 @@ import {
   UseFormClearErrors,
   UseFormGetValues,
   UseFormSetValue,
+  UseFormWatch,
   ValidationRule,
   useForm,
 } from "react-hook-form";
@@ -107,7 +108,7 @@ export type FormState<T> = {
   control: Control<T>;
   errors: DeepMap<T, FieldError>;
   clearErrors: UseFormClearErrors<T>;
-  getValues: UseFormGetValues<T>;
+  watch: UseFormWatch<T>;
   formInput: ClassNameMap<
     | "input"
     | "checkbox"
@@ -266,8 +267,10 @@ export const RenderInput = <T,>({
   formState: FormState<T>;
   params?: AutocompleteRenderInputParams;
 }) => {
-  const { setValue, control, errors, clearErrors, getValues, formInput } =
+  const { setValue, control, errors, clearErrors, watch, formInput } =
     formState;
+
+  const value = watch(name);
 
   const error = accessNestedValues(name, errors);
   useEffect(() => {
@@ -288,7 +291,7 @@ export const RenderInput = <T,>({
     ),
     endAdornment: (
       <>
-        {type === "password" && getValues(name) && (
+        {type === "password" && value && (
           <InputAdornment
             position="end"
             className={`${formInput.clickable} ${formInput.toggleViewPassword}`}
@@ -300,7 +303,7 @@ export const RenderInput = <T,>({
             />
           </InputAdornment>
         )}
-        {getValues(name) && !disabled && isModifiable && (
+        {value && !disabled && isModifiable && (
           <InputAdornment position="end" className={formInput.clearButton}>
             <FontAwesomeIcon
               className="inputIcon"
@@ -316,11 +319,6 @@ export const RenderInput = <T,>({
       </>
     ),
   };
-
-  // useEffect(
-  //   () => console.log(getValues(name), disabled, isModifiable),
-  //   [getValues(name), disabled, isModifiable]
-  // );
 
   return (
     <label>
@@ -607,7 +605,7 @@ export function InstitutionForm({
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
 

@@ -289,7 +289,7 @@ export function UserForm({
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
 
