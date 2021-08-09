@@ -1,6 +1,6 @@
 import "../styles/Form.css";
 
-import { FormEventHandler, Fragment } from "react";
+import { FormEventHandler, Fragment, useEffect } from "react";
 import { FormState, RenderInput, useInputStyles } from "../pages/Institution";
 import {
   Grid,
@@ -46,6 +46,7 @@ export function LoginForm() {
     getValues,
     setValue,
     setError,
+    watch,
     formState: { errors },
   } = useForm<LoginFormInputs>({ mode: "onChange" });
   const navigate = useNavigate();
@@ -59,6 +60,9 @@ export function LoginForm() {
     getValues,
     setValue,
   };
+  // somehow necessary bc otherwise endAdornments won't properly re-render
+  // eslint-disable-next-line
+  const password = watch("password");
 
   const inputs = [
     <Grid item xs={12}>

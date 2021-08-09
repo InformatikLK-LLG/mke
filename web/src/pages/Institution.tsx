@@ -116,6 +116,7 @@ export type FormState<T> = {
     | "formControl"
     | "clearButton"
     | "clickable"
+    | "toggleViewPassword"
   >;
 };
 
@@ -227,6 +228,9 @@ export const useInputStyles = makeStyles({
       cursor: "pointer",
     },
   },
+  toggleViewPassword: {
+    paddingRight: "0.5em",
+  },
   tableContainer: {
     width: "100%",
     height: "80%",
@@ -284,8 +288,11 @@ export const RenderInput = <T,>({
     ),
     endAdornment: (
       <>
-        {type === "password" && (
-          <InputAdornment position="end" className={formInput.clickable}>
+        {type === "password" && getValues(name) && (
+          <InputAdornment
+            position="end"
+            className={`${formInput.clickable} ${formInput.toggleViewPassword}`}
+          >
             <FontAwesomeIcon
               className="inputIcon"
               icon={showPassword ? faEyeSlash : faEye}
@@ -309,6 +316,11 @@ export const RenderInput = <T,>({
       </>
     ),
   };
+
+  // useEffect(
+  //   () => console.log(getValues(name), disabled, isModifiable),
+  //   [getValues(name), disabled, isModifiable]
+  // );
 
   return (
     <label>
