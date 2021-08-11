@@ -17,6 +17,7 @@ import de.llggiessen.mke.repository.UserRepository;
 import de.llggiessen.mke.schema.Privilege;
 import de.llggiessen.mke.schema.Role;
 import de.llggiessen.mke.schema.User;
+import de.llggiessen.mke.utils.FormValidation;
 import de.llggiessen.mke.utils.RoleUtils;
 
 @RestController
@@ -86,6 +87,7 @@ public class UserController {
         if (!userFromDb.isPresent())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "There is no customer with this id. Maybe you meant to create a new customer using a POST request.");
+        FormValidation.validateUser(user);
         try {
             user.setPassword(userFromDb.get().getPassword());
             return userRepository.save(user);
