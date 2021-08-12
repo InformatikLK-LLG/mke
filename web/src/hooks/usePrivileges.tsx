@@ -1,14 +1,11 @@
 import { Privilege } from "./useAuth";
-import { User } from "../pages/User";
 import axios from "axios";
 import { useQuery } from "react-query";
 
-const usePrivileges = (user: User) => {
+const usePrivileges = () => {
   return {
-    ...useQuery(["privileges", user], () =>
-      axios.get<Array<Privilege>>(
-        `http://localhost:8080/user/${user.id}/privileges`
-      )
+    ...useQuery(["privileges"], () =>
+      axios.get<Array<Privilege>>("http://localhost:8080/privilege")
     ),
   };
 };

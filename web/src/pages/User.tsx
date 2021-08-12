@@ -26,11 +26,11 @@ import useUsers, { UserSearchParams } from "../hooks/useUsers";
 
 import Autocomplete from "../components/Autocomplete";
 import Button from "../components/Button";
-import { CreateRole } from "./Role";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "../components/Loading";
 import PageNotFound from "./PageNotFound";
 import { Role } from "../hooks/useAuth";
+import { ViewPrivileges } from "./Role";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faUserTag } from "@fortawesome/free-solid-svg-icons";
 import { useDetailsStyles } from "../components/InstitutionDetails";
@@ -141,7 +141,7 @@ export function UserDetails({ data }: { data: User }) {
         <h3
           style={{ alignSelf: "flex-start" }}
         >{`Rechte — ${data.firstName} ${data.lastName}`}</h3>
-        <CreateRole user={data} />
+        <ViewPrivileges user={data} />
       </div>
     </div>
   );

@@ -154,6 +154,19 @@ export default function Wrapper() {
       ],
     },
     {
+      path: "/roles",
+      name: "Rollen",
+      heading: "Rollen",
+      subroutes: [
+        {
+          path: "/roles/create",
+          name: "Erstellen",
+          heading: "Rollen erstellen",
+          privileges: "ROLE_WRITE",
+        },
+      ],
+    },
+    {
       path: "/profile",
       name: <FontAwesomeIcon icon={faUser} />,
       heading: `Hallo ${auth.user?.email}`,

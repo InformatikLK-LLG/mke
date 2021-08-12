@@ -11,6 +11,7 @@ import Institution, {
 } from "./pages/Institution";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
+import Role, { CreateRole } from "./pages/Role";
 import User, { Users, ViewUserDetails } from "./pages/User";
 
 import AuthenticationRoute from "./components/AuthenticationRoute";
@@ -102,6 +103,13 @@ function App() {
                       path="/:userId"
                       element={<ViewUserDetails />}
                       requiredPrivilege={["USER_READ"]}
+                    />
+                  </PrivateRoute>
+                  <PrivateRoute path="/roles" element={<Role />}>
+                    <PrivateRoute
+                      path="/create"
+                      element={<CreateRole />}
+                      requiredPrivilege={["ROLE_WRITE"]}
                     />
                   </PrivateRoute>
                 </Route>
