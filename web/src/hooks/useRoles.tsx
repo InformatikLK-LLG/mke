@@ -4,9 +4,12 @@ import { useQuery } from "react-query";
 
 const useRoles = () => {
   return {
-    ...useQuery(["roles"], () =>
-      axios.get<Array<Role>>("http://localhost:8080/role")
-    ),
+    ...useQuery(["roles"], async () => {
+      const { data } = await axios.get<Array<Role>>(
+        "http://localhost:8080/role"
+      );
+      return data;
+    }),
   };
 };
 

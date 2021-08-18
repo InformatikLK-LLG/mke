@@ -836,7 +836,7 @@ export function Institutions() {
     <div className="container">
       <Table
         tableHeaders={tableHeaders}
-        rows={data?.data || []}
+        rows={data || []}
         sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
         onRowClick={(row) => navigate(`./${row.id}`)}
         search={search}

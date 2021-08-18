@@ -39,10 +39,10 @@ export function InstitutionOverlay({
   data,
 }: {
   instCode: string;
-  data?: AxiosResponse<FormInstitutionType>;
+  data?: FormInstitutionType;
 }) {
   const defaultValues = data
-    ? data.data
+    ? data
     : {
         id: "",
         name: "",
@@ -80,7 +80,7 @@ export function InstitutionOverlay({
   return (
     <div className={detailsStyles.enclosure}>
       <div className={detailsStyles.section}>
-        <UpdateInstitutionForm data={data?.data} />
+        <UpdateInstitutionForm data={data} />
       </div>
       <Divider
         style={{ width: "80%" }}
@@ -96,7 +96,7 @@ export function InstitutionOverlay({
             mobilePhone: { label: "Handynummer", width: 1 },
             businessPhone: { label: "Telefonnummer dienstlich", width: 1 },
           }}
-          rows={customers?.data || []}
+          rows={customers || []}
           sort={["Vorname", "Nachname", "Email"]}
           onRowClick={(row) => navigate(`/customers/${row.id}`)}
           isLoading={customersIsLoading}

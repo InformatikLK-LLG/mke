@@ -1,6 +1,7 @@
+import { useQuery, useQueryClient } from "react-query";
+
 import { User } from "../pages/User";
 import axios from "axios";
-import { useQuery } from "react-query";
 import { useState } from "react";
 
 export type UserSearchParams = {
@@ -11,14 +12,28 @@ export type UserSearchParams = {
 };
 
 const useUsers = () => {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useState<
     UserSearchParams | undefined
   >();
   return {
-    ...useQuery(["users", searchParams], () =>
-      axios.get<Array<User>>("http://localhost:8080/user", {
-        params: searchParams,
-      })
+    ...useQuery(
+      ["users", searchParams],
+      async () => {
+        const { data } = await axios.get<Array<User>>(
+          "http://localhost:8080/user",
+          {
+            params: searchParams,
+          }
+        );
+        return data;
+      },
+      {
+        onSuccess: (users) =>
+          users.forEach((user) =>
+            queryClient.setQueryData(["user", user.id], user)
+          ),
+      }
     ),
     searchParams,
     setSearchParams,

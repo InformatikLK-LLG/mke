@@ -95,7 +95,7 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
   return (
     <Table
       tableHeaders={tableHeaders}
-      rows={data?.data || []}
+      rows={data || []}
       sort={["Vorname", "Nachname", "Email"]}
       onRowClick={(row) => navigate(`/customers/${row.id}`)}
       isLoading={isLoading}
@@ -518,14 +518,10 @@ export function CustomerForm({
 export function ViewCustomerDetails() {
   const { id } = useParams();
   const { data, isLoading } = useCustomer(id);
-  // GET and stuff
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
   return isLoading ? (
     <Loading />
   ) : data ? (
-    <CustomerDetails data={data.data} />
+    <CustomerDetails data={data} />
   ) : (
     <PageNotFound />
   );

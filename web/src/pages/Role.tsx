@@ -36,7 +36,7 @@ export function ViewPrivileges({ user }: { user: User }) {
   const classes = useStyles();
   const { data } = usePrivilegesOfUser(user);
   const categories: Array<{ name: string; read: boolean; write: boolean }> = [];
-  const privileges: Privilege[] = data?.data || [];
+  const privileges: Privilege[] = data || [];
 
   privileges.forEach((privilege) => {
     const [name, kindOfPrivilege] = privilege.id.split("_");
@@ -114,7 +114,7 @@ export function CreateRole() {
   const { data } = usePrivileges();
   // we don't change privilges, and if data changes, the ui really should re-render
   // eslint-disable-next-line
-  const privileges = data?.data || [];
+  const privileges = data || [];
   const [categories, setCategories] = useState<
     Array<{ name: string; read?: boolean; write?: boolean }>
   >([]);

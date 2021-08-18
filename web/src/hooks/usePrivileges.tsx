@@ -4,9 +4,12 @@ import { useQuery } from "react-query";
 
 const usePrivileges = () => {
   return {
-    ...useQuery(["privileges"], () =>
-      axios.get<Array<Privilege>>("http://localhost:8080/privilege")
-    ),
+    ...useQuery(["privileges"], async () => {
+      const { data } = await axios.get<Array<Privilege>>(
+        "http://localhost:8080/privilege"
+      );
+      return data;
+    }),
   };
 };
 

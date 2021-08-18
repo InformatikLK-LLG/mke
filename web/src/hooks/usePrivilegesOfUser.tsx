@@ -5,11 +5,12 @@ import { useQuery } from "react-query";
 
 const usePrivilegesOfUser = (user: User) => {
   return {
-    ...useQuery(["userPrivileges", user], () =>
-      axios.get<Array<Privilege>>(
+    ...useQuery(["userPrivileges", user], async () => {
+      const { data } = await axios.get<Array<Privilege>>(
         `http://localhost:8080/user/${user.id}/privileges`
-      )
-    ),
+      );
+      return data;
+    }),
   };
 };
 

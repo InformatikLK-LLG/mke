@@ -99,7 +99,7 @@ export function Users() {
     { email: "string" },
     {
       roles: {
-        data: roleData?.data.map((role) => role.id),
+        data: roleData?.map((role) => role.id),
         isLoading: roleIsLoading,
       },
     },
@@ -108,7 +108,7 @@ export function Users() {
   return (
     <div className="container">
       <Table
-        rows={userData?.data || []}
+        rows={userData || []}
         tableHeaders={tableHeaders}
         isLoading={userIsLoading}
         onRowClick={(row) => navigate(`./${row.id}`)}
@@ -153,7 +153,7 @@ export function ViewUserDetails() {
   return isLoading ? (
     <Loading />
   ) : data ? (
-    <UserDetails data={data.data} />
+    <UserDetails data={data} />
   ) : (
     <PageNotFound />
   );
@@ -345,7 +345,7 @@ export function UserForm({
         name="roles"
         render={({ field }) => (
           <Autocomplete
-            data={availableRoles?.data || []}
+            data={availableRoles || []}
             onChange={(event, values) => {
               field.onChange(values);
             }}
