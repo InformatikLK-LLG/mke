@@ -517,7 +517,7 @@ export function CustomerForm({
 
 export function ViewCustomerDetails() {
   const { id } = useParams();
-  const { data, isLoading } = useCustomer(id);
+  const { data, isLoading } = useCustomer(Number(id));
   return isLoading ? (
     <Loading />
   ) : data ? (

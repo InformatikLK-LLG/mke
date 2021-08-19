@@ -149,7 +149,7 @@ export function UserDetails({ data }: { data: User }) {
 
 export function ViewUserDetails() {
   const { userId } = useParams();
-  const { data, isLoading } = useUser(userId);
+  const { data, isLoading } = useUser(Number(userId));
   return isLoading ? (
     <Loading />
   ) : data ? (
