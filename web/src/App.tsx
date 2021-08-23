@@ -17,6 +17,7 @@ import User, { Users, ViewUserDetails } from "./pages/User";
 import AuthenticationRoute from "./components/AuthenticationRoute";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import Home from "./pages/Home";
+import { Invites } from "./pages/Invite";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import NoTrespassing from "./components/NoTrespassing";
@@ -103,6 +104,11 @@ function App() {
                       path="/:userId"
                       element={<ViewUserDetails />}
                       requiredPrivilege={["USER_READ"]}
+                    />
+                    <PrivateRoute
+                      path="/invite"
+                      element={<Invites />}
+                      requiredPrivilege={["INVITE_WRITE"]}
                     />
                   </PrivateRoute>
                   <PrivateRoute path="/roles" element={<Role />}>

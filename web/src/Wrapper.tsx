@@ -151,6 +151,12 @@ export default function Wrapper() {
           path: "/users/:userId",
           heading: "",
         },
+        {
+          path: "/users/invite",
+          name: "Einladen",
+          heading: "Einladung erstellen",
+          privileges: "INVITE_WRITE",
+        },
       ],
     },
     {
