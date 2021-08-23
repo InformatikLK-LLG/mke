@@ -96,7 +96,7 @@ public class AuthController {
                 || user.getPassword() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        Optional<Invite> invite = inviteRepository.findById(user.getCode());
+        Optional<Invite> invite = inviteRepository.findByInviteCode(user.getCode());
 
         if (!invite.isPresent() || !invite.get().getEmail().equals(user.getEmail()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

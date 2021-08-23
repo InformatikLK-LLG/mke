@@ -78,7 +78,7 @@ public class InviteController {
     @PutMapping("")
     @PreAuthorize("hasAuthority('INVITE_WRITE')")
     public Invite extendInvite(@RequestParam("inviteCode") String inviteCode) {
-        Optional<Invite> invite = inviteRepository.findById(inviteCode);
+        Optional<Invite> invite = inviteRepository.findByInviteCode(inviteCode);
         if (invite.isPresent()) {
             invite.get().setCreationDate(LocalDateTime.now());
             return inviteRepository.save(invite.get());

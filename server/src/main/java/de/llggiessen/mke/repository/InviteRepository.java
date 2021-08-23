@@ -14,7 +14,7 @@ import de.llggiessen.mke.schema.Invite;
 @Repository
 @RepositoryRestResource(exported = false)
 @Transactional
-public interface InviteRepository extends CrudRepository<Invite, String> {
+public interface InviteRepository extends CrudRepository<Invite, Long> {
 
     @Query("SELECT invite FROM Invite invite WHERE invite.user.email = :email")
     Optional<Invite> findByEmail(@Param("email") String email);
@@ -26,5 +26,7 @@ public interface InviteRepository extends CrudRepository<Invite, String> {
     Optional<Invite> findByEncodedInviteCode(@Param("code") String code);
 
     void deleteByUserEmail(@Param("email") String email);
+
+    Optional<Invite> findByInviteCode(String inviteCode);
 
 }
