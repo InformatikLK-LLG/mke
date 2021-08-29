@@ -115,6 +115,11 @@ const useStyles = makeStyles({
     fontSize: "1.2em",
     padding: "6px",
   },
+  tableButton: {
+    background: "none",
+    border: "none",
+    fontSize: "1em",
+  },
 });
 
 export function accessNestedValues(path: string, object: {}) {
@@ -150,8 +155,11 @@ export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
     }
   : Header;
 
-type TableButton = {
-  onClick: () => void;
+type TableButton<T> = {
+  onClick: (
+    row: T,
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
   icon: JSX.Element;
   stylingStuff?: { backgroundColor: string; textColor: string };
 };
@@ -159,7 +167,7 @@ type TableButton = {
 interface TableProps<T extends SimplestItem, K> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
-  buttons?: Array<TableButton>;
+  buttons?: Array<TableButton<T>>;
   sort?: Array<string>;
   search?: (parameter?: keyof K, query?: string) => void;
   searchParams?: Array<
@@ -366,19 +374,12 @@ export default function Table<T extends SimplestItem, K>({
                 {buttons.map((button) => {
                   return (
                     <Grid item>
-                      <MuiButton
-                        type="button"
-                        onClick={button.onClick}
-                        style={{
-                          backgroundColor:
-                            button.stylingStuff?.backgroundColor ||
-                            theme.palette.primary.main,
-                          color: button.stylingStuff?.textColor || "white",
-                          width: "1em",
-                        }}
+                      <button
+                        onClick={(event) => button.onClick(row, event)}
+                        className={`${classes.clickable} ${classes.buttonHover} ${classes.tableButton}`}
                       >
                         {button.icon}
-                      </MuiButton>
+                      </button>
                     </Grid>
                   );
                 })}
