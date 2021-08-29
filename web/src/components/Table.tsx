@@ -6,6 +6,7 @@ import {
   Checkbox,
   FormControlLabel,
   Grid,
+  Button as MuiButton,
   TableBody,
   TableCell,
   TableContainer,
@@ -16,6 +17,10 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
+import {
+  FontAwesomeIcon,
+  FontAwesomeIconProps,
+} from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
   faSortDown,
@@ -29,7 +34,6 @@ import Autocomplete from "./Autocomplete";
 import Button from "./Button";
 import Delayed from "./Delayed";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
 import flower from "../resources/blume.jpg";
 import { useEffect } from "react";
@@ -146,9 +150,16 @@ export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
     }
   : Header;
 
+type TableButton = {
+  onClick: () => void;
+  icon: JSX.Element;
+  stylingStuff?: { backgroundColor: string; textColor: string };
+};
+
 interface TableProps<T extends SimplestItem, K> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
+  buttons?: Array<TableButton>;
   sort?: Array<string>;
   search?: (parameter?: keyof K, query?: string) => void;
   searchParams?: Array<
@@ -252,6 +263,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 export default function Table<T extends SimplestItem, K>({
   tableHeaders,
   rows,
+  buttons,
   sort,
   search,
   searchParams = [],
@@ -340,9 +352,40 @@ export default function Table<T extends SimplestItem, K>({
           isBlume && classes.flowerRow
         }`}
       >
-        {accessKeys.map((nestedKey) => {
-          return RenderValue(row, nestedKey);
-        })}
+        <>
+          {accessKeys.map((nestedKey) => RenderValue(row, nestedKey))}
+          {buttons && (
+            <TableCell>
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                wrap="nowrap"
+                spacing={2}
+              >
+                {buttons.map((button) => {
+                  return (
+                    <Grid item>
+                      <MuiButton
+                        type="button"
+                        onClick={button.onClick}
+                        style={{
+                          backgroundColor:
+                            button.stylingStuff?.backgroundColor ||
+                            theme.palette.primary.main,
+                          color: button.stylingStuff?.textColor || "white",
+                          width: "1em",
+                        }}
+                      >
+                        {button.icon}
+                      </MuiButton>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </TableCell>
+          )}
+        </>
       </TableRow>
     );
   }
@@ -449,6 +492,8 @@ export default function Table<T extends SimplestItem, K>({
     const header = accessNestedValues(key, tableHeaders) as Header;
     return header.width;
   });
+  buttons && columnWidths.push(1);
+
   const relativeWidth = columnWidths.reduce((prev, curr) => prev + curr, 0);
 
   return (
@@ -680,7 +725,10 @@ export default function Table<T extends SimplestItem, K>({
             })}
           </colgroup>
           <TableHead className={classes.tableHeader}>
-            <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
+            <TableRow>
+              {RenderHeaders(tableHeaders)}
+              {buttons && <TableCell>asdf</TableCell>}
+            </TableRow>
           </TableHead>
           <TableBody classes={{ root: isBlume ? classes.flowerBody : "" }}>
             {isLoading ? (
