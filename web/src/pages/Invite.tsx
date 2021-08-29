@@ -2,9 +2,11 @@ import { Divider, Grid, useTheme } from "@material-ui/core";
 import Form, { EmailInputField } from "../components/Form";
 import { FormState, useButtonStyles, useInputStyles } from "./Institution";
 import Table, { TableHeaders } from "../components/Table";
+import { faEdit, faTrashAlt } from "@fortawesome/free-regular-svg-icons";
 import useInvites, { InviteSearchParams } from "../hooks/useInvites";
 
 import Button from "../components/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
 import { useDetailsStyles } from "../components/InstitutionDetails";
@@ -86,12 +88,25 @@ export function CreateInvite() {
 
 export function Invites() {
   const detailsStyles = useDetailsStyles();
-  const { data, isLoading, setSearchParams } = useInvites();
+  const { setMessage, setSnackbarOpen } = useSnackbar();
+  const {
+    data,
+    isLoading,
+    setSearchParams,
+    searchParams: inviteSearchParams,
+  } = useInvites();
+  const [isDeleteLoading, setIsDeleteLoading] = useState<
+    { [key in number]: boolean } | undefined
+  >();
+  const queryClient = useQueryClient();
   const searchParams: Array<
     { [key in keyof InviteSearchParams]: "string" | "number" }
   > = [{ email: "string", inviteCode: "number" }];
   const tableHeaders: TableHeaders<InviteType> = {
-    email: { label: "Email", width: 3 },
+    email: {
+      label: "Email",
+      width: 3,
+    },
     inviteCode: { label: "Code", width: 1 },
   };
 
@@ -108,6 +123,31 @@ export function Invites() {
         <Table
           tableHeaders={tableHeaders}
           rows={data || []}
+          buttons={[
+            {
+              onClick: async (row, event) => {
+                try {
+                  setIsDeleteLoading({ [row.id]: true });
+                  await axios.delete("http://localhost:8080/invite", {
+                    params: { id: row.id },
+                  });
+                  queryClient.invalidateQueries([
+                    "invites",
+                    inviteSearchParams,
+                  ]);
+                } catch (error) {
+                  setMessage(
+                    "Joah ging halt nicht zu löschen und so..., sorry."
+                  );
+                  setSnackbarOpen(true);
+                } finally {
+                  setIsDeleteLoading({ [row.id]: false});
+                }
+              },
+              icon: <FontAwesomeIcon icon={faTrashAlt} />,
+              isLoading: isDeleteLoading,
+            },
+          ]}
           isLoading={isLoading}
         />
       </div>
