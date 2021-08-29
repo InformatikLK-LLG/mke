@@ -4,8 +4,10 @@ import {
   AccordionSummary,
   Table as BetterTable,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   Grid,
+  LinearProgress,
   Button as MuiButton,
   TableBody,
   TableCell,
@@ -162,6 +164,7 @@ type TableButton<T> = {
   ) => void;
   icon: JSX.Element;
   stylingStuff?: { backgroundColor: string; textColor: string };
+  isLoading?: { [key in number | string]: boolean };
 };
 
 interface TableProps<T extends SimplestItem, K> {
@@ -351,8 +354,15 @@ export default function Table<T extends SimplestItem, K>({
     );
   }
 
-  function RenderRow(row: T) {
-    return (
+  function RenderRow({ row }: { row: T }) {
+    const [rowIsLoading, setRowIsLoading] = useState(false);
+    return rowIsLoading ? (
+      <tr>
+        <td colSpan={columnWidths.length}>
+          <LinearProgress />
+        </td>
+      </tr>
+    ) : (
       <TableRow
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
@@ -371,18 +381,19 @@ export default function Table<T extends SimplestItem, K>({
                 wrap="nowrap"
                 spacing={2}
               >
-                {buttons.map((button) => {
-                  return (
-                    <Grid item>
-                      <button
-                        onClick={(event) => button.onClick(row, event)}
-                        className={`${classes.clickable} ${classes.buttonHover} ${classes.tableButton}`}
-                      >
-                        {button.icon}
-                      </button>
-                    </Grid>
-                  );
-                })}
+                {buttons.map((button, i) => (
+                  <Grid item key={`${row.id}.button.${i}`}>
+                    <button
+                      onClick={(event) => button.onClick(row, event)}
+                      className={`${classes.clickable} ${classes.buttonHover} ${classes.tableButton}`}
+                    >
+                      {button.icon}
+                    </button>
+                    {button.isLoading &&
+                      button.isLoading[row.id] &&
+                      setRowIsLoading(true)}
+                  </Grid>
+                ))}
               </Grid>
             </TableCell>
           )}
@@ -743,7 +754,7 @@ export default function Table<T extends SimplestItem, K>({
             ) : (
               stableSort(rows, getComparator(direction, sortBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => RenderRow(row))
+                .map((row) => <RenderRow row={row} key={row.id} />)
             )}
           </TableBody>
         </BetterTable>
