@@ -75,6 +75,15 @@ public class InviteController {
         }
     }
 
+    @DeleteMapping(value = "", params = { "id" })
+    @PreAuthorize("hasAuthority('INVITE_WRITE')")
+    public void deleteInvite(@RequestParam long id) {
+        Invite invite = inviteRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no invite with this id."));
+        inviteRepository.deleteById(id);
+        userRepository.delete(invite.getUser());
+    }
+
     @PutMapping("")
     @PreAuthorize("hasAuthority('INVITE_WRITE')")
     public Invite extendInvite(@RequestParam("inviteCode") String inviteCode) {
