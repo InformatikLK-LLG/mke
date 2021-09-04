@@ -199,7 +199,6 @@ function useProvideAuth(): Auth {
       try {
         const response = await axios.post<User>("http://localhost:8080/signin");
         setUser(response.data);
-        setIsLoading(false);
       } catch (error) {
         throw error;
       }
@@ -212,7 +211,6 @@ function useProvideAuth(): Auth {
       } catch (error) {
         setUser(undefined);
         console.error(error);
-        setIsLoading(false);
       }
     }
 
@@ -222,6 +220,8 @@ function useProvideAuth(): Auth {
         await fetchUser();
       } catch (error) {
         fetchNewJWT();
+      } finally {
+        setIsLoading(false);
       }
     }
 
