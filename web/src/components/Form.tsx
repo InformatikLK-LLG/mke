@@ -1,6 +1,6 @@
 import "../styles/Form.css";
 
-import { FormEventHandler, Fragment, useEffect } from "react";
+import { FormEventHandler, Fragment } from "react";
 import { FormState, RenderInput, useInputStyles } from "../pages/Institution";
 import {
   Grid,

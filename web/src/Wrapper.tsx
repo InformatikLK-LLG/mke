@@ -1,6 +1,6 @@
 import { IconButton, Snackbar } from "@material-ui/core";
 import NavBar, { NavBarItem } from "./components/NavBar";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -74,7 +74,6 @@ export default function Wrapper() {
   const auth = useAuth();
   const header = useProvideHeader();
   const snackbar = useProvideSnackbar();
-  const navigate = useNavigate();
 
   axios.defaults.withCredentials = true;
   axios.interceptors.response.use(

@@ -2,7 +2,6 @@ import {
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   AutocompleteRenderInputParams,
-  AutocompleteRenderOptionState,
   Autocomplete as MuiAutocomplete,
 } from "@material-ui/lab";
 import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";

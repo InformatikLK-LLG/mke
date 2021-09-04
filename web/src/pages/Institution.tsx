@@ -383,7 +383,7 @@ export default function Institution() {
 }
 
 export type RecursivePartial<T> = {
-  [K in keyof T]?: T[K] extends Array<infer L> ? T[K] : RecursivePartial<T[K]>;
+  [K in keyof T]?: T[K] extends Array<infer L> ? T[K] : RecursivePartial<T[K]>; // eslint-disable-line
 };
 
 export function CreateInstitution({

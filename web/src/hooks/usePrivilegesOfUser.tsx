@@ -1,9 +1,9 @@
 import { Privilege } from "./useAuth";
-import { User } from "../pages/User";
+import { UserType } from "../pages/User";
 import axios from "axios";
 import { useQuery } from "react-query";
 
-const usePrivilegesOfUser = (user: User) => {
+const usePrivilegesOfUser = (user: UserType) => {
   return {
     ...useQuery(["userPrivileges", user], async () => {
       const { data } = await axios.get<Array<Privilege>>(

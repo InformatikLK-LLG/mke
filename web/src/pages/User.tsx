@@ -7,7 +7,6 @@ import {
   InputAdornment,
   Switch,
   TextField,
-  makeStyles,
   useTheme,
 } from "@material-ui/core";
 import Form, { EmailInputField, OrderType } from "../components/Form";
@@ -39,7 +38,7 @@ import { useQueryClient } from "react-query";
 import useRoles from "../hooks/useRoles";
 import useUser from "../hooks/useUser";
 
-export type User = {
+export type UserType = {
   id: string;
   firstName: string;
   lastName: string;
@@ -56,11 +55,10 @@ export function Users() {
     data: userData,
     isLoading: userIsLoading,
     setSearchParams: setUserSearchParams,
-    error: userErrors,
   } = useUsers();
   const { data: roleData, isLoading: roleIsLoading } = useRoles();
   const navigate = useNavigate();
-  const tableHeaders: TableHeaders<User> = {
+  const tableHeaders: TableHeaders<UserType> = {
     firstName: { label: "Vorname", width: 1 },
     lastName: { label: "Nachname", width: 1 },
     email: { label: "Email", width: 1 },
@@ -120,7 +118,7 @@ export function Users() {
   );
 }
 
-export function UserDetails({ data }: { data: User }) {
+export function UserDetails({ data }: { data: UserType }) {
   const detailsStyles = useDetailsStyles();
   const header = useHeader();
 
@@ -159,15 +157,15 @@ export function ViewUserDetails() {
   );
 }
 
-export function UpdateUserForm({ data }: { data?: User }) {
+export function UpdateUserForm({ data }: { data?: UserType }) {
   const queryClient = useQueryClient();
   const userStyles = useDetailsStyles();
   const navigate = useNavigate();
   const { setMessage, setSnackbarOpen } = useSnackbar();
 
-  const updateData = async (data?: User) => {
+  const updateData = async (data?: UserType) => {
     try {
-      const response = await axios.put<User>(
+      const response = await axios.put<UserType>(
         `http://localhost:8080/user/${data?.id}`,
         data
       );
@@ -187,7 +185,7 @@ export function UpdateUserForm({ data }: { data?: User }) {
   const toggleLabel = (
     disabled: boolean,
     setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
-    getValues: UseFormGetValues<User>
+    getValues: UseFormGetValues<UserType>
   ) => {
     const editableToggle = (
       <Grid item container xs={12} justifyContent="flex-end">
@@ -242,19 +240,19 @@ export function UserForm({
   toggleLabel,
   defaultDisabled = false,
 }: {
-  defaultValues?: RecursivePartial<User>;
+  defaultValues?: RecursivePartial<UserType>;
   onSubmit: (
-    data: User,
+    data: UserType,
     event?: BaseSyntheticEvent
-  ) => Promise<AxiosResponse<User | Array<User>>>;
+  ) => Promise<AxiosResponse<UserType | Array<UserType>>>;
   toggleLabel?: (
     disabled: boolean,
     setDisabled: React.Dispatch<React.SetStateAction<boolean>>,
-    getValues: UseFormGetValues<User>
+    getValues: UseFormGetValues<UserType>
   ) => JSX.Element;
   defaultDisabled?: boolean;
 }) {
-  const defaultUser: User = {
+  const defaultUser: UserType = {
     id: defaultValues?.id || "",
     firstName: defaultValues?.firstName || "",
     lastName: defaultValues?.lastName || "",
@@ -271,7 +269,7 @@ export function UserForm({
     formState: { errors, isValid },
     clearErrors,
     trigger,
-  } = useForm<User>({
+  } = useForm<UserType>({
     mode: "onChange",
     defaultValues: defaultUser,
   });
@@ -282,9 +280,9 @@ export function UserForm({
   const [isLoading, setIsLoading] = useState(false);
   const [disabled, setDisabled] = useState(defaultDisabled);
   const { setMessage, setSnackbarOpen } = useSnackbar();
-  const { data: availableRoles, isLoading: roleIsLoading } = useRoles();
+  const { data: availableRoles } = useRoles();
 
-  const formState: FormState<User> = {
+  const formState: FormState<UserType> = {
     clearErrors,
     control,
     errors,

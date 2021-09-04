@@ -2,13 +2,13 @@ import { Divider, Grid, useTheme } from "@material-ui/core";
 import Form, { EmailInputField } from "../components/Form";
 import { FormState, useButtonStyles, useInputStyles } from "./Institution";
 import Table, { TableHeaders } from "../components/Table";
-import { faEdit, faTrashAlt } from "@fortawesome/free-regular-svg-icons";
 import useInvites, { InviteSearchParams } from "../hooks/useInvites";
 
 import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Outlet } from "react-router-dom";
 import axios from "axios";
+import { faTrashAlt } from "@fortawesome/free-regular-svg-icons";
 import { useDetailsStyles } from "../components/InstitutionDetails";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
@@ -89,12 +89,7 @@ export function CreateInvite() {
 export function Invites() {
   const detailsStyles = useDetailsStyles();
   const { setMessage, setSnackbarOpen } = useSnackbar();
-  const {
-    data,
-    isLoading,
-    setSearchParams,
-    searchParams: inviteSearchParams,
-  } = useInvites();
+  const { data, isLoading, searchParams: inviteSearchParams } = useInvites();
   const [isDeleteLoading, setIsDeleteLoading] = useState<
     { [key in number]: boolean } | undefined
   >();
@@ -141,7 +136,7 @@ export function Invites() {
                   );
                   setSnackbarOpen(true);
                 } finally {
-                  setIsDeleteLoading({ [row.id]: false});
+                  setIsDeleteLoading({ [row.id]: false });
                 }
               },
               icon: <FontAwesomeIcon icon={faTrashAlt} />,

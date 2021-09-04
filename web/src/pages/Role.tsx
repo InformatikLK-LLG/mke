@@ -8,18 +8,17 @@ import {
   InputAdornment,
   makeStyles,
 } from "@material-ui/core";
-import { Privilege, useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Outlet } from "react-router-dom";
-import { User } from "./User";
+import { Privilege } from "../hooks/useAuth";
+import { UserType } from "./User";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import usePrivileges from "../hooks/usePrivileges";
 import usePrivilegesOfUser from "../hooks/usePrivilegesOfUser";
-import { valueScaleCorrection } from "framer-motion/types/render/dom/projection/scale-correction";
 
 const useStyles = makeStyles({
   accordion: {
@@ -32,7 +31,7 @@ export default function Role() {
   return <Outlet />;
 }
 
-export function ViewPrivileges({ user }: { user: User }) {
+export function ViewPrivileges({ user }: { user: UserType }) {
   const classes = useStyles();
   const { data } = usePrivilegesOfUser(user);
   const categories: Array<{ name: string; read: boolean; write: boolean }> = [];

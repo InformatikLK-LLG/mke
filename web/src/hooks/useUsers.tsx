@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "react-query";
 
-import { User } from "../pages/User";
+import { UserType } from "../pages/User";
 import axios from "axios";
 import { useState } from "react";
 
@@ -20,7 +20,7 @@ const useUsers = () => {
     ...useQuery(
       ["users", searchParams],
       async () => {
-        const { data } = await axios.get<Array<User>>(
+        const { data } = await axios.get<Array<UserType>>(
           "http://localhost:8080/user",
           {
             params: searchParams,

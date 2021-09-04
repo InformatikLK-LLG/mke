@@ -4,7 +4,6 @@ import {
   UpdateInstitutionForm,
 } from "../pages/Institution";
 
-import { AxiosResponse } from "axios";
 import Table from "./Table";
 import useCustomers from "../hooks/useCustomers";
 import { useEffect } from "react";

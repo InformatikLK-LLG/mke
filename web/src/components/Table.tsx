@@ -4,11 +4,9 @@ import {
   AccordionSummary,
   Table as BetterTable,
   Checkbox,
-  CircularProgress,
   FormControlLabel,
   Grid,
   LinearProgress,
-  Button as MuiButton,
   TableBody,
   TableCell,
   TableContainer,
@@ -19,10 +17,6 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import {
-  FontAwesomeIcon,
-  FontAwesomeIconProps,
-} from "@fortawesome/react-fontawesome";
 import {
   IconDefinition,
   faSortDown,
@@ -36,10 +30,10 @@ import Autocomplete from "./Autocomplete";
 import Button from "./Button";
 import Delayed from "./Delayed";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "./Loading";
 import flower from "../resources/blume.jpg";
 import { useEffect } from "react";
-import { useInputStyles } from "../pages/Institution";
 
 const useStyles = makeStyles({
   headerIcon: {
@@ -149,7 +143,7 @@ interface Header {
 export type TableHeaders<T extends SimplestItem> = AllTableHeaders<T>;
 export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
   ? never
-  : T extends Array<infer ElementType>
+  : T extends Array<infer ElementType> // eslint-disable-line
   ? Header
   : T extends object
   ? {
