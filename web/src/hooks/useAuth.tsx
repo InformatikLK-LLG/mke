@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 
-export type Privilege = {
+export type PrivilegeType = {
   id:
     | "INSTITUTION_READ"
     | "INSTITUTION_WRITE"
@@ -19,54 +19,54 @@ export type Privilege = {
     | "ROLE_WRITE";
 };
 
-export type Role = {
+export type RoleType = {
   id: string;
-  privileges: Array<Privilege>;
+  privileges: Array<PrivilegeType>;
 };
 
-type User =
+type UserType =
   | {
       firstName: string;
       lastName: string;
       email: string;
       username: string;
       password: string;
-      roles: Array<Role>;
+      roles: Array<RoleType>;
     }
   | undefined;
 
-type Invite =
+type InviteType =
   | { inviteCode: string; encodedInviteCode: number; email: string }
   | undefined;
 
-type Auth = {
-  user: User;
+type AuthType = {
+  user: UserType;
   isLoading: boolean;
-  signin: (email: string, password: string) => Promise<User>;
+  signin: (email: string, password: string) => Promise<UserType>;
   signout: () => void;
   revokeAll: () => void;
   validateInviteCode: (code: number) => boolean;
   verifyRegistrationEligibility: (
     code: number,
     email: string
-  ) => Promise<Invite>;
+  ) => Promise<InviteType>;
   register: (
     code: number,
     firstName: string,
     lastName: string,
     email: string,
     password: string
-  ) => Promise<User>;
-  skipFirstRegisterStep: (inviteCode: string) => Promise<Invite>;
+  ) => Promise<UserType>;
+  skipFirstRegisterStep: (inviteCode: string) => Promise<InviteType>;
 };
 
-export const hasInstitutionWrite = (user: User) => {
+export const hasInstitutionWrite = (user: UserType) => {
   return user?.roles.some((role) =>
     role.privileges.some((privilege) => privilege.id === "INSTITUTION_WRITE")
   );
 };
 
-const defaultAuth: Auth = {
+const defaultAuth: AuthType = {
   user: undefined,
   isLoading: true,
   signin: () => {
@@ -92,7 +92,7 @@ const defaultAuth: Auth = {
   },
 };
 
-const authContext = createContext<Auth>(defaultAuth);
+const authContext = createContext<AuthType>(defaultAuth);
 
 export default function ProvideAuth({ children }: { children: JSX.Element }) {
   const auth = useProvideAuth();
@@ -103,16 +103,19 @@ export const useAuth = () => {
   return useContext(authContext);
 };
 
-function useProvideAuth(): Auth {
-  const [user, setUser] = useState<User>();
+function useProvideAuth(): AuthType {
+  const [user, setUser] = useState<UserType>();
   const [isLoading, setIsLoading] = useState(true);
 
   const signin = async (email: string, password: string) => {
     try {
-      const response = await axios.post<User>("http://localhost:8080/login", {
-        email,
-        password,
-      });
+      const response = await axios.post<UserType>(
+        "http://localhost:8080/login",
+        {
+          email,
+          password,
+        }
+      );
       setUser(response.data);
       return response.data;
     } catch (error) {
@@ -145,9 +148,12 @@ function useProvideAuth(): Auth {
 
   const verifyRegistrationEligibility = async (code: number, email: string) => {
     try {
-      const response = await axios.get<Invite>("http://localhost:8080/invite", {
-        params: { code, email },
-      });
+      const response = await axios.get<InviteType>(
+        "http://localhost:8080/invite",
+        {
+          params: { code, email },
+        }
+      );
       return response.data;
     } catch (error) {
       return undefined;
@@ -157,7 +163,7 @@ function useProvideAuth(): Auth {
   const skipFirstRegisterStep = async (inviteCode: string) => {
     try {
       if (inviteCode) {
-        const response = await axios.get<Invite>(
+        const response = await axios.get<InviteType>(
           "http://localhost:8080/invite",
           {
             params: { inviteCode },
@@ -177,7 +183,7 @@ function useProvideAuth(): Auth {
     password: string
   ) => {
     try {
-      const response = await axios.post<User>(
+      const response = await axios.post<UserType>(
         "http://localhost:8080/register",
         {
           code,
@@ -197,7 +203,9 @@ function useProvideAuth(): Auth {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const response = await axios.post<User>("http://localhost:8080/signin");
+        const response = await axios.post<UserType>(
+          "http://localhost:8080/signin"
+        );
         setUser(response.data);
       } catch (error) {
         throw error;

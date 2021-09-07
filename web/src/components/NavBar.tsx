@@ -1,6 +1,6 @@
 import "../styles/NavBar.css";
 
-import { Role, useAuth } from "../hooks/useAuth";
+import { RoleType, useAuth } from "../hooks/useAuth";
 
 import Dropdown from "./Dropdown";
 
@@ -16,7 +16,7 @@ export interface NavBarType extends Array<NavBarItem> {}
 type NavBarProps = { routes: NavBarType };
 
 export const userCanAccessRoute = (
-  userPrivileges: Array<Role>,
+  userPrivileges: Array<RoleType>,
   route: NavBarItem
 ) =>
   userPrivileges.some((role) =>

@@ -28,7 +28,7 @@ import Button from "../components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "../components/Loading";
 import PageNotFound from "./PageNotFound";
-import { Role } from "../hooks/useAuth";
+import { RoleType } from "../hooks/useAuth";
 import { ViewPrivileges } from "./Role";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faUserTag } from "@fortawesome/free-solid-svg-icons";
@@ -43,7 +43,7 @@ export type UserType = {
   firstName: string;
   lastName: string;
   email: string;
-  roles: Array<Role>;
+  roles: Array<RoleType>;
 };
 
 export default function User() {
@@ -65,7 +65,7 @@ export function Users() {
     roles: {
       label: "Rollen",
       width: 1,
-      format: (value: Array<Role>) => (
+      format: (value: Array<RoleType>) => (
         <>
           {value
             .map((role) => role.id)
