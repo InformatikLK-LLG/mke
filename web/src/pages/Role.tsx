@@ -6,15 +6,19 @@ import {
   FormControlLabel,
   Grid,
   InputAdornment,
+  TextField,
   makeStyles,
+  useTheme,
 } from "@material-ui/core";
+import { PrivilegeCategory, PrivilegeType, RoleType } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 
+import Button from "../components/Button";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Outlet } from "react-router-dom";
-import { Privilege } from "../hooks/useAuth";
 import { UserType } from "./User";
+import axios from "axios";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import usePrivileges from "../hooks/usePrivileges";
@@ -35,7 +39,7 @@ export function ViewPrivileges({ user }: { user: UserType }) {
   const classes = useStyles();
   const { data } = usePrivilegesOfUser(user);
   const categories: Array<{ name: string; read: boolean; write: boolean }> = [];
-  const privileges: Privilege[] = data || [];
+  const privileges: PrivilegeType[] = data || [];
 
   privileges.forEach((privilege) => {
     const [name, kindOfPrivilege] = privilege.id.split("_");
@@ -110,26 +114,31 @@ export function ViewPrivileges({ user }: { user: UserType }) {
 
 export function CreateRole() {
   const classes = useStyles();
+  const theme = useTheme();
   const { data } = usePrivileges();
   // we don't change privilges, and if data changes, the ui really should re-render
   // eslint-disable-next-line
   const privileges = data || [];
+  const [name, setName] = useState("");
   const [categories, setCategories] = useState<
-    Array<{ name: string; read?: boolean; write?: boolean }>
+    Array<{ id: PrivilegeCategory; read?: boolean; write?: boolean }>
   >([]);
+
+  const selectedPrivileges: Array<PrivilegeType> = [];
 
   useEffect(() => {
     privileges.forEach((privilege) => {
-      const [name, kindOfPrivilege] = privilege.id.split("_");
+      const [name, kindOfPrivilege] = privilege.id.split("_") as [
+        PrivilegeCategory,
+        "READ" | "WRITE"
+      ];
 
       setCategories((categories) => {
-        const i = categories.findIndex(
-          (value) => value.name === name.toLowerCase()
-        );
+        const i = categories.findIndex((value) => value.id === name);
 
         if (i === -1) {
           return categories.concat({
-            name: name.toLowerCase(),
+            id: name,
             read: kindOfPrivilege === "READ" ? false : undefined,
             write: kindOfPrivilege === "WRITE" ? false : undefined,
           });
@@ -148,113 +157,143 @@ export function CreateRole() {
 
   return (
     <div className="">
-      {categories.map((category, index) => (
-        <Accordion square className={classes.accordion} key={category.name}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Grid container item xs>
-              <Grid item>
+      <TextField
+        label="Name"
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+      />
+      <div>
+        {categories.map((category, index) => (
+          <Accordion square className={classes.accordion} key={category.id}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Grid container item xs>
+                <Grid item>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={(event) =>
+                          setCategories((categories) =>
+                            categories.map((category, j) =>
+                              index === j
+                                ? {
+                                    ...category,
+                                    read:
+                                      category.read !== undefined
+                                        ? event.target.checked
+                                        : undefined,
+                                    write:
+                                      category.write !== undefined
+                                        ? event.target.checked
+                                        : undefined,
+                                  }
+                                : category
+                            )
+                          )
+                        }
+                      />
+                    }
+                    onClick={(event) => event.stopPropagation()}
+                    checked={
+                      (category.read || category.read === undefined) &&
+                      (category.write || category.write === undefined)
+                    }
+                    onFocus={(event) => event.stopPropagation()}
+                    label={
+                      category.id.charAt(0) + category.id.slice(1).toLowerCase()
+                    }
+                  />
+                </Grid>
+                <Grid
+                  item
+                  container
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  xs
+                >
+                  {category.read && (
+                    <Grid item>
+                      <InputAdornment position="end">
+                        <FontAwesomeIcon icon={faEye} />
+                      </InputAdornment>
+                    </Grid>
+                  )}
+                  {category.write && (
+                    <Grid item>
+                      <InputAdornment position="end">
+                        <FontAwesomeIcon icon={faPen} />
+                      </InputAdornment>
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
+            </AccordionSummary>
+            <AccordionDetails>
+              {category.read !== undefined && (
                 <FormControlLabel
                   control={
                     <Checkbox
-                      onChange={(event) =>
+                      checked={category.read}
+                      onClick={() =>
                         setCategories((categories) =>
                           categories.map((category, j) =>
                             index === j
-                              ? {
-                                  ...category,
-                                  read:
-                                    category.read !== undefined
-                                      ? event.target.checked
-                                      : undefined,
-                                  write:
-                                    category.write !== undefined
-                                      ? event.target.checked
-                                      : undefined,
-                                }
+                              ? { ...category, read: !category.read }
                               : category
                           )
                         )
                       }
                     />
                   }
-                  onClick={(event) => event.stopPropagation()}
-                  checked={
-                    (category.read || category.read === undefined) &&
-                    (category.write || category.write === undefined)
-                  }
-                  onFocus={(event) => event.stopPropagation()}
-                  label={
-                    category.name.charAt(0).toUpperCase() +
-                    category.name.slice(1)
-                  }
+                  label="READ"
                 />
-              </Grid>
-              <Grid
-                item
-                container
-                justifyContent="flex-end"
-                alignItems="center"
-                xs
-              >
-                {category.read && (
-                  <Grid item>
-                    <InputAdornment position="end">
-                      <FontAwesomeIcon icon={faEye} />
-                    </InputAdornment>
-                  </Grid>
-                )}
-                {category.write && (
-                  <Grid item>
-                    <InputAdornment position="end">
-                      <FontAwesomeIcon icon={faPen} />
-                    </InputAdornment>
-                  </Grid>
-                )}
-              </Grid>
-            </Grid>
-          </AccordionSummary>
-          <AccordionDetails>
-            {category.read !== undefined && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={category.read}
-                    onClick={() =>
-                      setCategories((categories) =>
-                        categories.map((category, j) =>
-                          index === j
-                            ? { ...category, read: !category.read }
-                            : category
+              )}
+              {category.write !== undefined && (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={category.write}
+                      onClick={() =>
+                        setCategories((categories) =>
+                          categories.map((category, j) =>
+                            index === j
+                              ? { ...category, write: !category.write }
+                              : category
+                          )
                         )
-                      )
-                    }
-                  />
-                }
-                label="READ"
-              />
-            )}
-            {category.write !== undefined && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={category.write}
-                    onClick={() =>
-                      setCategories((categories) =>
-                        categories.map((category, j) =>
-                          index === j
-                            ? { ...category, write: !category.write }
-                            : category
-                        )
-                      )
-                    }
-                  />
-                }
-                label="WRITE"
-              />
-            )}
-          </AccordionDetails>
-        </Accordion>
-      ))}
+                      }
+                    />
+                  }
+                  label="WRITE"
+                />
+              )}
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </div>
+      <Button
+        label="Erstellen"
+        type="button"
+        backgroundColor={theme.palette.primary.main}
+        onClick={async () => {
+          categories.forEach((category) => {
+            category.read &&
+              selectedPrivileges.push({ id: `${category.id}_READ` });
+            category.write &&
+              selectedPrivileges.push({ id: `${category.id}_WRITE` });
+          });
+          try {
+            const blub = await axios.post<RoleType>(
+              "http://localhost:8080/role",
+              {
+                id: name,
+                privileges: selectedPrivileges,
+              }
+            );
+          } catch (error) {
+            console.log(error);
+          }
+        }}
+      />
     </div>
   );
 }
