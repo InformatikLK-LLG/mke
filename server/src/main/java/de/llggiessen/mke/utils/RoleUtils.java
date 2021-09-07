@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import de.llggiessen.mke.repository.RoleRepository;
+import de.llggiessen.mke.schema.Privilege;
 import de.llggiessen.mke.schema.Role;
 
 @Component
@@ -27,10 +28,13 @@ public class RoleUtils {
     }
 
     public boolean isInUsersScope(String roleId) {
-        Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
-                .getAuthorities();
+        return isInUsersScope(roleRepository.findById(roleId).get().getPrivileges());
+    }
 
-        return (privileges.containsAll(roleRepository.findById(roleId).get().getPrivileges()));
+    public boolean isInUsersScope(Set<Privilege> privileges) {
+        Collection<? extends GrantedAuthority> userPrivileges = SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities();
+        return userPrivileges.containsAll(privileges);
     }
 
     public boolean isPresent(Role role) {
