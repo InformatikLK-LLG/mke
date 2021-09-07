@@ -2,21 +2,17 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 
+export type PrivilegeCategory =
+  | "INSTITUTION"
+  | "CUSTOMER"
+  | "USER"
+  | "BOOKING"
+  | "INVENTORY"
+  | "INVITE"
+  | "ROLE";
+
 export type PrivilegeType = {
-  id:
-    | "INSTITUTION_READ"
-    | "INSTITUTION_WRITE"
-    | "CUSTOMER_READ"
-    | "CUSTOMER_WRITE"
-    | "USER_READ"
-    | "USER_WRITE"
-    | "BOOKING_READ"
-    | "BOOKING_WRITE"
-    | "INVENTORY_READ"
-    | "INVENTORY_WRITE"
-    | "INVITE_READ"
-    | "INVITE_WRITE"
-    | "ROLE_WRITE";
+  id: `${PrivilegeCategory}_READ` | `${PrivilegeCategory}_WRITE`;
 };
 
 export type RoleType = {
