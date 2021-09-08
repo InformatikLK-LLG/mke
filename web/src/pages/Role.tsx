@@ -10,19 +10,20 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
+import { Outlet, useNavigate } from "react-router-dom";
 import { PrivilegeCategory, PrivilegeType, RoleType } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 
 import Button from "../components/Button";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Outlet } from "react-router-dom";
 import { UserType } from "./User";
 import axios from "axios";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import usePrivileges from "../hooks/usePrivileges";
 import usePrivilegesOfUser from "../hooks/usePrivilegesOfUser";
+import { useSnackbar } from "../Wrapper";
 
 const useStyles = makeStyles({
   accordion: {
@@ -115,6 +116,7 @@ export function ViewPrivileges({ user }: { user: UserType }) {
 export function CreateRole() {
   const classes = useStyles();
   const theme = useTheme();
+  const navigate = useNavigate();
   const { data } = usePrivileges();
   // we don't change privilges, and if data changes, the ui really should re-render
   // eslint-disable-next-line
@@ -125,6 +127,8 @@ export function CreateRole() {
   >([]);
 
   const selectedPrivileges: Array<PrivilegeType> = [];
+  const [isLoading, setIsLoading] = useState(false);
+  const { setMessage, setSnackbarOpen } = useSnackbar();
 
   useEffect(() => {
     privileges.forEach((privilege) => {
@@ -273,6 +277,7 @@ export function CreateRole() {
       <Button
         label="Erstellen"
         type="button"
+        isLoading={isLoading}
         backgroundColor={theme.palette.primary.main}
         onClick={async () => {
           categories.forEach((category) => {
@@ -282,15 +287,24 @@ export function CreateRole() {
               selectedPrivileges.push({ id: `${category.id}_WRITE` });
           });
           try {
-            const blub = await axios.post<RoleType>(
+            setIsLoading(true);
+            const response = await axios.post<RoleType>(
               "http://localhost:8080/role",
               {
                 id: name,
                 privileges: selectedPrivileges,
               }
             );
+            if (response.status === 200) {
+              setMessage("Erfolgreich gespeichert.");
+              setSnackbarOpen(true);
+              navigate("/roles");
+            }
+            return response;
           } catch (error) {
-            console.log(error);
+            throw error;
+          } finally {
+            setIsLoading(false);
           }
         }}
       />
