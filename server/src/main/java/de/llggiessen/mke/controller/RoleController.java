@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,12 @@ public class RoleController {
         Set<Role> roles = roleRepository.findByIdIgnoreCaseContaining(id).orElseThrow();
         roles.removeIf((role) -> !privileges.containsAll(role.getPrivileges()));
         return roles;
+    }
+
+    @GetMapping("/{roleId}")
+    public Role getRole(@PathVariable String roleId) {
+        return roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No role with this id."));
     }
 
     @PostMapping("")
