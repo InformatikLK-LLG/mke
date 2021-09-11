@@ -169,6 +169,10 @@ export default function Wrapper() {
           heading: "Rollen erstellen",
           privileges: "ROLE_WRITE",
         },
+        {
+          path: "/roles/:roleId",
+          heading: "",
+        },
       ],
     },
     {
