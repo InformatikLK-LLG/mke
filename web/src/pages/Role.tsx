@@ -12,7 +12,9 @@ import {
 } from "@material-ui/core";
 import { Outlet, useNavigate } from "react-router-dom";
 import { PrivilegeCategory, PrivilegeType, RoleType } from "../hooks/useAuth";
+import Table, { TableHeaders } from "../components/Table";
 import { useEffect, useState } from "react";
+import useRoles, { RoleSearchParams } from "../hooks/useRoles";
 
 import Button from "../components/Button";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -34,6 +36,42 @@ const useStyles = makeStyles({
 
 export default function Role() {
   return <Outlet />;
+}
+
+export function Roles() {
+  const navigate = useNavigate();
+  const { data, isLoading, setSearchParams } = useRoles();
+
+  const tableHeaders: TableHeaders<RoleType> = {
+    id: { label: "Name", width: 1 },
+  };
+
+  const searchParams: Array<{ [key in keyof RoleSearchParams]: "string" }> = [
+    {
+      id: "string",
+    },
+  ];
+
+  const search = async (parameter?: "id", query?: string) =>
+    setSearchParams(
+      (value) =>
+        parameter &&
+        (value ? { ...value, [parameter]: query } : { [parameter]: query })
+    );
+
+  return (
+    <div className="container">
+      <Table
+        rows={data || []}
+        tableHeaders={tableHeaders}
+        onRowClick={(row) => navigate(`./${row.id}`)}
+        isLoading={isLoading}
+        search={search}
+        searchParams={searchParams}
+        sort={["Name"]}
+      />
+    </div>
+  );
 }
 
 export function ViewPrivileges({ user }: { user: UserType }) {
