@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,10 +32,10 @@ public class RoleController {
     RoleUtils roleUtils;
 
     @GetMapping("")
-    public Iterable<Role> getRoles() {
+    public Iterable<Role> getRoles(@RequestParam(name = "id", defaultValue = "") String id) {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
-        Set<Role> roles = roleRepository.findAll();
+        Set<Role> roles = roleRepository.findByIdIgnoreCaseContaining(id).orElseThrow();
         roles.removeIf((role) -> !privileges.containsAll(role.getPrivileges()));
         return roles;
     }
