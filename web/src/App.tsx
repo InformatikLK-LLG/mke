@@ -111,7 +111,11 @@ function App() {
                       requiredPrivilege={["INVITE_WRITE"]}
                     />
                   </PrivateRoute>
-                  <PrivateRoute path="/roles" element={<Role />}>
+                  <PrivateRoute
+                    path="/roles"
+                    element={<Role />}
+                    requiredPrivilege={["ROLE_READ"]}
+                  >
                     <PrivateRoute path="/" element={<Roles />} />
                     <PrivateRoute
                       path="/:roleId"

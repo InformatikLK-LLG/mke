@@ -162,6 +162,7 @@ export default function Wrapper() {
       path: "/roles",
       name: "Rollen",
       heading: "Rollen",
+      privileges: "ROLE_READ",
       subroutes: [
         {
           path: "/roles/create",
