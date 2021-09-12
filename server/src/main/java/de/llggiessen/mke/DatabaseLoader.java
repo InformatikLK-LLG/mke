@@ -64,7 +64,7 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     public Role createRoleIfNotFound(String name, Set<Privilege> privileges) {
-        Optional<Role> role = roleRepository.findById(name);
+        Optional<Role> role = roleRepository.findByName(name);
         if (role.isPresent())
             return role.get();
         return roleRepository.save(new Role(name, privileges));

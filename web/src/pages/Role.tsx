@@ -11,12 +11,7 @@ import {
   makeStyles,
   useTheme,
 } from "@material-ui/core";
-import {
-  Outlet,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { PrivilegeCategory, PrivilegeType, RoleType } from "../hooks/useAuth";
 import Table, { TableHeaders } from "../components/Table";
 import { useEffect, useState } from "react";
@@ -53,16 +48,16 @@ export function Roles() {
   const { data, isLoading, setSearchParams } = useRoles();
 
   const tableHeaders: TableHeaders<RoleType> = {
-    id: { label: "Name", width: 1 },
+    name: { label: "Name", width: 1 },
   };
 
   const searchParams: Array<{ [key in keyof RoleSearchParams]: "string" }> = [
     {
-      id: "string",
+      name: "string",
     },
   ];
 
-  const search = async (parameter?: "id", query?: string) =>
+  const search = async (parameter?: "name", query?: string) =>
     setSearchParams(
       (value) =>
         parameter &&
@@ -100,7 +95,7 @@ export function RoleDetails({ data }: { data: RoleType }) {
   const header = useHeader();
 
   useEffect(() => {
-    header.setHeader(`${data.id}`);
+    header.setHeader(`${data.name}`);
   }, [data, header]);
 
   return (
@@ -318,7 +313,7 @@ function UpdateRole({ data }: { data: RoleType }) {
             const response = await axios.post<RoleType>(
               "http://localhost:8080/role",
               {
-                id: name,
+                name,
                 privileges: selectedPrivileges,
               }
             );
@@ -594,7 +589,7 @@ export function CreateRole() {
             const response = await axios.post<RoleType>(
               "http://localhost:8080/role",
               {
-                id: name,
+                name,
                 privileges: selectedPrivileges,
               }
             );

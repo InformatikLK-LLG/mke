@@ -4,7 +4,7 @@ import { RoleType } from "./useAuth";
 import axios from "axios";
 import { useState } from "react";
 
-export type RoleSearchParams = { id?: string };
+export type RoleSearchParams = { name?: string };
 
 const useRoles = () => {
   const queryClient = useQueryClient();

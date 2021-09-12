@@ -139,7 +139,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}/role")
     @PreAuthorize("hasAuthority('USER_WRITE')")
-    public void revokeRole(@PathVariable long userId, @RequestParam("roleId") String roleId) {
+    public void revokeRole(@PathVariable long userId, @RequestParam("roleId") long roleId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user with this id."));
@@ -148,7 +148,7 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to manage privileges you do not have yourself");
 
-        if (!user.getRoles().removeIf((role) -> role.getId().equals(roleId)))
+        if (!user.getRoles().removeIf((role) -> role.getId() == roleId))
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "User has no role with this id");
 
         userRepository.save(user);

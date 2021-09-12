@@ -34,28 +34,31 @@ public class RoleController {
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('ROLE_READ')")
-    public Iterable<Role> getRoles(@RequestParam(name = "id", defaultValue = "") String id) {
+    public Iterable<Role> getRoles(@RequestParam(name = "id", defaultValue = "") String name) {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
-        Set<Role> roles = roleRepository.findByIdIgnoreCaseContaining(id).orElseThrow();
+        Set<Role> roles = roleRepository.findByNameIgnoreCaseContaining(name).orElseThrow();
         roles.removeIf((role) -> !privileges.containsAll(role.getPrivileges()));
         return roles;
     }
 
     @GetMapping("/{roleId}")
     @PreAuthorize("hasAuthority('ROLE_READ')")
-    public Role getRole(@PathVariable String roleId) {
+    public Role getRole(@PathVariable long roleId) {
         return roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No role with this id."));
     }
 
     private boolean isValidRole(Role role) {
-        return !(role.getPrivileges() == null || role.getPrivileges().size() == 0) || role.getId().equals("");
+        return !(role.getPrivileges() == null || role.getPrivileges().size() == 0) || role.getName().equals("");
     }
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role createRole(@RequestBody Role role) {
+
+        if (roleRepository.existsByName(role.getName()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A role with this name already exists.");
 
         if (!isValidRole(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid role.");
@@ -64,14 +67,11 @@ public class RoleController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "You are not allowed to assign privileges you do not have yourself.");
 
-        if (roleUtils.isPresent(role))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rolle mit diesem Namen existiert bereits.");
-
         if (roleUtils.isSuperfluous(role))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Rolle mit gleichen Berechtigungen existiert bereits.");
 
-        role.setId(role.getId().toUpperCase());
+        role.setName(role.getName().toUpperCase());
         return roleRepository.save(role);
     }
 
@@ -79,8 +79,8 @@ public class RoleController {
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role updateRole(@RequestBody Role role) {
 
-        if (!roleUtils.isPresent(role))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no role with this name.");
+        if (!roleRepository.existsById(role.getId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no role with this id.");
 
         if (role.getPrivileges() == null || role.getPrivileges().size() == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");

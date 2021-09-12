@@ -11,9 +11,13 @@ import de.llggiessen.mke.schema.Role;
 
 @Repository
 @RepositoryRestResource(exported = false)
-public interface RoleRepository extends CrudRepository<Role, String> {
+public interface RoleRepository extends CrudRepository<Role, Long> {
 
     Set<Role> findAll();
 
-    Optional<Set<Role>> findByIdIgnoreCaseContaining(String id);
+    boolean existsByName(String name);
+
+    Optional<Role> findByName(String name);
+
+    Optional<Set<Role>> findByNameIgnoreCaseContaining(String name);
 }

@@ -27,7 +27,7 @@ public class RoleUtils {
         return (roles.size() > 0 && !roleRepository.findById(role.getId()).isPresent());
     }
 
-    public boolean isInUsersScope(String roleId) {
+    public boolean isInUsersScope(long roleId) {
         return isInUsersScope(roleRepository.findById(roleId).get().getPrivileges());
     }
 
@@ -38,6 +38,6 @@ public class RoleUtils {
     }
 
     public boolean isPresent(Role role) {
-        return roleRepository.findById(role.getId()).isPresent();
+        return roleRepository.existsById(role.getId());
     }
 }

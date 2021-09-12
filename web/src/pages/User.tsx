@@ -68,7 +68,7 @@ export function Users() {
       format: (value: Array<RoleType>) => (
         <>
           {value
-            .map((role) => role.id)
+            .map((role) => role.name)
             .sort()
             .join(", ")}
         </>
@@ -97,7 +97,7 @@ export function Users() {
     { email: "string" },
     {
       roles: {
-        data: roleData?.map((role) => role.id),
+        data: roleData?.map((role) => role.name),
         isLoading: roleIsLoading,
       },
     },
@@ -368,7 +368,7 @@ export function UserForm({
               />
             )}
             disabled={disabled}
-            renderText={(option) => option.id}
+            renderText={(option) => option.name}
             value={field.value}
             loading={isLoading}
             loadingText="Lade Daten"
