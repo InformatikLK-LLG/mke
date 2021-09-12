@@ -33,6 +33,7 @@ public class RoleController {
     RoleUtils roleUtils;
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('ROLE_READ')")
     public Iterable<Role> getRoles(@RequestParam(name = "id", defaultValue = "") String id) {
         Collection<? extends GrantedAuthority> privileges = SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities();
@@ -42,6 +43,7 @@ public class RoleController {
     }
 
     @GetMapping("/{roleId}")
+    @PreAuthorize("hasAuthority('ROLE_READ')")
     public Role getRole(@PathVariable String roleId) {
         return roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No role with this id."));
