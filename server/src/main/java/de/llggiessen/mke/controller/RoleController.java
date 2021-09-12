@@ -49,13 +49,16 @@ public class RoleController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No role with this id."));
     }
 
+    private boolean isValidRole(Role role) {
+        return !(role.getPrivileges() == null || role.getPrivileges().size() == 0) || role.getId().equals("");
+    }
+
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_WRITE')")
     public Role createRole(@RequestBody Role role) {
 
-        if (role.getPrivileges() == null || role.getPrivileges().size() == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have to specify privileges.");
-        }
+        if (!isValidRole(role))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not a valid role.");
 
         if (!roleUtils.isInUsersScope(role.getPrivileges()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
