@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   Grid,
   InputAdornment,
+  Switch,
   TextField,
   makeStyles,
   useTheme,
@@ -31,6 +32,7 @@ import { UserType } from "./User";
 import axios from "axios";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
+import { useDetailsStyles } from "../components/InstitutionDetails";
 import usePrivileges from "../hooks/usePrivileges";
 import usePrivilegesOfUser from "../hooks/usePrivilegesOfUser";
 import useRole from "../hooks/useRole";
@@ -110,6 +112,7 @@ export function RoleDetails({ data }: { data: RoleType }) {
 
 function UpdateRole({ data }: { data: RoleType }) {
   const classes = useStyles();
+  const detailsStyles = useDetailsStyles();
   const theme = useTheme();
   const navigate = useNavigate();
   const { data: privilegeData } = usePrivileges();
@@ -124,6 +127,8 @@ function UpdateRole({ data }: { data: RoleType }) {
   const selectedPrivileges: Array<PrivilegeType> = [];
   const [isLoading, setIsLoading] = useState(false);
   const { setMessage, setSnackbarOpen } = useSnackbar();
+
+  const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
     privileges.forEach((privilege) => {
@@ -156,7 +161,30 @@ function UpdateRole({ data }: { data: RoleType }) {
 
   return (
     <div className="">
+      <FormControlLabel
+        control={
+          <Switch
+            checked={!isDisabled}
+            onChange={async () => {
+              if (!isDisabled) {
+                try {
+                  await console.log("");
+                  setIsDisabled(true);
+                } catch (error) {
+                  setIsDisabled(false);
+                }
+              } else setIsDisabled((value) => !value);
+            }}
+            name="toggleDisabled"
+            color="primary"
+          />
+        }
+        label="Bearbeiten"
+        labelPlacement="start"
+        className={detailsStyles.toggleLabel}
+      />
       <TextField
+        disabled={isDisabled}
         label="Name"
         value={name}
         onChange={(event) => setName(event.target.value)}
@@ -170,6 +198,7 @@ function UpdateRole({ data }: { data: RoleType }) {
                   <FormControlLabel
                     control={
                       <Checkbox
+                        disabled={isDisabled}
                         onChange={(event) =>
                           setCategories((categories) =>
                             categories.map((category, j) =>
@@ -231,6 +260,7 @@ function UpdateRole({ data }: { data: RoleType }) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      disabled={isDisabled}
                       checked={category.read}
                       onClick={() =>
                         setCategories((categories) =>
@@ -250,6 +280,7 @@ function UpdateRole({ data }: { data: RoleType }) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      disabled={isDisabled}
                       checked={category.write}
                       onClick={() =>
                         setCategories((categories) =>
@@ -270,6 +301,7 @@ function UpdateRole({ data }: { data: RoleType }) {
         ))}
       </div>
       <Button
+        disabled={isDisabled}
         label="Erstellen"
         type="button"
         isLoading={isLoading}
