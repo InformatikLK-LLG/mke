@@ -113,13 +113,13 @@ function UpdateRole({ data }: { data: RoleType }) {
   const { data: privilegeData } = usePrivileges();
   // we don't change privilges, and if data changes, the ui really should re-render
   // eslint-disable-next-line
-  const privileges = data.privileges || [];
-  const [name, setName] = useState("");
+  const privileges = privilegeData || [];
+  const [name, setName] = useState(data.name);
   const [categories, setCategories] = useState<
     Array<{ id: PrivilegeCategory; read?: boolean; write?: boolean }>
   >([]);
 
-  const selectedPrivileges: Array<PrivilegeType> = [];
+  const selectedPrivileges: Array<PrivilegeType> = data.privileges || [];
   const [isLoading, setIsLoading] = useState(false);
   const { setMessage, setSnackbarOpen } = useSnackbar();
 
@@ -132,20 +132,32 @@ function UpdateRole({ data }: { data: RoleType }) {
         "READ" | "WRITE"
       ];
 
+      const foo = selectedPrivileges.filter(
+        (privilege) => privilege.id.split("_")[0] === name
+      );
+
       setCategories((categories) => {
         const i = categories.findIndex((value) => value.id === name);
 
         if (i === -1) {
           return categories.concat({
             id: name,
-            read: kindOfPrivilege === "READ" ? false : undefined,
-            write: kindOfPrivilege === "WRITE" ? false : undefined,
+            read: Boolean(foo.find((blub) => blub.id.split("_")[1] === "READ")),
+            write: Boolean(
+              foo.find((blub) => blub.id.split("_")[1] === "WRITE")
+            ),
           });
         }
 
         let tempPrivilege = categories[i];
-        if (kindOfPrivilege === "READ") tempPrivilege.read = false;
-        else if (kindOfPrivilege === "WRITE") tempPrivilege.write = false;
+        if (kindOfPrivilege === "READ")
+          tempPrivilege.read = Boolean(
+            foo.find((blub) => blub.id.split("_")[1] === "READ")
+          );
+        else if (kindOfPrivilege === "WRITE")
+          tempPrivilege.write = Boolean(
+            foo.find((blub) => blub.id.split("_")[1] === "WRITE")
+          );
         categories[i] = tempPrivilege;
         return categories.map((category, index) =>
           index === i ? tempPrivilege : category
