@@ -1,30 +1,12 @@
 import { Navigate, Route } from "react-router-dom";
+import { Outlet, RouteProps } from "react-router";
 
-import { RouteProps } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
-type AuthenticationRouteProps = {
-  path: string;
-  element: JSX.Element;
-  rest?: RouteProps;
-  children?: JSX.Element | JSX.Element[];
-};
-
-export default function AuthenticationRoute({
-  path,
-  element,
-  rest,
-  children,
-}: AuthenticationRouteProps) {
+export default function AuthenticationRoute() {
   const auth = useAuth();
 
   if (auth.isLoading) return <></>;
 
-  return !auth.user ? (
-    <Route {...rest} path={path} element={element}>
-      {children}
-    </Route>
-  ) : (
-    <Navigate to="/" />
-  );
+  return !auth.user ? <Outlet /> : <Navigate to="/" />;
 }

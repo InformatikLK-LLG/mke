@@ -1,23 +1,13 @@
 import { Navigate, Route } from "react-router-dom";
+import { Outlet, RouteProps } from "react-router";
 
-import { RouteProps } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
 type PrivateRouteProps = {
-  path: string;
-  element: JSX.Element;
-  rest?: RouteProps;
-  children?: JSX.Element | JSX.Element[];
   requiredPrivilege?: Array<string> | string;
 };
 
-export default function PrivateRoute({
-  path,
-  element,
-  rest,
-  children,
-  requiredPrivilege,
-}: PrivateRouteProps) {
+export default function PrivateRoute({ requiredPrivilege }: PrivateRouteProps) {
   const auth = useAuth();
 
   if (auth.isLoading) return <></>;
@@ -35,9 +25,7 @@ export default function PrivateRoute({
             )
           )
     ) ? (
-      <Route {...rest} path={path} element={element}>
-        {children}
-      </Route>
+      <Outlet />
     ) : (
       <>
         <h3>go away please</h3>

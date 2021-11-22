@@ -23,7 +23,7 @@ import {
 import Form, { EmailInputField, OrderType } from "../components/Form";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { hasInstitutionWrite, useAuth } from "../hooks/useAuth";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 
@@ -88,9 +88,9 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
     );
   };
 
-  const searchParams: Array<
-    { [key in keyof CustomerSearchParams]: "string" | "number" }
-  > = [{ firstName: "string" }, { lastName: "string" }];
+  const searchParams: Array<{
+    [key in keyof CustomerSearchParams]: "string" | "number";
+  }> = [{ firstName: "string" }, { lastName: "string" }];
 
   return (
     <Table
@@ -173,7 +173,9 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
       }
       return response;
     } catch (error) {
-      setMessage(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data.message);
+      }
       throw error;
     } finally {
       setSnackbarOpen(true);

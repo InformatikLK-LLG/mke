@@ -47,86 +47,111 @@ function App() {
             <BrowserRouter>
               <Routes>
                 <Route element={<Wrapper />}>
-                  <PrivateRoute path="/" element={<Home />} />
-                  <AuthenticationRoute path="/login" element={<Login />} />
-                  <AuthenticationRoute
+                  <Route path="/" element={<PrivateRoute />}>
+                    <Route path="" element={<Home />} />
+                  </Route>
+                  <Route path="/logout" element={<PrivateRoute />}>
+                    <Route path="" element={<Logout />} />
+                  </Route>
+                  <Route path="/login" element={<AuthenticationRoute />}>
+                    <Route path="" element={<Login />} />
+                  </Route>
+                  <Route
                     path="/forgotpassword"
-                    element={<ForgotPassword />}
-                  />
-                  <AuthenticationRoute path="/register" element={<Register />}>
-                    <Route path="/" element={<Register1 />} />
-                    <NoTrespassing path="1" element={<Register2 />} />
-                    <NoTrespassing path="2" element={<Register3 />} />
-                  </AuthenticationRoute>
-                  <PrivateRoute path="/logout" element={<Logout />} />
-                  <PrivateRoute
+                    element={<AuthenticationRoute />}
+                  >
+                    <Route path="" element={<ForgotPassword />} />
+                  </Route>
+
+                  <Route path="/register" element={<AuthenticationRoute />}>
+                    <Route path="" element={<Register1 />} />
+                    <Route path="1" element={<NoTrespassing />}>
+                      <Route path="" element={<Register2 />} />
+                    </Route>
+                    <Route path="2" element={<NoTrespassing />}>
+                      <Route path="" element={<Register3 />} />
+                    </Route>
+                  </Route>
+
+                  <Route
                     path="/institutions"
-                    element={<Institution />}
-                    requiredPrivilege="INSTITUTION_READ"
+                    element={
+                      <PrivateRoute requiredPrivilege="INSTITUTION_READ" />
+                    }
                   >
-                    <PrivateRoute path="/" element={<Institutions />} />
-                    <PrivateRoute
-                      path="/create"
-                      element={<CreateInstitution />}
-                      requiredPrivilege="INSTITUTION_WRITE"
-                    />
-                    <PrivateRoute
-                      path="/:instCode"
-                      element={<ViewInstitutionDetails />}
-                      requiredPrivilege={["INSTITUTION_READ", "CUSTOMER_READ"]}
-                    />
-                  </PrivateRoute>
-                  <PrivateRoute
+                    <Route path="" element={<Institutions />} />
+                    <Route
+                      path="create"
+                      element={
+                        <PrivateRoute requiredPrivilege="INSTITUTION_WRITE" />
+                      }
+                    >
+                      <Route path="" element={<CreateInstitution />} />
+                    </Route>
+                    <Route
+                      path=":instCode"
+                      element={
+                        <PrivateRoute requiredPrivilege="CUSTOMER_READ" />
+                      }
+                    >
+                      <Route path="" element={<ViewInstitutionDetails />} />
+                    </Route>
+                  </Route>
+
+                  <Route
                     path="/customers"
-                    element={<Customer />}
-                    requiredPrivilege="CUSTOMER_READ"
+                    element={<PrivateRoute requiredPrivilege="CUSTOMER_READ" />}
                   >
-                    <PrivateRoute path="/" element={<Customers />} />
-                    <PrivateRoute
-                      path="/create"
-                      element={<CreateCustomer />}
-                      requiredPrivilege="CUSTOMER_WRITE"
-                    />
-                    <PrivateRoute
-                      path="/:id"
-                      element={<ViewCustomerDetails />}
-                      requiredPrivilege={["CUSTOMER_READ", "INSTITUTION_READ"]}
-                    />
-                  </PrivateRoute>
-                  <Route path="*" element={<PageNotFound />} />
-                  <PrivateRoute
+                    <Route path="" element={<Customers />} />
+                    <Route
+                      path="create"
+                      element={
+                        <PrivateRoute requiredPrivilege="CUSTOMER_WRITE" />
+                      }
+                    >
+                      <Route path="" element={<CreateCustomer />} />
+                    </Route>
+                    <Route
+                      path=":id"
+                      element={
+                        <PrivateRoute requiredPrivilege="INSTITUTION_READ" />
+                      }
+                    >
+                      <Route path="" element={<ViewCustomerDetails />} />
+                    </Route>
+                  </Route>
+
+                  <Route
                     path="/users"
-                    element={<User />}
-                    requiredPrivilege="USER_READ"
+                    element={<PrivateRoute requiredPrivilege="USER_READ" />}
                   >
-                    <PrivateRoute path="/" element={<Users />} />
-                    <PrivateRoute
-                      path="/:userId"
-                      element={<ViewUserDetails />}
-                      requiredPrivilege={["USER_READ"]}
-                    />
-                    <PrivateRoute
-                      path="/invite"
-                      element={<Invites />}
-                      requiredPrivilege={["INVITE_WRITE"]}
-                    />
-                  </PrivateRoute>
-                  <PrivateRoute
+                    <Route path="" element={<Users />} />
+                    <Route path=":id" element={<ViewUserDetails />} />
+                    <Route
+                      path="invite"
+                      element={
+                        <PrivateRoute requiredPrivilege="INVITE_WRITE" />
+                      }
+                    >
+                      <Route path="" element={<Invites />} />
+                    </Route>
+                  </Route>
+
+                  <Route
                     path="/roles"
-                    element={<Role />}
-                    requiredPrivilege={["ROLE_READ"]}
+                    element={<PrivateRoute requiredPrivilege="ROLE_READ" />}
                   >
-                    <PrivateRoute path="/" element={<Roles />} />
-                    <PrivateRoute
-                      path="/:roleId"
-                      element={<ViewRoleDetails />}
-                    />
-                    <PrivateRoute
-                      path="/create"
-                      element={<CreateRole />}
-                      requiredPrivilege={["ROLE_WRITE"]}
-                    />
-                  </PrivateRoute>
+                    <Route path="" element={<Roles />} />
+                    <Route path=":id" element={<ViewRoleDetails />} />
+                    <Route
+                      path="create"
+                      element={<PrivateRoute requiredPrivilege="ROLE_WRITE" />}
+                    >
+                      <Route path="" element={<CreateRole />} />
+                    </Route>
+                  </Route>
+
+                  <Route path="*" element={<PageNotFound />} />
                 </Route>
               </Routes>
             </BrowserRouter>

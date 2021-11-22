@@ -4,6 +4,7 @@ import {
   Controller,
   ControllerRenderProps,
   DeepMap,
+  DeepPartial,
   FieldError,
   Path,
   PathValue,
@@ -106,7 +107,7 @@ export type FormInstitutionType = {
 export type FormState<T> = {
   setValue: UseFormSetValue<T>;
   control: Control<T>;
-  errors: DeepMap<T, FieldError>;
+  errors: DeepMap<DeepPartial<T>, FieldError>;
   clearErrors: UseFormClearErrors<T>;
   watch: UseFormWatch<T>;
   formInput: ClassNameMap<
@@ -488,7 +489,9 @@ export function UpdateInstitutionForm({
       }
       return response;
     } catch (error) {
-      setMessage(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data.message);
+      }
       throw error;
     } finally {
       setSnackbarOpen(true);
@@ -788,7 +791,9 @@ export function InstitutionForm({
             setSnackbarOpen(true);
           }
         } catch (error) {
-          setMessage(error.response.data.message);
+          if (axios.isAxiosError(error)) {
+            setMessage(error.response?.data.message);
+          }
           setSnackbarOpen(true);
         } finally {
           setIsLoading(false);
@@ -823,9 +828,9 @@ export function Institutions() {
     );
   }
 
-  const searchParams: Array<
-    { [key in keyof InstitutionsSearchParams]: "string" | "number" }
-  > = [
+  const searchParams: Array<{
+    [key in keyof InstitutionsSearchParams]: "string" | "number";
+  }> = [
     { id: "string" },
     { name: "string" },
     { "address.street": "string" },
@@ -850,6 +855,9 @@ export function Institutions() {
 export function ViewInstitutionDetails() {
   const { instCode } = useParams();
   const { data, isLoading } = useInstitution(instCode);
+  if (!instCode) {
+    return <PageNotFound />;
+  }
   return isLoading ? (
     <Loading />
   ) : data ? (

@@ -80,8 +80,8 @@ export function Roles() {
 }
 
 export function ViewRoleDetails() {
-  const { roleId } = useParams();
-  const { data, isLoading } = useRole(roleId);
+  const { id } = useParams();
+  const { data, isLoading } = useRole(id);
   return isLoading ? (
     <Loading />
   ) : data ? (

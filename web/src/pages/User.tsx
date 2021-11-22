@@ -84,14 +84,12 @@ export function Users() {
     );
   }
 
-  const searchParams: Array<
-    {
-      [key in keyof UserSearchParams]:
-        | "string"
-        | "number"
-        | { data: Array<string> | undefined; isLoading: boolean };
-    }
-  > = [
+  const searchParams: Array<{
+    [key in keyof UserSearchParams]:
+      | "string"
+      | "number"
+      | { data: Array<string> | undefined; isLoading: boolean };
+  }> = [
     { firstName: "string" },
     { lastName: "string" },
     { email: "string" },
@@ -146,8 +144,8 @@ export function UserDetails({ data }: { data: UserType }) {
 }
 
 export function ViewUserDetails() {
-  const { userId } = useParams();
-  const { data, isLoading } = useUser(Number(userId));
+  const { id } = useParams();
+  const { data, isLoading } = useUser(Number(id));
   return isLoading ? (
     <Loading />
   ) : data ? (
@@ -176,7 +174,9 @@ export function UpdateUserForm({ data }: { data?: UserType }) {
       }
       return response;
     } catch (error) {
-      setMessage(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data.message);
+      }
       throw error;
     } finally {
       setSnackbarOpen(true);
@@ -401,7 +401,9 @@ export function UserForm({
             setSnackbarOpen(true);
           }
         } catch (error) {
-          setMessage(error.response.data.message);
+          if (axios.isAxiosError(error)) {
+            setMessage(error.response?.data.message);
+          }
           setSnackbarOpen(true);
         } finally {
           setIsLoading(false);
