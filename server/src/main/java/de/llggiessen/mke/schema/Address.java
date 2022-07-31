@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class Address {
     private String street;
     private String streetNumber;
-    private int zipCode;
-    private String place;
+    private String zipCode;
+    private String town;
 }
-

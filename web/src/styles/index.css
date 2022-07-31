@@ -2,12 +2,51 @@
   font-size: 18px;
 }
 
+*::-webkit-scrollbar {
+  width: 0.5em;
+  height: 0.5em;
+  background-color: var(--input);
+  border-radius: 1em;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 1em;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlighting);
+}
+
+*::selection {
+  background: yellowgreen;
+}
+
 body {
   margin: 0;
   padding: 0;
+  /* font-size: 20px; */
+  font-display: optional;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+body::-webkit-scrollbar {
+  width: 0.75em;
+}
+
+span.MuiTypography-root {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
   /* font-size: 20px; */
+  font-display: optional;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+span.MuiTypography-root {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
 }
 
 h1,
@@ -54,7 +93,6 @@ h2 {
     --input: #f0f0f0;
   }
 }
-
 .flexrow {
   display: flex;
   flex-flow: row nowrap;
@@ -71,6 +109,22 @@ h2 {
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  height: 70%;
+  padding: 2em 0;
+}
+
+.section {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+.foo {
+  display: flex;
+  flex-flow: column nowrap;
+  /* justify-content: center; */
+  align-items: center;
+  gap: 3em;
 }
 
 .container > h1 {
@@ -79,7 +133,7 @@ h2 {
 
 .wrapper {
   height: 100vh;
-  width: 100vw;
+  /* width: 100vw;*/
   box-sizing: border-box;
   display: flex;
   flex-flow: column nowrap;
@@ -94,7 +148,7 @@ h2 {
   flex-flow: row wrap;
   justify-content: space-between;
   height: 10%;
-  /* padding: 2em; */
+  padding-bottom: 2em;
 }
 
 .content {
@@ -125,6 +179,9 @@ h2 {
 /* .flexcolumn.reverse {
   flex-direction: column-reverse;
 } */
+.flexrow.reverse {
+  flex-direction: row-reverse;
+}
 
 .lower {
   display: flex;

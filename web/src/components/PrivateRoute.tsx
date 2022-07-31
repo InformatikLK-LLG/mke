@@ -1,12 +1,13 @@
 import { Navigate, Route } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+
 import { RouteProps } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 type privateRouteProps = {
   path: string;
   element: JSX.Element;
   rest?: RouteProps;
-  children?: JSX.Element;
+  children?: JSX.Element | JSX.Element[];
 };
 
 export default function PrivateRoute({
