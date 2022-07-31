@@ -147,8 +147,8 @@ export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
   ? Header
   : T extends object
   ? {
-      [K in keyof T]?: K extends string ? AllTableHeaders<T[K]> : never;
-    }
+    [K in keyof T]?: K extends string ? AllTableHeaders<T[K]> : never;
+  }
   : Header;
 
 type TableButton<T> = {
@@ -170,9 +170,9 @@ interface TableProps<T extends SimplestItem, K> {
   searchParams?: Array<
     {
       [key in keyof K]:
-        | "number"
-        | "string"
-        | { data: Array<string> | undefined; isLoading: boolean };
+      | "number"
+      | "string"
+      | { data: Array<string> | undefined; isLoading: boolean };
     }
   >;
   onRowClick?: (row: T) => void;
@@ -207,10 +207,10 @@ type Prev = [
 
 type Join<K, P> = K extends string
   ? P extends string
-    ? P extends ""
-      ? `${K}`
-      : `${K}.${P}`
-    : never
+  ? P extends ""
+  ? `${K}`
+  : `${K}.${P}`
+  : never
   : never;
 
 export type Leaves<T, D extends number = 5> = [D] extends [never]
@@ -360,9 +360,8 @@ export default function Table<T extends SimplestItem, K>({
       <TableRow
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
-        className={`${classes.row} ${onRowClick && classes.clickable} ${
-          isBlume && classes.flowerRow
-        }`}
+        className={`${classes.row} ${onRowClick && classes.clickable} ${isBlume && classes.flowerRow
+          }`}
       >
         <>
           {accessKeys.map((nestedKey) => RenderValue(row, nestedKey))}
@@ -377,15 +376,17 @@ export default function Table<T extends SimplestItem, K>({
               >
                 {buttons.map((button, i) => (
                   <Grid item key={`${row.id}.button.${i}`}>
-                    <button
-                      onClick={(event) => button.onClick(row, event)}
-                      className={`${classes.clickable} ${classes.buttonHover} ${classes.tableButton}`}
-                    >
-                      {button.icon}
-                    </button>
-                    {button.isLoading &&
-                      button.isLoading[row.id] &&
-                      setRowIsLoading(true)}
+                    <>
+                      <button
+                        onClick={(event) => button.onClick(row, event)}
+                        className={`${classes.clickable} ${classes.buttonHover} ${classes.tableButton}`}
+                      >
+                        {button.icon}
+                      </button>
+                      {button.isLoading &&
+                        button.isLoading[row.id] &&
+                        setRowIsLoading(true)}
+                    </>
                   </Grid>
                 ))}
               </Grid>
@@ -463,8 +464,8 @@ export default function Table<T extends SimplestItem, K>({
       <Fragment key={`headers.${keyThing}`}>
         {Array.isArray(nestedKeys)
           ? nestedKeys.map((innerNestedKey) =>
-              RenderHeaders(headers, innerNestedKey)
-            )
+            RenderHeaders(headers, innerNestedKey)
+          )
           : RenderHeader(accessNestedValues(nestedKeys, headers), nestedKeys)}
       </Fragment>
     );

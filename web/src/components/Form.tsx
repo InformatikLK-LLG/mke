@@ -301,7 +301,7 @@ export function RegisterForm2() {
   ];
 
   const onSubmit = handleSubmit(({ firstName, lastName, email }) =>
-    navigate("../2", {
+    navigate("../../2", {
       state: {
         registerState: { code, firstName, lastName, email },
       },
@@ -517,10 +517,10 @@ export default function Form({
     ? viewportWidth >= breakpoints.xl && order["xl"]
       ? "xl"
       : viewportWidth >= breakpoints.lg && order["lg"]
-      ? "lg"
-      : viewportWidth >= breakpoints.md && order["md"]
-      ? "md"
-      : "xs"
+        ? "lg"
+        : viewportWidth >= breakpoints.md && order["md"]
+          ? "md"
+          : "xs"
     : "xs";
 
   return (
@@ -535,12 +535,12 @@ export default function Form({
         {otherElements?.start}
         {order && order["xs"]
           ? //order[breakpoint] can never be undefined because breakpoint is checking this case already^
-            order[breakpoint]!.map((index) => (
-              <Fragment key={index}>{inputs[index - 1]}</Fragment>
-            ))
+          order[breakpoint]!.map((index) => (
+            <Fragment key={index}>{inputs[index - 1]}</Fragment>
+          ))
           : inputs.map((input, index) => (
-              <Fragment key={index}>{input}</Fragment>
-            ))}
+            <Fragment key={index}>{input}</Fragment>
+          ))}
       </Grid>
       {otherElements?.middle}
       <Grid

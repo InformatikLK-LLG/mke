@@ -62,85 +62,83 @@ export default function PlacesAutocomplete<
 
   const handleSelect =
     ({ place_id, description }: { place_id: any; description: string }) =>
-    async () => {
-      setValue(description, false);
-      clearSuggestions();
-      const parameter = {
-        placeId: place_id,
-        fields: ["address_components", "formatted_phone_number", "name"],
-      };
-      try {
-        const details = await getDetails(parameter);
-        if (typeof details === "string") return;
-        if (!details.address_components) return;
-        if (searchFor !== "address") {
-          details.formatted_phone_number &&
-            setValueInForm(
-              "phoneNumber" as Path<T>,
-              details.formatted_phone_number as UnpackNestedValue<
-                PathValue<T, Path<T>>
-              >,
-              {
-                shouldValidate: true,
-              }
-            );
-          details.name &&
-            setValueInForm(
-              "name" as Path<T>,
-              details.name as UnpackNestedValue<PathValue<T, Path<T>>>,
-              {
-                shouldValidate: true,
-              }
-            );
-        }
-
-        details.address_components.forEach((component: any) => {
-          switch (component.types[0]) {
-            case "street_number":
+      async () => {
+        setValue(description, false);
+        clearSuggestions();
+        const parameter = {
+          placeId: place_id,
+          fields: ["address_components", "formatted_phone_number", "name"],
+        };
+        try {
+          const details = await getDetails(parameter);
+          if (typeof details === "string") return;
+          if (!details.address_components) return;
+          if (searchFor !== "address") {
+            details.formatted_phone_number &&
               setValueInForm(
-                "address.streetNumber" as Path<T>,
-                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
+                "phoneNumber" as Path<T>,
+                details.formatted_phone_number as PathValue<T, Path<T>>,
                 {
                   shouldValidate: true,
                 }
               );
-              break;
-            case "route":
+            details.name &&
               setValueInForm(
-                "address.street" as Path<T>,
-                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
+                "name" as Path<T>,
+                details.name as PathValue<T, Path<T>>,
                 {
                   shouldValidate: true,
                 }
               );
-              break;
-            case "locality":
-              setValueInForm(
-                "address.town" as Path<T>,
-                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
-                {
-                  shouldValidate: true,
-                }
-              );
-              break;
-            case "postal_code":
-              setValueInForm(
-                "address.zipCode" as Path<T>,
-                component.long_name as UnpackNestedValue<PathValue<T, Path<T>>>,
-                {
-                  shouldValidate: true,
-                }
-              );
-              break;
-
-            default:
-              break;
           }
-        });
-      } catch (error) {
-        console.log("OOOPS");
-      }
-    };
+
+          details.address_components.forEach((component: any) => {
+            switch (component.types[0]) {
+              case "street_number":
+                setValueInForm(
+                  "address.streetNumber" as Path<T>,
+                  component.long_name as PathValue<T, Path<T>>,
+                  {
+                    shouldValidate: true,
+                  }
+                );
+                break;
+              case "route":
+                setValueInForm(
+                  "address.street" as Path<T>,
+                  component.long_name as PathValue<T, Path<T>>,
+                  {
+                    shouldValidate: true,
+                  }
+                );
+                break;
+              case "locality":
+                setValueInForm(
+                  "address.town" as Path<T>,
+                  component.long_name as PathValue<T, Path<T>>,
+                  {
+                    shouldValidate: true,
+                  }
+                );
+                break;
+              case "postal_code":
+                setValueInForm(
+                  "address.zipCode" as Path<T>,
+                  component.long_name as PathValue<T, Path<T>>,
+                  {
+                    shouldValidate: true,
+                  }
+                );
+                break;
+
+              default:
+                break;
+            }
+          });
+        } catch (error) {
+          console.log("OOOPS");
+        }
+      };
 
   useEffect(() => {
     setValue(params.value as string);
@@ -166,12 +164,12 @@ export default function PlacesAutocomplete<
       filterOptions={(options) =>
         searchFor
           ? options.filter((option) =>
-              searchFor === "address"
-                ? ["premise", "route"].some((value) =>
-                    option.types.includes(value)
-                  )
-                : option.types.includes(searchFor)
-            )
+            searchFor === "address"
+              ? ["premise", "route"].some((value) =>
+                option.types.includes(value)
+              )
+              : option.types.includes(searchFor)
+          )
           : options
       }
       options={data}

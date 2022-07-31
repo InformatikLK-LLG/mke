@@ -8,8 +8,10 @@ export default function Home() {
   ];
   return (
     <div className="content">
-      <BookingCalendar dates={dates} />
-      {document.getElementsByClassName("selected")}
+      <>
+        <BookingCalendar dates={dates} />
+        {document.getElementsByClassName("selected")}
+      </>
     </div>
   );
 }

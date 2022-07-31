@@ -8,13 +8,14 @@ import {
   FieldError,
   Path,
   PathValue,
-  UnpackNestedValue,
   UseFormClearErrors,
   UseFormGetValues,
   UseFormSetValue,
   UseFormWatch,
   ValidationRule,
   useForm,
+  FieldErrorsImpl,
+  DeepRequired,
 } from "react-hook-form";
 import Form, { OrderType } from "../components/Form";
 import {
@@ -107,7 +108,7 @@ export type FormInstitutionType = {
 export type FormState<T> = {
   setValue: UseFormSetValue<T>;
   control: Control<T>;
-  errors: DeepMap<DeepPartial<T>, FieldError>;
+  errors: FieldErrorsImpl<DeepRequired<T>>
   clearErrors: UseFormClearErrors<T>;
   watch: UseFormWatch<T>;
   formInput: ClassNameMap<
@@ -310,7 +311,7 @@ export const RenderInput = <T,>({
               className="inputIcon"
               icon={faTimes}
               onClick={() =>
-                setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, {
+                setValue(name, "" as PathValue<T, Path<T>>, {
                   shouldValidate: true,
                 })
               }
@@ -323,14 +324,12 @@ export const RenderInput = <T,>({
 
   return (
     <label>
-      <AnimatePresence>
-        {accessNestedValues(name, errors) && (
-          <FormErrorMessage
-            message={accessNestedValues(name, errors).message}
-            name={name}
-          />
-        )}
-      </AnimatePresence>
+      {accessNestedValues(name, errors) && (
+        <FormErrorMessage
+          message={accessNestedValues(name, errors).message}
+          name={name}
+        />
+      )}
       <Controller
         control={control}
         name={name}
@@ -341,12 +340,7 @@ export const RenderInput = <T,>({
               setValueInForm={
                 setValue as unknown as UseFormSetValue<FormInstitutionType>
               }
-              params={
-                field as ControllerRenderProps<
-                  FormInstitutionType,
-                  "name" | "address.street"
-                >
-              }
+              params={field as unknown as ControllerRenderProps<FormInstitutionType, Path<FormInstitutionType>>}
               searchFor={autocompletePlaces}
               InputProps={InputProps}
               autoComplete={autoComplete}
@@ -831,11 +825,11 @@ export function Institutions() {
   const searchParams: Array<{
     [key in keyof InstitutionsSearchParams]: "string" | "number";
   }> = [
-    { id: "string" },
-    { name: "string" },
-    { "address.street": "string" },
-    { schoolAdministrativeDistrict: "number" },
-  ];
+      { id: "string" },
+      { name: "string" },
+      { "address.street": "string" },
+      { schoolAdministrativeDistrict: "number" },
+    ];
 
   return (
     <div className="container">
