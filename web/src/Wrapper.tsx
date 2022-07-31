@@ -4,6 +4,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { useAuth } from "./hooks/useAuth";
@@ -74,6 +75,29 @@ export default function Wrapper() {
   const header = useProvideHeader();
   const snackbar = useProvideSnackbar();
 
+  axios.defaults.withCredentials = true;
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        await axios.post("http://localhost:8080/profile/refreshToken");
+        return axios(originalRequest);
+      }
+      if (
+        error.response.status === 418 &&
+        !originalRequest._retry &&
+        location.pathname !== "/login"
+      ) {
+        originalRequest._retry = true;
+        auth.signout();
+        return axios(originalRequest);
+      }
+      return Promise.reject(error);
+    }
+  );
+
   const routes: RouteType = [
     {
       path: "/",
@@ -84,11 +108,13 @@ export default function Wrapper() {
       path: "/institutions",
       name: "Institutionen",
       heading: "Institutionen",
+      privileges: "INSTITUTION_READ",
       subroutes: [
         {
           path: "/institutions/create",
           name: "Erstellen",
           heading: "Institution erstellen",
+          privileges: "INSTITUTION_WRITE",
         },
         {
           path: "/institutions/:instCode",
@@ -100,14 +126,52 @@ export default function Wrapper() {
       path: "/customers",
       name: "Kundinnen",
       heading: "Kundinnen",
+      privileges: "CUSTOMER_READ",
       subroutes: [
         {
           path: "/customers/create",
           name: "Erstellen",
           heading: "Kundin erstellen",
+          privileges: "CUSTOMER_WRITE",
         },
         {
-          path: "/customers/:id",
+          path: "/customers/:customerId",
+          heading: "",
+        },
+      ],
+    },
+    {
+      path: "/users",
+      name: "Nutzerinnen",
+      heading: "Nutzerinnen",
+      privileges: "USER_READ",
+      subroutes: [
+        {
+          path: "/users/:userId",
+          heading: "",
+        },
+        {
+          path: "/users/invite",
+          name: "Einladen",
+          heading: "Einladung erstellen",
+          privileges: "INVITE_WRITE",
+        },
+      ],
+    },
+    {
+      path: "/roles",
+      name: "Rollen",
+      heading: "Rollen",
+      privileges: "ROLE_READ",
+      subroutes: [
+        {
+          path: "/roles/create",
+          name: "Erstellen",
+          heading: "Rollen erstellen",
+          privileges: "ROLE_WRITE",
+        },
+        {
+          path: "/roles/:roleId",
           heading: "",
         },
       ],

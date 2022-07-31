@@ -1,6 +1,7 @@
-import type { NavBarItem, NavBarType } from "./NavBar";
+import { NavBarItem, NavBarType, userCanAccessRoute } from "./NavBar";
 
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
 
 export default function Dropdown({
@@ -13,6 +14,8 @@ export default function Dropdown({
   subroutes?: NavBarType;
 }) {
   const [isActive, setIsActive] = useState(false);
+  const { user } = useAuth();
+  const userPrivileges = user?.roles;
 
   return (
     <>
@@ -36,14 +39,21 @@ export default function Dropdown({
         {isActive && (
           <div className="dropdown-items">
             <ul>
-              {subroutes?.map(
-                (subroute, i) =>
-                  subroute.name && (
-                    <li key={i}>
-                      <NavLink to={subroute.path}>{subroute.name}</NavLink>
-                    </li>
-                  )
-              )}
+              {subroutes?.map((subroute, i) => {
+                if (userPrivileges && subroute.name) {
+                  if (
+                    !subroute.privileges ||
+                    userCanAccessRoute(userPrivileges, subroute)
+                  ) {
+                    return (
+                      <li key={i}>
+                        <NavLink to={subroute.path}>{subroute.name}</NavLink>
+                      </li>
+                    );
+                  }
+                }
+                return undefined;
+              })}
             </ul>
           </div>
         )}

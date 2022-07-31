@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
 
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -16,7 +15,7 @@ import java.sql.Time;
 public class Booking {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     private int numberOfParticipants;
     @Embedded

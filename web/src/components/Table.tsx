@@ -6,6 +6,7 @@ import {
   Checkbox,
   FormControlLabel,
   Grid,
+  LinearProgress,
   TableBody,
   TableCell,
   TableContainer,
@@ -25,6 +26,7 @@ import {
 import React, { Fragment, useState } from "react";
 import { faCheckSquare, faSquare } from "@fortawesome/free-regular-svg-icons";
 
+import Autocomplete from "./Autocomplete";
 import Button from "./Button";
 import Delayed from "./Delayed";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -109,6 +111,11 @@ const useStyles = makeStyles({
     fontSize: "1.2em",
     padding: "6px",
   },
+  tableButton: {
+    background: "none",
+    border: "none",
+    fontSize: "1em",
+  },
 });
 
 export function accessNestedValues(path: string, object: {}) {
@@ -136,18 +143,38 @@ interface Header {
 export type TableHeaders<T extends SimplestItem> = AllTableHeaders<T>;
 export type AllTableHeaders<T, D extends number = 10> = [D] extends [never]
   ? never
+  : T extends Array<infer ElementType> // eslint-disable-line
+  ? Header
   : T extends object
   ? {
       [K in keyof T]?: K extends string ? AllTableHeaders<T[K]> : never;
     }
   : Header;
 
+type TableButton<T> = {
+  onClick: (
+    row: T,
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
+  icon: JSX.Element;
+  stylingStuff?: { backgroundColor: string; textColor: string };
+  isLoading?: { [key in number | string]: boolean };
+};
+
 interface TableProps<T extends SimplestItem, K> {
   tableHeaders: TableHeaders<T>;
   rows: T[];
+  buttons?: Array<TableButton<T>>;
   sort?: Array<string>;
   search?: (parameter?: keyof K, query?: string) => void;
-  searchParams?: Array<{ [key in keyof K]: "number" | "string" }>;
+  searchParams?: Array<
+    {
+      [key in keyof K]:
+        | "number"
+        | "string"
+        | { data: Array<string> | undefined; isLoading: boolean };
+    }
+  >;
   onRowClick?: (row: T) => void;
   isLoading?: boolean;
 }
@@ -198,6 +225,18 @@ function comparator<T>(a: T, b: T, orderBy: Leaves<T>) {
   if (!isNaN(newA) && !isNaN(newB)) {
     newA = parseInt(newA);
     newB = parseInt(newB);
+  } else if (Array.isArray(newA) && Array.isArray(newB)) {
+    // instead of assuming the value is in *.id one should replace this to use headers.format
+    newA = newA
+      .map((value) => value.id)
+      .sort()
+      .join()
+      .toLowerCase();
+    newB = newB
+      .map((value) => value.id)
+      .sort()
+      .join()
+      .toLowerCase();
   } else {
     newA = newA.toLowerCase();
     newB = newB.toLowerCase();
@@ -229,6 +268,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 export default function Table<T extends SimplestItem, K>({
   tableHeaders,
   rows,
+  buttons,
   sort,
   search,
   searchParams = [],
@@ -308,8 +348,15 @@ export default function Table<T extends SimplestItem, K>({
     );
   }
 
-  function RenderRow(row: T) {
-    return (
+  function RenderRow({ row }: { row: T }) {
+    const [rowIsLoading, setRowIsLoading] = useState(false);
+    return rowIsLoading ? (
+      <tr>
+        <td colSpan={columnWidths.length}>
+          <LinearProgress />
+        </td>
+      </tr>
+    ) : (
       <TableRow
         key={`row.${row.id}`}
         onClick={() => onRowClick && onRowClick(row)}
@@ -317,9 +364,34 @@ export default function Table<T extends SimplestItem, K>({
           isBlume && classes.flowerRow
         }`}
       >
-        {accessKeys.map((nestedKey) => {
-          return RenderValue(row, nestedKey);
-        })}
+        <>
+          {accessKeys.map((nestedKey) => RenderValue(row, nestedKey))}
+          {buttons && (
+            <TableCell>
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                wrap="nowrap"
+                spacing={2}
+              >
+                {buttons.map((button, i) => (
+                  <Grid item key={`${row.id}.button.${i}`}>
+                    <button
+                      onClick={(event) => button.onClick(row, event)}
+                      className={`${classes.clickable} ${classes.buttonHover} ${classes.tableButton}`}
+                    >
+                      {button.icon}
+                    </button>
+                    {button.isLoading &&
+                      button.isLoading[row.id] &&
+                      setRowIsLoading(true)}
+                  </Grid>
+                ))}
+              </Grid>
+            </TableCell>
+          )}
+        </>
       </TableRow>
     );
   }
@@ -426,6 +498,8 @@ export default function Table<T extends SimplestItem, K>({
     const header = accessNestedValues(key, tableHeaders) as Header;
     return header.width;
   });
+  buttons && columnWidths.push(1);
+
   const relativeWidth = columnWidths.reduce((prev, curr) => prev + curr, 0);
 
   return (
@@ -446,7 +520,8 @@ export default function Table<T extends SimplestItem, K>({
               <Grid container spacing={2} alignItems="center">
                 {searchParams.map((searchParam) => {
                   const parameter = Object.keys(searchParam)[0] as keyof K;
-                  return searchParam[parameter] === "number" ? (
+                  const value = searchParam[parameter];
+                  return value === "number" ? (
                     <Grid
                       container
                       item
@@ -455,7 +530,7 @@ export default function Table<T extends SimplestItem, K>({
                       alignItems="center"
                       wrap="nowrap"
                     >
-                      <Grid item key={`${parameter}-checkbox`}>
+                      <Grid item key={`${String(parameter)}-checkbox`}>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -506,7 +581,7 @@ export default function Table<T extends SimplestItem, K>({
                           }
                         />
                       </Grid>
-                      <Grid item key={`${parameter}-icon`}>
+                      <Grid item key={`${String(parameter)}-icon`}>
                         <FontAwesomeIcon
                           className={`inputIcon ${classes.buttonHover} ${classes.clickable}`}
                           icon={faTimes}
@@ -525,6 +600,46 @@ export default function Table<T extends SimplestItem, K>({
                           }}
                         />
                       </Grid>
+                    </Grid>
+                  ) : typeof value !== "string" ? (
+                    <Grid item key={parameter as string}>
+                      <Autocomplete
+                        data={value.data || []}
+                        loading={value.isLoading}
+                        loadingText="Lade Daten"
+                        onChange={(event, values) => {
+                          setPage(0);
+                          setSearchValues(
+                            (searchValues) =>
+                              searchValues && {
+                                ...searchValues,
+                                [parameter]: values.join(","),
+                              }
+                          );
+                          search(parameter as keyof K, values.join(","));
+                        }}
+                        value={
+                          searchValues[parameter].length !== 0
+                            ? searchValues[parameter].split(",")
+                            : undefined
+                        }
+                        inputField={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            label={
+                              (
+                                accessNestedValues(
+                                  String(parameter),
+                                  tableHeaders
+                                ) as Header
+                              ).label
+                            }
+                            variant="outlined"
+                            InputProps={{ ...params.InputProps, className: "" }}
+                          />
+                        )}
+                      />
                     </Grid>
                   ) : (
                     <Grid item key={parameter as string}>
@@ -559,7 +674,13 @@ export default function Table<T extends SimplestItem, K>({
                     </Grid>
                   );
                 })}
-                <Grid container item xs justify="flex-end" alignItems="center">
+                <Grid
+                  container
+                  item
+                  xs
+                  justifyContent="flex-end"
+                  alignItems="center"
+                >
                   <Grid item>
                     <FontAwesomeIcon
                       icon={faTimes}
@@ -610,7 +731,10 @@ export default function Table<T extends SimplestItem, K>({
             })}
           </colgroup>
           <TableHead className={classes.tableHeader}>
-            <TableRow>{RenderHeaders(tableHeaders)}</TableRow>
+            <TableRow>
+              {RenderHeaders(tableHeaders)}
+              {buttons && <TableCell>asdf</TableCell>}
+            </TableRow>
           </TableHead>
           <TableBody classes={{ root: isBlume ? classes.flowerBody : "" }}>
             {isLoading ? (
@@ -624,7 +748,7 @@ export default function Table<T extends SimplestItem, K>({
             ) : (
               stableSort(rows, getComparator(direction, sortBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => RenderRow(row))
+                .map((row) => <RenderRow row={row} key={row.id} />)
             )}
           </TableBody>
         </BetterTable>
@@ -644,7 +768,7 @@ export default function Table<T extends SimplestItem, K>({
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
           className={classes.pagination}
         />
       )}

@@ -23,12 +23,14 @@ import {
 import Form, { EmailInputField, OrderType } from "../components/Form";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import Table, { TableHeaders } from "../components/Table";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { hasInstitutionWrite, useAuth } from "../hooks/useAuth";
 import useCustomers, { CustomerSearchParams } from "../hooks/useCustomers";
 
 import { Autocomplete } from "@material-ui/lab";
 import Button from "../components/Button";
 import Loading from "../components/Loading";
+import PageNotFound from "./PageNotFound";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { faUniversity } from "@fortawesome/free-solid-svg-icons";
 import useCustomer from "../hooks/useCustomer";
@@ -86,14 +88,14 @@ export function CustomerTable({ instCode }: { instCode?: string }) {
     );
   };
 
-  const searchParams: Array<
-    { [key in keyof CustomerSearchParams]: "string" | "number" }
-  > = [{ firstName: "string" }, { lastName: "string" }];
+  const searchParams: Array<{
+    [key in keyof CustomerSearchParams]: "string" | "number";
+  }> = [{ firstName: "string" }, { lastName: "string" }];
 
   return (
     <Table
       tableHeaders={tableHeaders}
-      rows={data?.data || []}
+      rows={data || []}
       sort={["Vorname", "Nachname", "Email"]}
       onRowClick={(row) => navigate(`/customers/${row.id}`)}
       isLoading={isLoading}
@@ -107,7 +109,7 @@ export function CreateCustomer() {
   return <CreateCustomerForm />;
 }
 
-export function CustomerDetails({ data }: { data?: CustomerType }) {
+export function CustomerDetails({ data }: { data: CustomerType }) {
   return (
     <div className="container">
       <UpdateCustomerForm data={data} />
@@ -171,7 +173,9 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
       }
       return response;
     } catch (error) {
-      setMessage(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data.message);
+      }
       throw error;
     } finally {
       setSnackbarOpen(true);
@@ -183,7 +187,7 @@ export function UpdateCustomerForm({ data }: { data?: CustomerType }) {
     getValues: UseFormGetValues<CustomerType>
   ) => {
     const editableToggle = (
-      <Grid item container xs={12} justify="flex-end">
+      <Grid item container xs={12} justifyContent="flex-end">
         <FormControlLabel
           control={
             <Switch
@@ -283,6 +287,7 @@ export function CustomerForm({
     useState<Array<{ name: string; id?: string }>>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { setSnackbarOpen, setMessage } = useSnackbar();
+  const { user } = useAuth();
 
   const institution = watch("institution");
   const formState: FormState<CustomerType> = {
@@ -290,7 +295,7 @@ export function CustomerForm({
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
 
@@ -384,6 +389,7 @@ export function CustomerForm({
               );
               field.value &&
                 field.value !== "" &&
+                hasInstitutionWrite(user) &&
                 filtered.push({
                   name: field.value,
                 });
@@ -513,10 +519,12 @@ export function CustomerForm({
 
 export function ViewCustomerDetails() {
   const { id } = useParams();
-  const { data, isLoading } = useCustomer(id);
-  // GET and stuff
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
-  return isLoading ? <Loading /> : <CustomerDetails data={data?.data} />;
+  const { data, isLoading } = useCustomer(Number(id));
+  return isLoading ? (
+    <Loading />
+  ) : data ? (
+    <CustomerDetails data={data} />
+  ) : (
+    <PageNotFound />
+  );
 }

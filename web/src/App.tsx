@@ -11,9 +11,13 @@ import Institution, {
 } from "./pages/Institution";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Register, { Register1, Register2, Register3 } from "./pages/Register";
+import Role, { CreateRole, Roles, ViewRoleDetails } from "./pages/Role";
+import User, { Users, ViewUserDetails } from "./pages/User";
 
+import AuthenticationRoute from "./components/AuthenticationRoute";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import Home from "./pages/Home";
+import { Invites } from "./pages/Invite";
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import NoTrespassing from "./components/NoTrespassing";
@@ -21,14 +25,17 @@ import PrivateRoute from "./components/PrivateRoute";
 import ProvideAuth from "./hooks/useAuth";
 import { ThemeProvider } from "@material-ui/styles";
 import Wrapper from "./Wrapper";
-import { createMuiTheme } from "@material-ui/core";
+import PageNotFound from "./pages/PageNotFound";
+import { createTheme } from "@material-ui/core";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: 1 } },
+  });
   return (
     <ProvideAuth>
       <ThemeProvider
-        theme={createMuiTheme({
+        theme={createTheme({
           palette: {
             primary: { main: "#74C7CD" },
             secondary: { main: "#F0F0F0" },
@@ -40,34 +47,111 @@ function App() {
             <BrowserRouter>
               <Routes>
                 <Route element={<Wrapper />}>
-                  <PrivateRoute path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/forgotpassword" element={<ForgotPassword />} />
-                  <Route path="/register" element={<Register />}>
-                    <Route path="/" element={<Register1 />} />
-                    <NoTrespassing path="1" element={<Register2 />} />
-                    <NoTrespassing path="2" element={<Register3 />} />
+                  <Route path="/" element={<PrivateRoute />}>
+                    <Route path="" element={<Home />} />
                   </Route>
-                  <PrivateRoute path="/logout" element={<Logout />} />
-                  <PrivateRoute path="/institutions" element={<Institution />}>
-                    <PrivateRoute path="/" element={<Institutions />} />
-                    <PrivateRoute
-                      path="/create"
-                      element={<CreateInstitution />}
-                    />
-                    <PrivateRoute
-                      path="/:instCode"
-                      element={<ViewInstitutionDetails />}
-                    />
-                  </PrivateRoute>
-                  <PrivateRoute path="/customers" element={<Customer />}>
-                    <PrivateRoute path="/" element={<Customers />} />
-                    <PrivateRoute path="/create" element={<CreateCustomer />} />
-                    <PrivateRoute
-                      path="/:id"
-                      element={<ViewCustomerDetails />}
-                    />
-                  </PrivateRoute>
+                  <Route path="/logout" element={<PrivateRoute />}>
+                    <Route path="" element={<Logout />} />
+                  </Route>
+                  <Route path="/login" element={<AuthenticationRoute />}>
+                    <Route path="" element={<Login />} />
+                  </Route>
+                  <Route
+                    path="/forgotpassword"
+                    element={<AuthenticationRoute />}
+                  >
+                    <Route path="" element={<ForgotPassword />} />
+                  </Route>
+
+                  <Route path="/register" element={<AuthenticationRoute />}>
+                    <Route path="" element={<Register1 />} />
+                    <Route path="1" element={<NoTrespassing />}>
+                      <Route path="" element={<Register2 />} />
+                    </Route>
+                    <Route path="2" element={<NoTrespassing />}>
+                      <Route path="" element={<Register3 />} />
+                    </Route>
+                  </Route>
+
+                  <Route
+                    path="/institutions"
+                    element={
+                      <PrivateRoute requiredPrivilege="INSTITUTION_READ" />
+                    }
+                  >
+                    <Route path="" element={<Institutions />} />
+                    <Route
+                      path="create"
+                      element={
+                        <PrivateRoute requiredPrivilege="INSTITUTION_WRITE" />
+                      }
+                    >
+                      <Route path="" element={<CreateInstitution />} />
+                    </Route>
+                    <Route
+                      path=":instCode"
+                      element={
+                        <PrivateRoute requiredPrivilege="CUSTOMER_READ" />
+                      }
+                    >
+                      <Route path="" element={<ViewInstitutionDetails />} />
+                    </Route>
+                  </Route>
+
+                  <Route
+                    path="/customers"
+                    element={<PrivateRoute requiredPrivilege="CUSTOMER_READ" />}
+                  >
+                    <Route path="" element={<Customers />} />
+                    <Route
+                      path="create"
+                      element={
+                        <PrivateRoute requiredPrivilege="CUSTOMER_WRITE" />
+                      }
+                    >
+                      <Route path="" element={<CreateCustomer />} />
+                    </Route>
+                    <Route
+                      path=":id"
+                      element={
+                        <PrivateRoute requiredPrivilege="INSTITUTION_READ" />
+                      }
+                    >
+                      <Route path="" element={<ViewCustomerDetails />} />
+                    </Route>
+                  </Route>
+
+                  <Route
+                    path="/users"
+                    element={<PrivateRoute requiredPrivilege="USER_READ" />}
+                  >
+                    <Route path="" element={<Users />} />
+                    <Route path=":id" element={<ViewUserDetails />} />
+                    <Route
+                      path="invite"
+                      element={
+                        <PrivateRoute requiredPrivilege="INVITE_WRITE" />
+                      }
+                    >
+                      <Route path="" element={<Invites />} />
+                    </Route>
+                  </Route>
+
+                  <Route
+                    path="/roles"
+                    element={<PrivateRoute requiredPrivilege="ROLE_READ" />}
+                  >
+                    <Route path="" element={<Roles />} />
+                    <Route path=":id" element={<ViewRoleDetails />} />
+                    <Route
+                      path="create"
+                      element={<PrivateRoute requiredPrivilege="ROLE_WRITE" />}
+                    >
+                      <Route path="" element={<CreateRole />} />
+                    </Route>
+                  </Route>
+
+                  <Route path="*" element={<PageNotFound />} />
                 </Route>
               </Routes>
             </BrowserRouter>

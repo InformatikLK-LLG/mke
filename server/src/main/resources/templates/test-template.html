@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml" lang="de">
+<head>
+    <title>nirgendwo abgeschrieben</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'/>
+    <!-- use the font -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 18px;
+        }
+        .square {
+            padding: 1em;
+            background-color: lightblue;
+            width: 20vw;
+            height: 20vw;
+        }
+    </style>
+</head>
+ <body>
+    <p>
+        <h2>EINLADUNG MKE</h2>
+        <span>Hey you</span>
+        <div class="square">
+        <p>Du wurdest dazu eingeladen ein Mitglied der mobilen Kanueinheit in einem Standort zu werden. Mit folgendem Link oder dem Code darunter kannst du dich registrieren.</p>
+        </div>
+        <a th:href="${link}">Jetzt registrieren!</a>
+        <p th:text="${code}"></p>
+    </p>
+  </body>
+</html>

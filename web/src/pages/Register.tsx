@@ -8,9 +8,34 @@ import { makeStyles, useTheme } from "@material-ui/core";
 
 import Button from "../components/Button";
 import { SideBox } from "../components/SideBox";
+import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
+import { useLocation } from "react-router";
 import useViewport from "../hooks/useViewport";
 
 export default function Register() {
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const inviteCode = new URLSearchParams(useLocation().search).get(
+    "inviteCode"
+  );
+
+  useEffect(() => {
+    async function skipFirstStep() {
+      if (inviteCode) {
+        const invite = await auth.skipFirstRegisterStep(inviteCode);
+        if (invite)
+          navigate("./1", {
+            state: {
+              registerState: { email: invite.email, code: invite.inviteCode },
+            },
+          });
+      }
+    }
+
+    skipFirstStep();
+  }, [auth, navigate, inviteCode]);
+
   return <Outlet />;
 }
 

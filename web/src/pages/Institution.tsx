@@ -4,6 +4,7 @@ import {
   Controller,
   ControllerRenderProps,
   DeepMap,
+  DeepPartial,
   FieldError,
   Path,
   PathValue,
@@ -11,6 +12,7 @@ import {
   UseFormClearErrors,
   UseFormGetValues,
   UseFormSetValue,
+  UseFormWatch,
   ValidationRule,
   useForm,
 } from "react-hook-form";
@@ -47,12 +49,13 @@ import axios, { AxiosResponse } from "axios";
 import {
   faCheckSquare,
   faEdit,
+  faEye,
+  faEyeSlash,
   faSquare,
 } from "@fortawesome/free-regular-svg-icons";
 import useInstitutions, {
   InstitutionsSearchParams,
 } from "../hooks/useInstitutions";
-import { useQueryClient } from "react-query";
 
 import { AnimatePresence } from "framer-motion";
 import { AutocompleteRenderInputParams } from "@material-ui/lab";
@@ -62,9 +65,11 @@ import { CustomerType } from "./Customer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FormErrorMessage from "../components/FormErrorMessage";
 import Loading from "../components/Loading";
+import PageNotFound from "./PageNotFound";
 import PlacesAutocomplete from "../components/PlacesAutocomplete";
 import useEventListener from "@use-it/event-listener";
 import useInstitution from "../hooks/useInstitution";
+import { useQueryClient } from "react-query";
 import { useSnackbar } from "../Wrapper";
 
 type Address = {
@@ -102,11 +107,18 @@ export type FormInstitutionType = {
 export type FormState<T> = {
   setValue: UseFormSetValue<T>;
   control: Control<T>;
-  errors: DeepMap<T, FieldError>;
+  errors: DeepMap<DeepPartial<T>, FieldError>;
   clearErrors: UseFormClearErrors<T>;
-  getValues: UseFormGetValues<T>;
+  watch: UseFormWatch<T>;
   formInput: ClassNameMap<
-    "input" | "checkbox" | "select" | "menuItem" | "formControl" | "clearButton"
+    | "input"
+    | "checkbox"
+    | "select"
+    | "menuItem"
+    | "formControl"
+    | "clearButton"
+    | "clickable"
+    | "toggleViewPassword"
   >;
 };
 
@@ -205,6 +217,9 @@ export const useInputStyles = makeStyles({
   formControl: {
     marginTop: 0,
   },
+  clickable: {
+    "&:hover": { cursor: "pointer" },
+  },
   clearButton: {
     width: "1em",
     height: "1em",
@@ -214,6 +229,9 @@ export const useInputStyles = makeStyles({
     "&:hover": {
       cursor: "pointer",
     },
+  },
+  toggleViewPassword: {
+    paddingRight: "0.5em",
   },
   tableContainer: {
     width: "100%",
@@ -250,8 +268,10 @@ export const RenderInput = <T,>({
   formState: FormState<T>;
   params?: AutocompleteRenderInputParams;
 }) => {
-  const { setValue, control, errors, clearErrors, getValues, formInput } =
+  const { setValue, control, errors, clearErrors, watch, formInput } =
     formState;
+
+  const value = watch(name);
 
   const error = accessNestedValues(name, errors);
   useEffect(() => {
@@ -262,6 +282,7 @@ export const RenderInput = <T,>({
       return () => clearTimeout(timer);
     }
   }, [error, name, clearErrors]);
+  const [showPassword, setShowPassword] = useState(false);
 
   const InputProps = {
     startAdornment: (
@@ -269,18 +290,34 @@ export const RenderInput = <T,>({
         <FontAwesomeIcon className="inputIcon" icon={icon} />
       </InputAdornment>
     ),
-    endAdornment: getValues(name) && !disabled && isModifiable && (
-      <InputAdornment position="end" className={formInput.clearButton}>
-        <FontAwesomeIcon
-          className={`inputIcon`}
-          icon={faTimes}
-          onClick={() =>
-            setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, {
-              shouldValidate: true,
-            })
-          }
-        />
-      </InputAdornment>
+    endAdornment: (
+      <>
+        {type === "password" && value && (
+          <InputAdornment
+            position="end"
+            className={`${formInput.clickable} ${formInput.toggleViewPassword}`}
+          >
+            <FontAwesomeIcon
+              className="inputIcon"
+              icon={showPassword ? faEyeSlash : faEye}
+              onClick={() => setShowPassword((value) => !value)}
+            />
+          </InputAdornment>
+        )}
+        {value && !disabled && isModifiable && (
+          <InputAdornment position="end" className={formInput.clearButton}>
+            <FontAwesomeIcon
+              className="inputIcon"
+              icon={faTimes}
+              onClick={() =>
+                setValue(name, "" as UnpackNestedValue<PathValue<T, Path<T>>>, {
+                  shouldValidate: true,
+                })
+              }
+            />
+          </InputAdornment>
+        )}
+      </>
     ),
   };
 
@@ -325,7 +362,7 @@ export const RenderInput = <T,>({
           ) : (
             <TextField
               placeholder={placeholder}
-              type={type}
+              type={type === "password" && showPassword ? "text" : type}
               className={formInput.input}
               {...field}
               value={field.value || ""}
@@ -347,7 +384,7 @@ export default function Institution() {
 }
 
 export type RecursivePartial<T> = {
-  [K in keyof T]?: RecursivePartial<T[K]>;
+  [K in keyof T]?: T[K] extends Array<infer L> ? T[K] : RecursivePartial<T[K]>; // eslint-disable-line
 };
 
 export function CreateInstitution({
@@ -452,7 +489,9 @@ export function UpdateInstitutionForm({
       }
       return response;
     } catch (error) {
-      setMessage(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data.message);
+      }
       throw error;
     } finally {
       setSnackbarOpen(true);
@@ -464,7 +503,7 @@ export function UpdateInstitutionForm({
     getValues: UseFormGetValues<FormInstitutionType>
   ) => {
     const editableToggle = (
-      <Grid item container xs={12} justify="flex-end">
+      <Grid item container xs={12} justifyContent="flex-end">
         <FormControlLabel
           control={
             <Switch
@@ -569,7 +608,7 @@ export function InstitutionForm({
     control,
     errors,
     formInput,
-    getValues,
+    watch,
     setValue,
   };
 
@@ -752,7 +791,9 @@ export function InstitutionForm({
             setSnackbarOpen(true);
           }
         } catch (error) {
-          setMessage(error.response.data.message);
+          if (axios.isAxiosError(error)) {
+            setMessage(error.response?.data.message);
+          }
           setSnackbarOpen(true);
         } finally {
           setIsLoading(false);
@@ -787,9 +828,9 @@ export function Institutions() {
     );
   }
 
-  const searchParams: Array<
-    { [key in keyof InstitutionsSearchParams]: "string" | "number" }
-  > = [
+  const searchParams: Array<{
+    [key in keyof InstitutionsSearchParams]: "string" | "number";
+  }> = [
     { id: "string" },
     { name: "string" },
     { "address.street": "string" },
@@ -800,7 +841,7 @@ export function Institutions() {
     <div className="container">
       <Table
         tableHeaders={tableHeaders}
-        rows={data?.data || []}
+        rows={data || []}
         sort={["Name", "INST-Code", "Straße", "Ort", "PLZ", "Telefonnummer"]}
         onRowClick={(row) => navigate(`./${row.id}`)}
         search={search}
@@ -813,10 +854,15 @@ export function Institutions() {
 
 export function ViewInstitutionDetails() {
   const { instCode } = useParams();
-  const { data, isLoading } = useInstitution(instCode);
+  const { data, isLoading } = useInstitution(instCode || "");
+  if (!instCode) {
+    return <PageNotFound />;
+  }
   return isLoading ? (
     <Loading />
-  ) : (
+  ) : data ? (
     <InstitutionOverlay instCode={instCode} data={data} />
+  ) : (
+    <PageNotFound />
   );
 }
